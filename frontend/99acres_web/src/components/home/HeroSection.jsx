@@ -19,7 +19,6 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-// Swiper
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
 
@@ -27,7 +26,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 
-const Home = () => {
+const HeroSection = ({ searchRef, hideSearch }) => {
   const [value, setValue] = React.useState(0);
 
   const slides = [
@@ -52,7 +51,7 @@ const Home = () => {
   return (
     <Box>
       {/* HERO SECTION */}
-      <Box sx={{ height: "520px", position: "relative" }}>
+      <Box sx={{ height: hideSearch ? "460px" : "520px",transition: "height 0.3s ease", position: "relative" }}>
         <Swiper
           modules={[Autoplay, EffectFade, Navigation]}
           effect="fade"
@@ -75,7 +74,6 @@ const Home = () => {
                   position: "relative",
                 }}
               >
-                {/* Dark Left Overlay */}
                 <Box
                   sx={{
                     position: "absolute",
@@ -85,7 +83,6 @@ const Home = () => {
                   }}
                 />
 
-                {/* Hero Content */}
                 <Container
                   maxWidth="lg"
                   sx={{
@@ -96,18 +93,11 @@ const Home = () => {
                   }}
                 >
                   <Box sx={{ maxWidth: 550 }}>
-                    <Typography
-                      variant="overline"
-                      sx={{ letterSpacing: 1.5 }}
-                    >
+                    <Typography variant="overline" sx={{ letterSpacing: 1.5 }}>
                       {slide.title}
                     </Typography>
 
-                    <Typography
-                      variant="h4"
-                      fontWeight={700}
-                      sx={{ mt: 2 }}
-                    >
+                    <Typography variant="h4" fontWeight={700} sx={{ mt: 2 }}>
                       {slide.subtitle}
                     </Typography>
 
@@ -124,9 +114,7 @@ const Home = () => {
                         backgroundColor: "#fff",
                         textTransform: "none",
                         px: 4,
-                        "&:hover": {
-                          backgroundColor: "#f5f5f5",
-                        },
+                        "&:hover": { backgroundColor: "#f5f5f5" },
                       }}
                     >
                       {slide.button}
@@ -138,7 +126,7 @@ const Home = () => {
           ))}
         </Swiper>
 
-        {/* LEFT BUTTON */}
+        {/* LEFT NAV */}
         <Box
           className="custom-prev"
           sx={{
@@ -156,15 +144,12 @@ const Home = () => {
             cursor: "pointer",
             zIndex: 20,
             boxShadow: 3,
-            "&:hover": {
-              backgroundColor: "#fff",
-            },
           }}
         >
           <ArrowBackIosNewIcon fontSize="small" />
         </Box>
 
-        {/* RIGHT BUTTON */}
+        {/* RIGHT NAV */}
         <Box
           className="custom-next"
           sx={{
@@ -182,9 +167,6 @@ const Home = () => {
             cursor: "pointer",
             zIndex: 20,
             boxShadow: 3,
-            "&:hover": {
-              backgroundColor: "#fff",
-            },
           }}
         >
           <ArrowForwardIosIcon fontSize="small" />
@@ -192,6 +174,7 @@ const Home = () => {
 
         {/* SEARCH CARD */}
         <Container
+          ref={searchRef}
           maxWidth="lg"
           sx={{
             position: "absolute",
@@ -199,6 +182,12 @@ const Home = () => {
             left: 0,
             right: 0,
             zIndex: 25,
+            transition: "all 0.35s ease",
+            opacity: hideSearch ? 0 : 1,
+            transform: hideSearch
+              ? "translateY(-40px)"
+              : "translateY(0px)",
+            pointerEvents: hideSearch ? "none" : "auto",
           }}
         >
           <Paper
@@ -208,7 +197,7 @@ const Home = () => {
               overflow: "hidden",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", px: 3, pt: 2}}>
+            <Box sx={{ display: "flex", alignItems: "center", px: 3, pt: 2 }}>
               <Tabs
                 value={value}
                 onChange={(e, newValue) => setValue(newValue)}
@@ -225,7 +214,13 @@ const Home = () => {
 
               <Box sx={{ flexGrow: 1 }} />
 
-              <Button sx={{ textTransform: "none", fontWeight: 600, color:"#000" }}>
+              <Button
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  color: "#000",
+                }}
+              >
                 Post Property
                 <Box
                   sx={{
@@ -257,7 +252,7 @@ const Home = () => {
                 sx={{
                   textTransform: "none",
                   color: "#555",
-                  whiteSpace:"nowrap",
+                  whiteSpace: "nowrap",
                   borderRight: "1px solid #ddd",
                   pr: 3,
                 }}
@@ -272,15 +267,11 @@ const Home = () => {
                 InputProps={{ disableUnderline: true }}
               />
 
-              <IconButton
-                sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}
-              >
+              <IconButton sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}>
                 <MyLocationIcon />
               </IconButton>
 
-              <IconButton
-                sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}
-              >
+              <IconButton sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}>
                 <MicIcon />
               </IconButton>
 
@@ -296,9 +287,9 @@ const Home = () => {
         </Container>
       </Box>
 
-      <Box sx={{ height: "140px", backgroundColor: "#f5f5f5" }} />
+      
     </Box>
   );
 };
 
-export default Home;
+export default HeroSection;

@@ -4,7 +4,7 @@ export const getDesignTokens = (mode) => ({
   palette: {
     mode,
     primary: {
-      main: "#d8232a", // 99acres red tone
+      main: "#1976d2", // 99acres red tone
     },
     secondary: {
       main: "#f5f5f5",
