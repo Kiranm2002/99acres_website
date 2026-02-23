@@ -6,20 +6,32 @@ import {
   Box,
   Button,
   Container,
-  IconButton
+  IconButton,Avatar
 } from "@mui/material";
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
-import AuthModal from "../auth/AuthModal";
+import { useNavigate } from "react-router-dom";
+// import AuthModal from "../auth/AuthModal";
+import LoginModal from "../auth/Login";
+import RegisterModal from "../auth/Register";
+import AppDrawer from "../common/AppDrawer";
 
-const Navbar = ({isHomePage}) => {
+//testing jwt
+// import Login from "../auth/Login1";
+// import Register from "../auth/Register1"
+
+const Navbar = ({isHomePage,user,setUser}) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
+    const navigate = useNavigate();
     // const navigate = useNavigate();
-    const [openAuth, setOpenAuth] = useState(false);
+    // const [openAuth, setOpenAuth] = useState(false);
+    // const [authType, setAuthType] = useState(""); 
+    const [openLogin, setOpenLogin] = useState(false);
+    const [openRegister, setOpenRegister] = useState(false);
 
     const handleMenuOpen = (event) => {
       setAnchorEl(event.currentTarget);
@@ -29,12 +41,12 @@ const Navbar = ({isHomePage}) => {
       setAnchorEl(null);
     };
   
-  return (
+  return (<>
     <AppBar
       position={isHomePage ? "absolute":"fixed"} elevation={0}
       sx={{
         backgroundColor: isHomePage ?"transparent":"#fff", color:isHomePage ? "#fff":"#000",
-        top: 0, left: 0, right: 0, width: "100%", zIndex: 1300,
+        top: 0, left: 0, right: 0, width: "100%", 
       }}
     >
       <Container maxWidth="xl">
@@ -107,35 +119,92 @@ const Navbar = ({isHomePage}) => {
             <SupportAgentIcon />
           </IconButton>
           <IconButton color="inherit" onClick={handleMenuOpen}>
-                <AccountCircleIcon />
-              </IconButton>
+                {user ? (
+              <Avatar
+                sx={{
+                  bgcolor: "#fff",
+                  color: "#000",
+                  fontWeight: "bold",
+                  width: 35,
+                  height: 35,
+                  fontSize: 14,
+                }}
+              >
+                {user.firstName.charAt(0).toUpperCase()}{user.lastName.charAt(0).toUpperCase()}
+              </Avatar>
+            ) : (
+              <AccountCircleIcon />
+            )}
+          </IconButton>
 
               <Menu
-                anchorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleMenuClose}
-              >
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {!user ? (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      setOpenLogin(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    Login
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setOpenRegister(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    Register
+                  </MenuItem>
+                </>
+              ) : (
                 <MenuItem
                   onClick={() => {
-                    setOpenAuth(true);
+                    setUser(null);          // log out user
                     handleMenuClose();
+                    navigate('/')
                   }}
                 >
-                  Login / Register
+                  Logout
                 </MenuItem>
-              </Menu>
+              )}
+            </Menu>
 
             
-             <IconButton color="inherit">
+             <IconButton color="inherit" onClick={() => setDrawerOpen(true)}>
                 <MenuIcon />
             </IconButton>
-            <AuthModal 
+            {/* <AuthModal 
             open={openAuth} 
-            handleClose={() => setOpenAuth(false)} 
-          />
+            handleClose={() => setOpenAuth(false)}
+            authType={authType} 
+          /> */}
+          <LoginModal
+              open={openLogin}
+              handleMenuClose={() => setOpenLogin(false)}
+              user={user}
+              setUser={setUser}
+            />
+
+            <RegisterModal
+              open={openRegister}
+              handleMenuClose={() => setOpenRegister(false)}
+              user={user}
+              setUser={setUser}
+            />
         </Toolbar>
       </Container>
     </AppBar>
+    <AppDrawer
+    open={drawerOpen}
+    onClose={() => setDrawerOpen(false)}
+    user={user}
+  />
+  </>
   );
 };
 

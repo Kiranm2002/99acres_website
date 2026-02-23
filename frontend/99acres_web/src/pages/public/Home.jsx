@@ -6,9 +6,11 @@ import RecommendedProjects from "../../components/home/RecommendedProjects";
 import ProjectsHighDemand from "../../components/home/ProjectsHighDemand"
 import ExclusiveProjects from "../../components/home/ExclusiveProjects"
 import Footer from "../../components/home/Footer"
+import Navbar from "../../components/navbar/Navbar";
 
 
-const Home = () => {
+const Home = ({user,setUser}) => {
+  // const [user,setUser] = useState(null)
   const [showSecondaryNav, setShowSecondaryNav] = useState(false);
   const searchRef = useRef(null);
 
@@ -32,8 +34,9 @@ const Home = () => {
   return (
     <>
       {/* Secondary Navbar */}
-      <SecondaryNavbar show={showSecondaryNav} />
+      <SecondaryNavbar show={showSecondaryNav} user={user} setUser={setUser} />
 
+      <Navbar isHomePage={true} user={user} setUser={setUser} />
       {/* Hero Section */}
       <HeroSection
         searchRef={searchRef}

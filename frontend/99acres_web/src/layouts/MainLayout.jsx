@@ -15,7 +15,7 @@ const MainLayout = ({ children }) => {
       {/* Show Navbar only if not login/register */}
       {!shouldHideNavbar && (
         <>
-          <Navbar isHomePage={isHomePage} />
+          {/* <Navbar isHomePage={isHomePage} /> */}
           
           {/* Add spacing only if not home */}
           {!isHomePage && <Toolbar />}

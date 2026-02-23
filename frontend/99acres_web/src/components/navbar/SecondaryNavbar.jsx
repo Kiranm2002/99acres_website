@@ -7,8 +7,10 @@ import {
   IconButton,
   TextField,
   InputAdornment,
-  Slide,
+  Slide,MenuItem,Menu,Avatar
 } from "@mui/material";
+
+import React, { useState } from "react";
 
 import SearchIcon from "@mui/icons-material/Search";
 import MicIcon from "@mui/icons-material/Mic";
@@ -16,9 +18,31 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
+import AppDrawer from "../common/AppDrawer";
+import LoginModal from "../auth/Login";
+import RegisterModal from "../auth/Register";
+import { useNavigate } from "react-router-dom";
 
-const SecondaryNavbar = ({ show }) => {
-  return (
+
+const SecondaryNavbar = ({ show,user,setUser }) => {
+  const navigate = useNavigate();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [openLogin, setOpenLogin] = useState(false);
+  const [openRegister, setOpenRegister] = useState(false);
+  
+  const handleMenuOpen = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+      const handleMenuClose = () => {
+        setAnchorEl(null);
+      };
+
+  // const toggleDrawer = (state) => {
+  //   setOpenDrawer(state);
+  // };
+  return (<>
     <Slide direction="down" in={show} mountOnEnter unmountOnExit>
       <AppBar
         position="fixed"
@@ -26,7 +50,7 @@ const SecondaryNavbar = ({ show }) => {
           backgroundColor: "#1565c0",
           px: 2,
           boxShadow: 3,
-          zIndex: 1400,
+          // zIndex: 1400,
         }}
       >
         <Toolbar sx={{ display: "flex", gap: 2 }}>
@@ -127,17 +151,88 @@ const SecondaryNavbar = ({ show }) => {
           </Button>
 
           {/* PROFILE */}
-          <IconButton sx={{ color: "#fff" }}>
-            <AccountCircleIcon />
+          <IconButton sx={{ color: "#fff" }} onClick={handleMenuOpen}>
+            {user ? (
+              <Avatar
+                sx={{
+                  bgcolor: "#fff",
+                  color: "#000",
+                  fontWeight: "bold",
+                  width: 35,
+                  height: 35,
+                  fontSize: 14,
+                }}
+              >
+                {user.firstName.charAt(0).toUpperCase()}
+                {user.lastName.charAt(0).toUpperCase()}
+              </Avatar>
+            ) : (
+              <AccountCircleIcon />
+            )}
           </IconButton>
+          <Menu
+              anchorEl={anchorEl}
+              open={Boolean(anchorEl)}
+              onClose={handleMenuClose}
+            >
+              {!user ? (
+                <>
+                  <MenuItem
+                    onClick={() => {
+                      setOpenLogin(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    Login
+                  </MenuItem>
+                  <MenuItem
+                    onClick={() => {
+                      setOpenRegister(true);
+                      handleMenuClose();
+                    }}
+                  >
+                    Register
+                  </MenuItem>
+                </>
+              ) : (
+                <MenuItem
+                  onClick={() => {
+                    setUser(null); // log out user
+                    handleMenuClose();
+                    navigate('/')
+                  }}
+                >
+                  Logout
+                </MenuItem>
+              )}
+            </Menu>
 
           {/* MENU */}
-          <IconButton sx={{ color: "#fff" }}>
+          <IconButton sx={{ color: "#fff" }} onClick={() => setDrawerOpen(true)}>
             <MenuIcon />
           </IconButton>
+          <LoginModal
+              open={openLogin}
+              handleMenuClose={() => setOpenLogin(false)}
+              user={user}
+              setUser={setUser}
+            />
+
+            <RegisterModal
+              open={openRegister}
+              handleMenuClose={() => setOpenRegister(false)}
+              user={user}
+              setUser={setUser}
+            />
         </Toolbar>
       </AppBar>
     </Slide>
+    <AppDrawer
+    open={drawerOpen}
+    onClose={() => setDrawerOpen(false)}
+    user={user}
+  />
+  </>
   );
 };
 

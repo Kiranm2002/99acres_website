@@ -1,7 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const transporter = require("../utils/mailer");
-
+const {generateAccessToken,generateRefreshToken} = require("../utils/jwt")
 
 const otpStore = {};
 
@@ -30,13 +30,52 @@ exports.sendOtp = async (req, res) => {
 };
 
 
-exports.verifyOtp = (req, res) => {
+// exports.verifyOtp = (req, res) => {
+//   const { email, otp } = req.body;
+//   if (otpStore[email] && otpStore[email].toString() === otp) {
+//     delete otpStore[email];
+//     return res.json({ success: true });
+//   }
+//   res.json({ success: false });
+// };
+
+exports.verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
-  if (otpStore[email] && otpStore[email].toString() === otp) {
-    delete otpStore[email];
-    return res.json({ success: true });
+
+  if (!otpStore[email] || otpStore[email].toString() !== otp) {
+    return res.status(400).json({ success: false, message: "Invalid OTP" });
   }
-  res.json({ success: false });
+
+  delete otpStore[email];
+
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    // User not registered yet → ask frontend to show registration form
+    return res.json({ success: true, type: "register", message: "OTP verified, please complete registration" });
+  }
+
+  
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: false, 
+    sameSite: "strict",
+    maxAge: 1*24 * 60 * 60 * 1000 
+  });
+
+  return res.json({
+    success: true,
+    type: "login",
+    accessToken,
+    user: {
+      fullName: user.fullName,
+      
+    }
+  });
 };
 
 
@@ -65,4 +104,26 @@ exports.register = async (req, res) => {
     console.error(err);
     res.status(500).json({ success: false, message: "Registration failed" });
   }
+};
+
+exports.refreshToken = (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ message: "Refresh token required" });
+  }
+
+  jwt.verify(token, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
+    if (err) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    const newAccessToken = jwt.sign(
+      { id: decoded.id },
+      process.env.JWT_ACCESS_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.json({ accessToken: newAccessToken });
+  });
 };
