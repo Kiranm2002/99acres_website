@@ -30,53 +30,53 @@ exports.sendOtp = async (req, res) => {
 };
 
 
-// exports.verifyOtp = (req, res) => {
-//   const { email, otp } = req.body;
-//   if (otpStore[email] && otpStore[email].toString() === otp) {
-//     delete otpStore[email];
-//     return res.json({ success: true });
-//   }
-//   res.json({ success: false });
-// };
-
-exports.verifyOtp = async (req, res) => {
+exports.verifyOtp = (req, res) => {
   const { email, otp } = req.body;
-
-  if (!otpStore[email] || otpStore[email].toString() !== otp) {
-    return res.status(400).json({ success: false, message: "Invalid OTP" });
+  if (otpStore[email] && otpStore[email].toString() === otp) {
+    delete otpStore[email];
+    return res.json({ success: true });
   }
-
-  delete otpStore[email];
-
-  let user = await User.findOne({ email });
-
-  if (!user) {
-    // User not registered yet → ask frontend to show registration form
-    return res.json({ success: true, type: "register", message: "OTP verified, please complete registration" });
-  }
-
-  
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: false, 
-    sameSite: "strict",
-    maxAge: 1*24 * 60 * 60 * 1000 
-  });
-
-  return res.json({
-    success: true,
-    type: "login",
-    accessToken,
-    user: {
-      fullName: user.fullName,
-      
-    }
-  });
+  res.json({ success: false });
 };
+
+// exports.verifyOtp = async (req, res) => {
+//   const { email, otp } = req.body;
+
+//   if (!otpStore[email] || otpStore[email].toString() !== otp) {
+//     return res.status(400).json({ success: false, message: "Invalid OTP" });
+//   }
+
+//   delete otpStore[email];
+
+//   let user = await User.findOne({ email });
+
+//   if (!user) {
+//     // User not registered yet → ask frontend to show registration form
+//     return res.json({ success: true, type: "register", message: "OTP verified, please complete registration" });
+//   }
+
+  
+//   const accessToken = generateAccessToken(user);
+//   const refreshToken = generateRefreshToken(user);
+
+  
+//   res.cookie("refreshToken", refreshToken, {
+//     httpOnly: true,
+//     secure: false, 
+//     sameSite: "strict",
+//     maxAge: 1*24 * 60 * 60 * 1000 
+//   });
+
+//   return res.json({
+//     success: true,
+//     type: "login",
+//     accessToken,
+//     user: {
+//       fullName: user.fullName,
+      
+//     }
+//   });
+// };
 
 
 exports.register = async (req, res) => {

@@ -51,7 +51,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
   return (
     <Box>
       {/* HERO SECTION */}
-      <Box sx={{ height: hideSearch ? "460px" : "520px",transition: "height 0.3s ease", position: "relative" }}>
+      <Box sx={{ height: hideSearch ? "250px" : "350px",transition: "height 0.3s ease", position: "relative" }}>
         <Swiper
           modules={[Autoplay, EffectFade, Navigation]}
           effect="fade"
@@ -67,7 +67,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
             <SwiperSlide key={index}>
               <Box
                 sx={{
-                  height: "520px",
+                  height: "350px",
                   backgroundImage: `url(${slide.image})`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
@@ -101,14 +101,15 @@ const HeroSection = ({ searchRef, hideSearch }) => {
                       {slide.subtitle}
                     </Typography>
 
-                    <Typography sx={{ mt: 2, opacity: 0.9 }}>
+                    <Box sx={{ maxWidth: 550, display: "flex", alignItems: "center", gap: 2, mt: 2 }}>
+                    <Typography sx={{  opacity: 0.9, mt:1 }}>
                       {slide.description}
                     </Typography>
 
                     <Button
                       variant="outlined"
                       sx={{
-                        mt: 3,
+                        mt: 2,
                         borderColor: "#000",
                         color: "#000",
                         backgroundColor: "#fff",
@@ -119,6 +120,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
                     >
                       {slide.button}
                     </Button>
+                    </Box>
                   </Box>
                 </Container>
               </Box>
@@ -173,15 +175,17 @@ const HeroSection = ({ searchRef, hideSearch }) => {
         </Box>
 
         {/* SEARCH CARD */}
-        <Container
+        <Box
           ref={searchRef}
-          maxWidth="lg"
+          // maxWidth="lg"
           sx={{
             position: "absolute",
             bottom: "-80px",
             left: 0,
             right: 0,
             zIndex: 25,
+            maxWidth:1000,
+            mx:"auto",
             transition: "all 0.35s ease",
             opacity: hideSearch ? 0 : 1,
             transform: hideSearch
@@ -255,6 +259,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
                   whiteSpace: "nowrap",
                   borderRight: "1px solid #ddd",
                   pr: 3,
+                  ml:3,
                 }}
               >
                 All Residential
@@ -267,12 +272,12 @@ const HeroSection = ({ searchRef, hideSearch }) => {
                 InputProps={{ disableUnderline: true }}
               />
 
-              <IconButton sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}>
-                <MyLocationIcon />
+              <IconButton sx={{ backgroundColor: "#f0f8ff", width: 40, height: 40 }}>
+                <MyLocationIcon sx={{color:"#1e90ff"}}/>
               </IconButton>
 
-              <IconButton sx={{ backgroundColor: "#f3f5f7", width: 40, height: 40 }}>
-                <MicIcon />
+              <IconButton sx={{ backgroundColor: "#f0f8ff", width: 40, height: 40 }}>
+                <MicIcon sx={{color:"#1e90ff"}}/>
               </IconButton>
 
               <Button
@@ -284,7 +289,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
               </Button>
             </Box>
           </Paper>
-        </Container>
+        </Box>
       </Box>
 
       

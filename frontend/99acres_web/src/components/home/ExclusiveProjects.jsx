@@ -1,4 +1,10 @@
-import { Box, Typography, Card, CardMedia } from "@mui/material";
+import { Box, Typography, Card, CardMedia, IconButton } from "@mui/material";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import { useRef, useState } from "react";
+
+import "swiper/css";
+import "swiper/css/navigation";
 
 function ExclusiveProjects() {
   const exclusiveProjects = [
@@ -17,12 +23,11 @@ function ExclusiveProjects() {
       image:
         "https://www.ieplads.com/bmsjs/banners99/2022/amrutha-lake-vista-r-308x198.jpg?ver=2",
     },
-    // {
-    //   id: 4,
-    //   image:
-    //     "https://images.unsplash.com/photo-1507089947368-19c1da9775ae",
-    // },
   ];
+
+  const [isBeginning, setIsBeginning] = useState(true);
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
 
   return (
     <Box sx={{ px: 6, py: 6, backgroundColor: "#f5f5f5" }}>
@@ -35,42 +40,108 @@ function ExclusiveProjects() {
         Sponsored projects and events
       </Typography>
 
-      {/* Horizontal Scroll Section */}
-      <Box
-        sx={{
-          display: "flex",
-          gap: 3,
-          overflowX: "auto",
-          scrollBehavior: "smooth",
-          "&::-webkit-scrollbar": {
-            display: "none",
-          },
-        }}
-      >
-        {exclusiveProjects.map((project) => (
-          <Card
-            key={project.id}
-            sx={{
-              minWidth: 360,
-              borderRadius: 3,
-              overflow: "hidden",
-              boxShadow: 2,
-              transition: "0.3s",
-              cursor: "pointer",
-              "&:hover": {
-                boxShadow: 6,
-                transform: "translateY(-4px)",
-              },
-            }}
+      <Box sx={{ position: "relative" }}>
+        <Swiper
+          modules={[Navigation]}
+          slidesPerView={3}
+          spaceBetween={20}
+          onSlideChange={(swiper) =>
+            setIsBeginning(swiper.isBeginning)
+          }
+          navigation={{
+            prevEl: prevRef.current,
+            nextEl: nextRef.current,
+          }}
+          onBeforeInit={(swiper) => {
+            if (prevRef.current && nextRef.current) {
+              swiper.params.navigation.prevEl = prevRef.current;
+              swiper.params.navigation.nextEl = nextRef.current;
+            }
+          }}
+        >
+          {exclusiveProjects.map((project) => (
+            <SwiperSlide key={project.id}>
+              <Card
+                sx={{
+                  borderRadius: 2,
+                  overflow: "hidden",
+                  boxShadow: 1,
+                  cursor: "pointer",
+                  transition: "0.3s",
+                  "&:hover": {
+                    boxShadow: 6,
+                    transform: "translateY(-4px)",
+                  },
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={project.image}
+                  alt="exclusive project"
+                  sx={{ objectFit: "cover" }}
+                />
+              </Card>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+
+        {/* Prev Button */}
+        <IconButton
+          ref={prevRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: -17,
+            transform: "translateY(-50%)",
+            width: 32,
+            height: 32,
+            bgcolor: "#fff",
+            boxShadow: 3,
+            display: isBeginning ? "none" : "flex",
+            zIndex: 10,
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
           >
-            <CardMedia
-              component="img"
-              height="240"
-              image={project.image}
-              alt="exclusive project"
-            />
-          </Card>
-        ))}
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </IconButton>
+
+        {/* Next Button */}
+        <IconButton
+          ref={nextRef}
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: -17,
+            transform: "translateY(-50%)",
+            width: 32,
+            height: 32,
+            bgcolor: "#fff",
+            boxShadow: 3,
+            zIndex: 10,
+          }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            viewBox="0 0 24 24"
+            width="20"
+            height="20"
+          >
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </IconButton>
       </Box>
     </Box>
   );

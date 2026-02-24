@@ -131,6 +131,7 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
               backgroundColor: "#fff",
               color: "#000",
               px: 2,
+              borderRadius:"10px",
               whiteSpace: "nowrap",
               "&:hover": { backgroundColor: "#f5f5f5" },
             }}

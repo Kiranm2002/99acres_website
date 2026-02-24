@@ -45,8 +45,12 @@ const Navbar = ({isHomePage,user,setUser}) => {
     <AppBar
       position={isHomePage ? "absolute":"fixed"} elevation={0}
       sx={{
-        backgroundColor: isHomePage ?"transparent":"#fff", color:isHomePage ? "#fff":"#000",
+        backgroundColor: isHomePage ?"transparent":"#fff", 
+        // color:isHomePage ? "#fff":"#000",
         top: 0, left: 0, right: 0, width: "100%", 
+        "--AppBar-color": isHomePage ? "#fff" : "#000",
+    "--AppBar-background": isHomePage ? "transparent" : "#fff",
+    boxShadow: isHomePage ? "none" : "0 2px 8px rgba(0,0,0,0.08)",
       }}
     >
       <Container maxWidth="xl">
@@ -55,50 +59,143 @@ const Navbar = ({isHomePage,user,setUser}) => {
             display: "flex",
             justifyContent: "space-between",
             minHeight: "70px",
+            px:0,
+            color: isHomePage ? "#fff" : "#000"
           }}
         >
           {/* LEFT SIDE */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <Typography variant="h5" fontWeight={700}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+            <Typography variant="h5" fontWeight={700} sx={{fontSize:"2rem"}}>
               99acres
             </Typography>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button sx={{ color: isHomePage ? "#f5f5f5" : "#000", fontWeight:"600",textTransform: "none" }}>
               Buy in Bangalore East
             </Button>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button 
+              variant="text" disableRipple
+              sx={{ 
+              // color: "#6d6d6d !important",
+              color: isHomePage ? "#fff" : "#6d6d6d", 
+              fontWeight:"500",
+              textTransform: "none" ,
+              "&:hover": {
+                color: isHomePage ? "#fff" : "#000",
+                backgroundColor: "transparent",
+              },
+              }}>
               For Buyers
             </Button>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button
+              variant="text" disableRipple
+              sx={{ 
+              // color: "#6d6d6d !important",
+              color: isHomePage ? "#fff" : "#6d6d6d", 
+              fontWeight:"500",
+              textTransform: "none" ,
+              "&:hover": {
+                color: isHomePage ? "#fff" : "#000",
+                backgroundColor: "transparent",
+              },
+              }} 
+            >
               For Tenants
             </Button>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button
+              variant="text" disableRipple
+              sx={{ 
+              // color: "#6d6d6d !important",
+              color: isHomePage ? "#fff" : "#6d6d6d", 
+              fontWeight:"500",
+              textTransform: "none" ,
+              "&:hover": {
+                color: isHomePage ? "#fff" : "#000",
+                backgroundColor: "transparent",
+              },
+              }} 
+            >
               For Owners
             </Button>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button
+            variant="text" disableRipple
+              sx={{ 
+              // color: "#6d6d6d !important",
+              color: isHomePage ? "#fff" : "#6d6d6d", 
+              fontWeight:"500",
+              textTransform: "none" ,
+              "&:hover": {
+                color: isHomePage ? "#fff" : "#000",
+                backgroundColor: "transparent",
+              },
+              }} 
+            >
               For Dealers / Builders
             </Button>
 
-            <Button sx={{ color: "#fff", textTransform: "none" }}>
+            <Button
+              variant="text" disableRipple
+              sx={{ 
+              // color: "#6d6d6d !important",
+              color: isHomePage ? "#fff" : "#6d6d6d", 
+              fontWeight:"500",
+              textTransform: "none" ,
+              position:"relative",
+              "&:hover": {
+                color: isHomePage ? "#fff" : "#000",
+                backgroundColor: "transparent",
+              },
+              }} 
+            >
               Insights
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: -4,         // adjust vertical position
+                  right: -10,       // adjust horizontal position near last letter
+                  bgcolor: "#ff4d4f",
+                  color: "#fff",
+                  fontSize: "8px",
+                  fontWeight: 700,
+                  px: 0.5,
+                  py: "1px",
+                  border:"1px solid #fff",
+                  borderRadius: "2px",
+                  lineHeight: 1.5,
+                  minWidth: 16,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                New
+              </Box>
             </Button>
             </Box>
             
 
           {/* RIGHT SIDE */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="contained"
             sx={{
               backgroundColor: "#fff",
-              color: "#000",
-              borderRadius: "20px",
+              color: "#444",
+              borderRadius: "8px",
               textTransform: "none",
               px: 3,
+              py:0.5,
+              minWidth:"auto",
               fontWeight: 600,
+              fontSize:"0.875rem",
+              height:34,
+              boxShadow: "none",
+              "&:hover": { backgroundColor: "#f5f5f5", boxShadow: "none" },
+              display:"flex",
+              alignItems:"center"
             }}
           >
             Post property 
@@ -107,17 +204,29 @@ const Navbar = ({isHomePage,user,setUser}) => {
                 bgcolor: "green",
                 color: "#fff",
                 fontSize: "10px",
-                px: 1,
+                px: 0.5,
                 ml: 1,
                 borderRadius: "4px",
+                height:17,
+                minWidth:17,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
                 }}
                 >
                 FREE
                 </Box>
           </Button>
-          <IconButton color="inherit">
-            <SupportAgentIcon />
+
+          <IconButton 
+            sx={{backgroundColor:"#fff",
+              width:25, height:25,
+              "&:hover":{backgroundColor:"#f5f5f5"}
+            }}
+          >
+            <SupportAgentIcon sx={{ color: "#000", fontSize: 20 }} />
           </IconButton>
+
           <IconButton color="inherit" onClick={handleMenuOpen}>
                 {user ? (
               <Avatar
@@ -130,7 +239,8 @@ const Navbar = ({isHomePage,user,setUser}) => {
                   fontSize: 14,
                 }}
               >
-                {user.firstName.charAt(0).toUpperCase()}{user.lastName.charAt(0).toUpperCase()}
+                {user.firstName.charAt(0).toUpperCase()}
+                {user.lastName.charAt(0).toUpperCase()}
               </Avatar>
             ) : (
               <AccountCircleIcon />
@@ -178,6 +288,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
              <IconButton color="inherit" onClick={() => setDrawerOpen(true)}>
                 <MenuIcon />
             </IconButton>
+          </Box>
             {/* <AuthModal 
             open={openAuth} 
             handleClose={() => setOpenAuth(false)}
