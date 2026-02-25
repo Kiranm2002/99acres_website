@@ -2,275 +2,388 @@ import { useState } from "react";
 import {
   Dialog,
   DialogContent,
+  Typography,
   TextField,
   Button,
-  Typography,
-  Box,
-  RadioGroup,
-  FormControlLabel,
-  Radio,
-  Alert,
-  CircularProgress
+  IconButton,
+  Box
 } from "@mui/material";
-import axios from "axios";
+import CloseIcon from "@mui/icons-material/Close";
+import { useRef } from "react";
+import axios from "axios"
 
 const AuthModal = ({ open, handleClose }) => {
-  const [step, setStep] = useState(1);
-
-  
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-
-  
-  const [fullName, setFullName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
-  const [isAgent, setIsAgent] = useState("no");
-
-  
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState("");
+  const [step, setStep] = useState("email"); 
+  const inputRefs = useRef([]);
+  const [emailError, setEmailError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [otpError, setOtpError] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
   
-  const handleSendOtp = async () => {
-    if (!email) {
-      setError("Enter a valid email");
+  // steps: email | otp | register
+
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [formData, setFormData] = useState({
+    fullName: "",
+    phone: "",
+  });
+
+  const handleContinue = async() => {
+    if (!email) return;
+
+    try {
+    setLoading(true);
+    setEmailError("");
+
+    //  Check if email exists
+    const checkRes = await axios.post(
+      "http://localhost:5000/check-email",
+      { email }
+    );
+    if (checkRes.data.exists) {
+      setEmailError("Email already registered please login");
+      setLoading(false);
       return;
     }
 
-    setLoading(true);
-    try {
-      await axios.post("http://localhost:5000/send-otp", { email });
-      setStep(2);
-      setError("");
-    } catch (err) {
-      setError("Failed to send OTP. Try again.");
-    }
-    setLoading(false);
-  };
+    //  Send OTP
+    await axios.post(
+      "http://localhost:5000/send-otp",
+      { email }
+    );
 
-  
+    setStep("otp");
+  }catch(error){
+    console.error(error);
+    setEmailError("Something went wrong. Try again.");
+  }finally{
+    setLoading(false)
+  }
+};
+
   const handleVerifyOtp = async () => {
-    if (!otp) {
-      setError("Enter OTP");
-      return;
-    }
+  if (otp.length !== 4) return;
 
-    setLoading(true);
-    try {
-      const res = await axios.post("http://localhost:5000/verify-otp", {
+  try {
+    setOtpLoading(true);
+    setOtpError("");
+
+    const res = await axios.post(
+      "http://localhost:5000/verify-otp",
+      {
         email,
         otp,
-      });
-
-      if (res.data.success) {
-        setStep(3);
-        setError("");
-      } else {
-        setError("Invalid OTP");
       }
-    } catch (err) {
-      setError("Failed to verify OTP");
-    }
-    setLoading(false);
-  };
+    );
 
-  
-  const handleRegister = async () => {
-    if (!fullName || !password || !confirmPassword) {
-      setError("All fields are required");
-      return;
+    if (res.data.success) {
+      setStep("register");
+    } else {
+      setOtpError("Invalid OTP");
     }
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-
-    setLoading(true);
-
+  } catch (error) {
+    setOtpError("Invalid OTP");
+  } finally {
+    setOtpLoading(false);
+  }
+};
+  const resendOtp = async()=>{
     try {
-      
-      const formData = new FormData();
-      formData.append("fullName", fullName);
-      formData.append("email", email);
-      formData.append("password", password);
-      if (profilePic) formData.append("profilePic", profilePic);
-      formData.append("isAgent", isAgent);
-
-      const res = await axios.post(
-        "http://localhost:5000/register",
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
+      await axios.post(
+        "http://localhost:5000/send-otp",
+        { email }
       );
-
-      if (res.data.success) {
-        setSuccess(true);
-        setError("");
-
-        // Reset form and close modal after 2s
-        setTimeout(() => {
-          handleClose();
-          setStep(1);
-          setSuccess(false);
-          setEmail("");
-          setOtp("");
-          setFullName("");
-          setPassword("");
-          setConfirmPassword("");
-          setProfilePic(null);
-          setIsAgent("no");
-        }, 2000);
-      } else {
-        setError(res.data.message || "Registration failed");
-      }
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.message || "Registration failed");
+    } catch (error) {
+      console.error("Resend OTP failed");
     }
+  }
 
-    setLoading(false);
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
-      <DialogContent>
+    <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth >
+      <DialogContent sx={{ p: 4, position: "relative" }}>
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            Registered Successfully 
-          </Alert>
-        )}
+        {/* Close Button */}
+        <IconButton
+          onClick={handleClose}
+          sx={{ position: "absolute", right: 10, top: 10 }}
+        >
+          <CloseIcon />
+        </IconButton>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        {/* STEP 1: EMAIL */}
-        {step === 1 && (
+        {/* Step 1 - Email */}
+        {step === "email" && (
           <>
-            <Typography variant="h6" mb={2}>
-              Enter Your Email
+            <Typography variant="h5" fontWeight="bold" mb={1}>
+              Login / Register
             </Typography>
+
+            <Typography variant="body2" color="text.secondary" mb={3}>
+              Please enter your Email ID
+            </Typography>
+
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+              <Typography variant="subtitle2" mb={1}>
+                Email ID
+              </Typography>
+              {emailError && (
+                <Typography
+                  variant="caption"
+                  sx={{ color: "red", fontWeight: 500 }}
+                >
+                  {emailError}
+                </Typography>
+              )}
+            </Box>
 
             <TextField
               fullWidth
-              label="Email"
-              type="email"
+              placeholder="Enter your email id"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={{ mb: 3 , }}
             />
 
             <Button
               fullWidth
               variant="contained"
-              sx={{ mt: 2 }}
-              onClick={handleSendOtp}
-              disabled={loading}
+              // disabled={!email}
+              sx={{
+                py: 1.5,
+                textTransform: "none",
+                fontWeight: "bold",
+                mb: 2,borderRadius:"4px",
+                fontSize:"15px",color: "#fff",
+                backgroundColor: email ? "#1976d2" : "#2f6999",
+                pointerEvents:email? "auto":"none",
+                opacity: email ? 1 : 0.6,  
+                "&:hover": {
+                  backgroundColor: email ? "#115293" : "#90caf9",}
+              }}
+              onClick={handleContinue}
             >
-              {loading ? <CircularProgress size={24} /> : "Send OTP"}
+              Continue
             </Button>
-          </>
-        )}
 
-        
-        {step === 2 && (
-          <>
-            <Typography variant="h6" mb={2}>
-              Enter OTP sent to {email}
+            <Typography align="center" mb={2}>
+              Or
             </Typography>
 
-            <TextField
-              fullWidth
-              label="OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-            />
-
             <Button
               fullWidth
-              variant="contained"
-              sx={{ mt: 2 }}
-              onClick={handleVerifyOtp}
-              disabled={loading}
+              variant="outlined"
+              sx={{ textTransform: "none", fontWeight: "bold",
+                borderRadius:"4px", color:"#000" ,
+                height:50,fontSize:"15px"
+              }}
             >
-              {loading ? <CircularProgress size={24} /> : "Verify OTP"}
+              Already have an account? Click here
             </Button>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              mt={1}
+            >
+              By clicking you agree to Terms and Conditions
+            </Typography>
           </>
         )}
 
-        
-        {step === 3 && (
+       {/* Step 2 - OTP */}
+          {step === "otp" && (
+            <>
+              {/* 1. Heading */}
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                sx={{ color: "#1c2b39", mb: 2 }}
+              >
+                Verify your email
+              </Typography>
+
+              {/* 2. Masked Email + Edit Icon */}
+              <Box sx={{ display: "flex", alignItems: "center", mb: 0.5 }}>
+                <Typography sx={{ fontWeight: 600 }}>
+                  {email.slice(0, 3)}
+                  {"*".repeat(email.indexOf("@") - 3)}
+                  {email.slice(email.indexOf("@"))}
+                </Typography>
+
+                <IconButton
+                  size="small"
+                  sx={{ ml: 1 }}
+                  onClick={() => setStep("email")}
+                >
+                  ✏️
+                </IconButton>
+              </Box>
+
+              {/* 3. OTP sent text */}
+              <Typography
+                variant="body2"
+                sx={{ color: "#7a869a", fontSize: "13px", mb: 3 }}
+              >
+                OTP sent to your email ID
+              </Typography>
+
+              {/* 4. Enter 4 digit OTP heading */}
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+                <Typography sx={{ fontWeight: 600, mb: 1 }}>
+                  Enter your 4 digit OTP
+                </Typography>
+
+                {otpError && (
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "red", fontWeight: 500 }}
+                  >
+                    {otpError}
+                  </Typography>
+                )}
+              </Box>
+
+              {/* 5. 4 OTP Boxes */}
+              <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+                {[0, 1, 2, 3].map((index) => (
+                  <TextField
+                    key={index}
+                    inputRef={(el) => (inputRefs.current[index] = el)}
+                    inputProps={{
+                      maxLength: 1,
+                      style: { textAlign: "center", fontSize: "18px" },
+                    }}
+                    value={otp[index] || ""}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^0-9]/g, "");
+                      if (!value) return;
+                      let newOtp = otp.split("");
+                      newOtp[index] = value;
+                      setOtp(newOtp.join(""));
+                      if(index<3){
+                        inputRefs.current[index+1]?.focus()
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Backspace" && !otp[index] && index > 0) {
+                        inputRefs.current[index - 1]?.focus();
+                      }
+                    }}
+                    sx={{
+                      width: "55px",
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "#d0d5dd",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#98a2b3",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#1976d2",
+                        },
+                      },
+                    }}
+                  />
+                ))}
+              </Box>
+
+              {/* 6. Resend Text */}
+              <Typography
+                variant="body2"
+                sx={{ color: "#7a869a", fontSize: "13px", mb: 3 }}
+              >
+                Haven't received yet?{" "}
+                <Box
+                  component="span"
+                  sx={{
+                    color: "#1976d2",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                  onClick={()=>resendOtp()}
+                >
+                  RESEND OTP
+                </Box>
+              </Typography>
+
+              {/* 7. Verify & Continue Button */}
+              <Button
+                fullWidth
+                variant="contained"
+                disabled={otp.length !== 4 || otpLoading}
+                sx={{
+                  py: 1.5,
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  mb: 2,
+                  borderRadius:"4px",fontSize:"15px",
+                  backgroundColor: otp.length === 4 ? "#1976d2" : "#90caf9",
+                  "&:hover": {
+                    backgroundColor: otp.length === 4 ? "#1565c0" : "#90caf9",
+                  },
+                }}
+                onClick={handleVerifyOtp}
+              >
+                Verify & Continue
+              </Button>
+
+              {/* 8. Verify via Email Link */}
+              <Button
+                fullWidth
+                variant="outlined"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,borderRadius:"4px",
+                  height:"50px", fontSize:"15px"
+                }}
+              >
+                Or, Verify via Email Link
+              </Button>
+            </>
+          )}
+
+        {/* Step 3 - Register */}
+        {step === "register" && (
           <>
-            <Typography variant="h6" mb={2}>
+            <Typography variant="h5" fontWeight="bold" mb={3}>
               Complete Registration
             </Typography>
 
             <TextField
               fullWidth
               label="Full Name"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
               sx={{ mb: 2 }}
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
             />
 
             <TextField
               fullWidth
-              label="Password"
-              type="password"
-              sx={{ mb: 2 }}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              label="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              sx={{ mb: 3 }}
             />
-
-            <TextField
-              fullWidth
-              label="Confirm Password"
-              type="password"
-              sx={{ mb: 2 }}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-
-            <Button
-              variant="outlined"
-              component="label"
-              fullWidth
-              sx={{ mb: 2 }}
-            >
-              Upload Profile Picture
-              <input
-                type="file"
-                hidden
-                onChange={(e) => setProfilePic(e.target.files[0])}
-              />
-            </Button>
-
-            <Typography mb={1}>Are you a Real Estate Agent?</Typography>
-
-            <RadioGroup
-              row
-              value={isAgent}
-              onChange={(e) => setIsAgent(e.target.value)}
-            >
-              <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-              <FormControlLabel value="no" control={<Radio />} label="No" />
-            </RadioGroup>
 
             <Button
               fullWidth
               variant="contained"
-              sx={{ mt: 2 }}
-              onClick={handleRegister}
-              disabled={loading}
+              sx={{ py: 1.5, textTransform: "none", fontWeight: "bold" }}
+              // onClick={handleRegister}
             >
-              {loading ? <CircularProgress size={24} /> : "Continue"}
+              Register
             </Button>
           </>
         )}

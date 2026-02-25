@@ -15,13 +15,12 @@ import { Menu, MenuItem } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import AuthModal from "../auth/AuthModal";
-import LoginModal from "../auth/Login";
-import RegisterModal from "../auth/Register";
+// import LoginModal from "../auth/Login";
+// import RegisterModal from "../auth/Register";
+import AuthModal from "../auth/AuthModal";
 import AppDrawer from "../common/AppDrawer";
 
-//testing jwt
-// import Login from "../auth/Login1";
-// import Register from "../auth/Register1"
+
 
 const Navbar = ({isHomePage,user,setUser}) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -30,8 +29,9 @@ const Navbar = ({isHomePage,user,setUser}) => {
     // const navigate = useNavigate();
     // const [openAuth, setOpenAuth] = useState(false);
     // const [authType, setAuthType] = useState(""); 
-    const [openLogin, setOpenLogin] = useState(false);
-    const [openRegister, setOpenRegister] = useState(false);
+    // const [openLogin, setOpenLogin] = useState(false);
+    // const [openRegister, setOpenRegister] = useState(false);
+    const [openAuth, setOpenAuth] = useState(false);
 
     const handleMenuOpen = (event) => {
       setAnchorEl(event.currentTarget);
@@ -60,16 +60,20 @@ const Navbar = ({isHomePage,user,setUser}) => {
             justifyContent: "space-between",
             minHeight: "70px",
             px:0,
+            flexWrap:"nowrap",
             color: isHomePage ? "#fff" : "#000"
           }}
         >
           {/* LEFT SIDE */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: {xs:1,sm:2,md:3},
+            whiteSpace:"nowrap",flexShrink:1,minWidth:0
+           }}>
             <Typography variant="h5" fontWeight={700} sx={{fontSize:"2rem"}}>
               99acres
             </Typography>
 
-            <Button sx={{ color: isHomePage ? "#f5f5f5" : "#000", fontWeight:"600",textTransform: "none" }}>
+            <Button sx={{ color: isHomePage ? "#f5f5f5" : "#000", fontWeight:"600",
+              textTransform: "none",whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 } }}>
               Buy in Bangalore East
             </Button>
 
@@ -83,7 +87,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
               "&:hover": {
                 color: isHomePage ? "#fff" : "#000",
                 backgroundColor: "transparent",
-              },
+              },whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 }
               }}>
               For Buyers
             </Button>
@@ -98,7 +102,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
               "&:hover": {
                 color: isHomePage ? "#fff" : "#000",
                 backgroundColor: "transparent",
-              },
+              },whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 }
               }} 
             >
               For Tenants
@@ -114,7 +118,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
               "&:hover": {
                 color: isHomePage ? "#fff" : "#000",
                 backgroundColor: "transparent",
-              },
+              },whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 }
               }} 
             >
               For Owners
@@ -130,7 +134,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
               "&:hover": {
                 color: isHomePage ? "#fff" : "#000",
                 backgroundColor: "transparent",
-              },
+              },whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 }
               }} 
             >
               For Dealers / Builders
@@ -147,11 +151,11 @@ const Navbar = ({isHomePage,user,setUser}) => {
               "&:hover": {
                 color: isHomePage ? "#fff" : "#000",
                 backgroundColor: "transparent",
-              },
+              },whiteSpace: "nowrap",px: { xs: 0.5, sm: 1, md: 2 }
               }} 
             >
               Insights
-              <Box
+              {/* <Box
                 sx={{
                   position: "absolute",
                   top: -4,         // adjust vertical position
@@ -172,7 +176,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
                 }}
               >
                 New
-              </Box>
+              </Box> */}
             </Button>
             </Box>
             
@@ -186,16 +190,20 @@ const Navbar = ({isHomePage,user,setUser}) => {
               color: "#444",
               borderRadius: "8px",
               textTransform: "none",
-              px: 3,
+              px: {xs:1,sm:2,md:3},
               py:0.5,
-              minWidth:"auto",
+              // minWidth:"auto",
               fontWeight: 600,
-              fontSize:"0.875rem",
-              height:34,
+              fontSize: { xs: "0.65rem", sm: "0.875rem" },
+               height: { xs: 28, sm: 34 },
               boxShadow: "none",
               "&:hover": { backgroundColor: "#f5f5f5", boxShadow: "none" },
               display:"flex",
-              alignItems:"center"
+              alignItems:"center",
+              gap:0.5,
+              flexShrink:1,
+              minWidth:0,
+              whiteSpace: "nowrap"
             }}
           >
             Post property 
@@ -212,6 +220,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                whiteSpace: "nowrap"
                 }}
                 >
                 FREE
@@ -220,11 +229,11 @@ const Navbar = ({isHomePage,user,setUser}) => {
 
           <IconButton 
             sx={{backgroundColor:"#fff",
-              width:25, height:25,
+              width: { xs: 22, sm: 25 },height: { xs: 22, sm: 25 },
               "&:hover":{backgroundColor:"#f5f5f5"}
             }}
           >
-            <SupportAgentIcon sx={{ color: "#000", fontSize: 20 }} />
+            <SupportAgentIcon sx={{ color: "#000", fontSize:{ xs: 18, sm: 20 } }} />
           </IconButton>
 
           <IconButton color="inherit" onClick={handleMenuOpen}>
@@ -234,16 +243,16 @@ const Navbar = ({isHomePage,user,setUser}) => {
                   bgcolor: "#fff",
                   color: "#000",
                   fontWeight: "bold",
-                  width: 35,
-                  height: 35,
-                  fontSize: 14,
+                  width: { xs: 28, sm: 35 },   // responsive
+                  height: { xs: 28, sm: 35 },
+                  fontSize: { xs: 12, sm: 14 },
                 }}
               >
                 {user.firstName.charAt(0).toUpperCase()}
                 {user.lastName.charAt(0).toUpperCase()}
               </Avatar>
             ) : (
-              <AccountCircleIcon />
+              <AccountCircleIcon sx={{ fontSize: { xs: 28, sm: 30 } }}/>
             )}
           </IconButton>
 
@@ -253,25 +262,15 @@ const Navbar = ({isHomePage,user,setUser}) => {
               onClose={handleMenuClose}
             >
               {!user ? (
-                <>
-                  <MenuItem
-                    onClick={() => {
-                      setOpenLogin(true);
-                      handleMenuClose();
-                    }}
-                  >
-                    Login
-                  </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setOpenRegister(true);
-                      handleMenuClose();
-                    }}
-                  >
-                    Register
-                  </MenuItem>
-                </>
-              ) : (
+              <MenuItem
+                onClick={() => {
+                  setOpenAuth(true);
+                  handleMenuClose();
+                }}
+              >
+                Login / Register
+              </MenuItem>
+            ) : (
                 <MenuItem
                   onClick={() => {
                     setUser(null);          // log out user
@@ -294,7 +293,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
             handleClose={() => setOpenAuth(false)}
             authType={authType} 
           /> */}
-          <LoginModal
+          {/* <LoginModal
               open={openLogin}
               handleMenuClose={() => setOpenLogin(false)}
               user={user}
@@ -305,6 +304,11 @@ const Navbar = ({isHomePage,user,setUser}) => {
               open={openRegister}
               handleMenuClose={() => setOpenRegister(false)}
               user={user}
+              setUser={setUser}
+            /> */}
+            <AuthModal
+              open={openAuth}
+              handleClose={() => setOpenAuth(false)}
               setUser={setUser}
             />
         </Toolbar>
