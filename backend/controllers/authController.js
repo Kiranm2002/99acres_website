@@ -81,7 +81,7 @@ exports.verifyOtp = (req, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const { fullName, email, password, isAgent } = req.body;
+    const { firstName, lastName, email, phone, password, isAgent } = req.body;
     const profilePic = req.file ? req.file.filename : "";
 
   
@@ -92,10 +92,11 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await User.create({
-      fullName,
+      firstName,
+      lastName,
       email,
+      phone,
       password: hashedPassword,
-      profilePic,
       isAgent: isAgent === "yes",
     });
 

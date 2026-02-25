@@ -3,6 +3,7 @@ const User = require("../models/User")
 const checkEmail = async(req,res)=>{
     try{
         const {email} = req.body
+        console.log("Incoming email:", email);
         if(!email){
             return res.status(400).json({
             success: false,
