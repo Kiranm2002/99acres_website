@@ -6,7 +6,8 @@ import Login from "./pages/public/Login";
 import Register from "./pages/public/Register";
 import Dashboard from "./pages/dashboard/Dashboard"
 import { useState, useEffect } from "react";
-
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
 function App() {
   const [user, setUser] = useState(null);
   
@@ -36,6 +37,8 @@ function App() {
         <Route path="/login" element={<MainLayout><Login user={user} setUser={setUser}/></MainLayout>} />
         <Route path="/register" element={<MainLayout><Register user={user} setUser={setUser} /></MainLayout>} />
         <Route path="/dashboard" element={<Dashboard user={user} setUser={setUser}/>}/>
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword/>}/>
       </Routes>
     
   );

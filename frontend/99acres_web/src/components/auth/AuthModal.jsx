@@ -6,7 +6,7 @@ import {
   TextField,
   Button,
   IconButton,
-  Box
+  Box,FormControlLabel,Checkbox
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import {useNavigate} from "react-router-dom"
@@ -14,6 +14,8 @@ import { useRef } from "react";
 import axios from "axios";
 import LockIcon from "@mui/icons-material/Lock";
 import InputAdornment from "@mui/material/InputAdornment";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ForgotPassword from "../../pages/auth/ForgotPassword";
 
 const AuthModal = ({ open, handleClose }) => {
   const [step, setStep] = useState("email"); 
@@ -27,6 +29,10 @@ const AuthModal = ({ open, handleClose }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [whatsappUpdates, setWhatsappUpdates] = useState(true);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [registerError, setRegisterError] = useState("");
+  const [passwordError, setPasswordError] = useState(""); 
   
   // steps: email | otp | register
 
@@ -129,53 +135,75 @@ const AuthModal = ({ open, handleClose }) => {
                   }
                 );
                 if(response.data.success){
-
-                  handleClose();
-                  navigate("/dashboard")
+                  setRegisterSuccess(true)
+                  setTimeout(()=>{
+                    handleClose();
+                    navigate("/dashboard")
+                  },2000)
+                  
                 }
                 
               } catch (error) {
                   console.error(error);
+                  setRegisterError(err.response?.data?.message || "Registration failed")
                 }}
 
     const handleUsernameContinue = async () => {
       try {
+        setEmailError("")
         const res = await axios.post(
           "http://localhost:5000/check-email",
-          { email }
+          { email:loginInput }
         );
 
         if (res.data.exists) {
           
           setEmail(loginInput);
           setStep("password"); // or "otp"
-        } else {
-          alert("User not found");
+        }else {
+      
+          setEmailError("Email is not Registered");
         }
       } catch (err) {
         console.error(err);
+        setEmailError("Something went wrong");
       }
 };
     const handlePasswordLogin = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:5000/api/auth/login",
-          {
-            email,
-            password,
-            whatsappUpdates,
-          }
+          "http://localhost:5000/login",
+          {email,password}
         );
 
         if (res.data.success) {
-          handleClose();
-          navigate("/dashboard");
+          setLoginSuccess(true)
+          setPasswordError("")
+          setLoading(false)
+          setTimeout(()=>{
+            handleClose();
+            navigate("/dashboard");
+          },1000)
+         
+        }else{
+          setPasswordError('Incorrect Password')
         }
       } catch (err) {
         console.error(err);
-        alert("Invalid Password");
+        if (err.response && err.response.data && err.response.data.message) {
+          setPasswordError(err.response.data.message);
+          } else if (err.response && err.response.status === 401) {
+            setPasswordError("Incorrect Password");
+          }else{
+            setPasswordError("Something went wrong")
+          }
+        
+      }finally{
+        setLoading(false)
       }
     };
+
+    
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth >
@@ -629,6 +657,29 @@ const AuthModal = ({ open, handleClose }) => {
               >
                 Create Account
               </Button>
+              {/* Success Message */}
+              {registerSuccess && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mt: 2,
+                    gap: 1,
+                  }}
+                >
+                  <CheckCircleIcon sx={{ color: "green" }} />
+                  <Typography
+                    sx={{
+                      color: "green",
+                      fontWeight: 500,
+                      fontSize: "16px",
+                    }}
+                  >
+                    Account Created Successfully
+                  </Typography>
+                </Box>
+              )}
             </>
           )}
 
@@ -664,22 +715,36 @@ const AuthModal = ({ open, handleClose }) => {
               </Typography>
 
               {/* Label */}
-              <Typography
-                sx={{
-                  color: "#1976d2",
-                  fontWeight: 600,
-                  mb: 1,
-                }}
-              >
-                Email ID/Username
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  sx={{
+                    color: "#1976d2",
+                    fontWeight: 600,
+                    mb: 1,
+                  }}
+                >
+                  Email ID/Username
+                </Typography>
+                {emailError && (
+                  <Typography
+                    sx={{
+                      color: "red",
+                      fontWeight: 500,
+                      ml: 2,
+                      fontSize: "13px",
+                    }}
+                  >
+                    {emailError}
+                  </Typography>
+                )}
+              </Box>
 
               {/* Input */}
               <TextField
                 fullWidth
                 placeholder="Email ID/Username"
                 value={loginInput}
-                onChange={(e) => setLoginInput(e.target.value)}
+                onChange={(e) => {setLoginInput(e.target.value); setEmailError('')}}
                 sx={{ mb: 4 }}
               />
 
@@ -728,15 +793,33 @@ const AuthModal = ({ open, handleClose }) => {
               </Typography>
 
               {/* Password Label */}
-              <Typography
-                sx={{
-                  color: "#1976d2",
-                  fontWeight: 600,
-                  mb: 1,
-                }}
-              >
-                Password
-              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
+                <Typography
+                  sx={{
+                    color: "#1976d2",
+                    fontWeight: 600,
+                    mb: 1,
+                  }}
+                >
+                  Password
+                </Typography>
+                {loginSuccess && (
+                    <Typography
+                      sx={{
+                        color: "green",
+                        fontWeight: 600,
+                        ml: 2,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        fontSize: "14px",
+                      }}
+                    >
+                      <CheckCircleIcon sx={{ fontSize: 18 }} />
+                      Login Successfully
+                    </Typography>
+                  )}
+              </Box>
 
               {/* Password Input */}
               <TextField
@@ -744,7 +827,9 @@ const AuthModal = ({ open, handleClose }) => {
                 type={showPassword ? "text" : "password"}
                 placeholder="Enter password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {setPassword(e.target.value);
+                  if(password) setPasswordError("")
+                }}
                 sx={{ mb: 1 }}
                 InputProps={{
                   endAdornment: (
@@ -759,6 +844,18 @@ const AuthModal = ({ open, handleClose }) => {
                   ),
                 }}
               />
+              {passwordError && (
+                <Typography
+                  sx={{
+                    color: "red",
+                    fontSize: "14px",
+                    mb: 1,
+                    textAlign: "left",
+                  }}
+                >
+                  {passwordError}
+                </Typography>
+              )}
 
               {/* Forgot Password */}
               <Typography
@@ -813,7 +910,7 @@ const AuthModal = ({ open, handleClose }) => {
                 }}
                 onClick={handlePasswordLogin}
               >
-                Continue
+                Login
               </Button>
             </>
           )}
