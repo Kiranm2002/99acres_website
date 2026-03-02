@@ -18,7 +18,7 @@ import MyLocationIcon from "@mui/icons-material/MyLocation";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-
+import { useNavigate } from "react-router-dom";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, EffectFade, Navigation } from "swiper/modules";
 
@@ -28,7 +28,7 @@ import "swiper/css/navigation";
 
 const HeroSection = ({ searchRef, hideSearch }) => {
   const [value, setValue] = React.useState(0);
-
+  const navigate = useNavigate();
   const slides = [
     {
       image:
@@ -219,6 +219,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
               <Box sx={{ flexGrow: 1 }} />
 
               <Button
+                onClick={()=>navigate("/post-property")}
                 sx={{
                   textTransform: "none",
                   fontWeight: 600,

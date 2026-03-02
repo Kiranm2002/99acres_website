@@ -81,9 +81,7 @@ const ResetPassword = () => {
               Create New Password
             </Typography>
 
-            {success && (
-              <CheckCircleIcon sx={{ color: "green" }} />
-            )}
+            
           </Box>
 
           <Divider sx={{ my: 2 }} />
@@ -183,11 +181,15 @@ const ResetPassword = () => {
             </Button>
 
             {/* Success Message */}
+            
             {success && (
               <Typography
                 sx={{ color: "green", mt: 3, ml: 22 }}
                 fontWeight="bold"
               >
+                {/* {success && (
+              <CheckCircleIcon sx={{ color: "green",mt:4 }} />
+              )} */}
                 Password Reset Successfully
               </Typography>
             )}

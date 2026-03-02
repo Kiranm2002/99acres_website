@@ -1,0 +1,43 @@
+const mongoose = require("mongoose");
+const Locality = require("../models/Locality");
+
+mongoose.connect("mongodb://localhost:27017/realestate");
+
+// 🔥 Replace with your actual Bangalore East ID
+const bangaloreEastId = "69a2b5330b1b388f878f6301";
+
+const localities = [
+  { name: "Whitefield", city: bangaloreEastId },
+  { name: "Indiranagar", city: bangaloreEastId },
+  { name: "Marathahalli", city: bangaloreEastId },
+  { name: "KR Puram", city: bangaloreEastId },
+  { name: "Mahadevapura", city: bangaloreEastId },
+  { name: "CV Raman Nagar", city: bangaloreEastId },
+  { name: "Varthur", city: bangaloreEastId },
+  { name: "Brookefield", city: bangaloreEastId },
+  { name: "Hoodi", city: bangaloreEastId },
+  { name: "Kadugodi", city: bangaloreEastId },
+  { name: "Ramamurthy Nagar", city: bangaloreEastId },
+  { name: "Kaggadasapura", city: bangaloreEastId },
+  { name: "Domlur", city: bangaloreEastId },
+  { name: "Old Airport Road", city: bangaloreEastId },
+  { name: "Bellandur", city: bangaloreEastId },
+  { name: "Panathur", city: bangaloreEastId },
+  { name: "HAL Layout", city: bangaloreEastId },
+  { name: "AECS Layout", city: bangaloreEastId },
+  { name: "Banaswadi", city: bangaloreEastId },
+  { name: "Horamavu", city: bangaloreEastId }
+];
+
+async function seedLocalities() {
+  try {
+    await Locality.insertMany(localities, { ordered: false });
+    console.log("East Bangalore localities inserted ✅");
+    process.exit();
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+}
+
+seedLocalities();

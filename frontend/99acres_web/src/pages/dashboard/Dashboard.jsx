@@ -45,12 +45,12 @@ const Dashboard = ({user,setUser}) => {
         hideSearch={showSecondaryNav} />
       <Box sx={{pt:"80px"}}><ExploreOptions/></Box>
 
-      {/* <Box
+      <Box
         sx={{display:"flex",
-          gap:4, px:6, mt:14, alignItems:"flex-start"
+          gap:4, px:6, mt:14, alignItems:"flex-start",backgroundColor:"#fff"
         }}
       >
-        <Box sx={{flex:3, minWidth:0}}>
+        <Box sx={{flex:3, minWidth:0, }}>
           
         <RecommendedProperties />
         <RecommendedProjects/>
@@ -67,12 +67,12 @@ const Dashboard = ({user,setUser}) => {
             <PromoCard/>
             </Box>
           </Box>
-        </Box> */}
+        </Box>
 
-      <RecommendedProperties/>
+      {/* <RecommendedProperties/>
       <RecommendedProjects/>
       <ProjectsHighDemand/>
-      <ExclusiveProjects/>
+      <ExclusiveProjects/> */}
       <Footer/>
       
   </>

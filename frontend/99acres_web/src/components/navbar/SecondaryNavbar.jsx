@@ -126,6 +126,7 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
 
           {/* POST PROPERTY */}
           <Button
+          onClick={()=>navigate("/post-property")}
             sx={{
               textTransform: "none",
               backgroundColor: "#fff",

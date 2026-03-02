@@ -18,6 +18,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ForgotPassword from "../../pages/auth/ForgotPassword";
 
 const AuthModal = ({ open, handleClose }) => {
+  // console.log("AuthModal Mounted");
   const [step, setStep] = useState("email"); 
   const inputRefs = useRef([]);
   const [emailError, setEmailError] = useState("");
@@ -42,6 +43,22 @@ const AuthModal = ({ open, handleClose }) => {
     fullName: "",
     phone: "",
   });
+  
+//   useEffect(() => {
+//   if (open) {
+//     setStep("email");
+//     setEmail("");
+//     setOtp("");
+//     setLoginInput("");
+//     setPassword("");
+//     setEmailError("");
+//     setOtpError("");
+//     setPasswordError("");
+//     setLoginSuccess(false);
+//     setRegisterSuccess(false);
+//     setRegisterError("");
+//   }
+// }, [open]);
 
   const handleContinue = async() => {
     if (!email) return;
@@ -145,7 +162,7 @@ const AuthModal = ({ open, handleClose }) => {
                 
               } catch (error) {
                   console.error(error);
-                  setRegisterError(err.response?.data?.message || "Registration failed")
+                  setRegisterError(error.response?.data?.message || "Registration failed")
                 }}
 
     const handleUsernameContinue = async () => {

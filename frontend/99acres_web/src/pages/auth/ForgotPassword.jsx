@@ -57,6 +57,8 @@ const ForgotPassword = () => {
           justifyContent: "center",
           backgroundColor: "#f5f5f5",
           px: 2,
+          mt:3,
+          mb:0.5
         }}
       >
         <Paper
@@ -78,9 +80,9 @@ const ForgotPassword = () => {
 
           {/* Divider */}
           <Divider />
-
+          
           {/* 3️⃣ Sub Heading */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3, mb: 3 }}>
+          {/* <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 3, mb: 3 }}> */}
             <Typography
               sx={{
                 mt: 3,
@@ -91,20 +93,8 @@ const ForgotPassword = () => {
             >
               Enter your email or username to create a new password
             </Typography>
-            {successMsg && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <CheckCircleIcon sx={{ color: "green", fontSize: 20 }} />
-                  <Typography
-                    sx={{
-                      color: "green",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {successMsg}
-                  </Typography>
-                </Box>
-              )}
-          </Box>
+            
+          {/* </Box> */}
 
           {/* 4️⃣ Label + Input Row */}
           <Box
@@ -162,6 +152,19 @@ const ForgotPassword = () => {
           >
             Submit
           </Button>
+          {successMsg && (
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1,mt:1 }}>
+                  <CheckCircleIcon sx={{ color: "green", fontSize: 20 }} />
+                  <Typography
+                    sx={{
+                      color: "green",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {successMsg}
+                  </Typography>
+                </Box>
+              )}
         </Paper>
       </Box>
 

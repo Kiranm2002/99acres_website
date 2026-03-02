@@ -185,6 +185,9 @@ const Navbar = ({isHomePage,user,setUser}) => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <Button
             variant="contained"
+            onClick={()=>{
+              // console.log("Clicked");
+              navigate("/post-property")}}
             sx={{
               backgroundColor: "#fff",
               color: "#444",
@@ -318,7 +321,15 @@ const Navbar = ({isHomePage,user,setUser}) => {
     open={drawerOpen}
     onClose={() => setDrawerOpen(false)}
     user={user}
+    // onOpenLogin={()=>{setOpenAuth(true);
+    //   setDrawerOpen(false)
+    // }}
+    
   />
+  {/* <AuthModal
+  open={openAuth}
+  onClose={() => setOpenAuth(false)}
+/> */}
   </>
   );
 };
