@@ -16,29 +16,13 @@ import PropertyProfile from "./pages/postProperty/steps/PropertyProfile";
 import PhotoDetails from "./pages/postProperty/steps/PhotoDetails";
 import OtherDetails from "./pages/postProperty/steps/OtherDetails";
 import ThankYou from "./pages/postProperty/steps/ThankYou";
+import PropertyDashboard from "./pages/postProperty/PropertyDashboard";
+import PropertyPreview from "./pages/postProperty/PropertyPreview";
 
 function App() {
   const [user, setUser] = useState(null);
   
-  // useEffect(() => {
-  //   const token = localStorage.getItem("accessToken");
-
-  //   if (token) {
-  //     axios
-  //       .get("http://localhost:5000/me", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //         withCredentials: true,
-  //       })
-  //       .then((res) => {
-  //         setUser(res.data.user);
-  //       })
-  //       .catch(() => {
-  //         setUser(null);
-  //       });
-  //   }
-  // }, []);
+  
   return (
     
       <Routes>
@@ -58,6 +42,8 @@ function App() {
             <Route path="other-details" element={<OtherDetails/>}/>
           </Route>
           <Route path="thank-you" element={<ThankYou/>}/>
+          <Route path="property-dashboard" element={<PropertyDashboard/>}/>
+          <Route path="property-preview" element={<PropertyPreview/>}/>
         </Route>
         
         

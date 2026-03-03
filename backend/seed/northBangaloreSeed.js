@@ -4,7 +4,7 @@ const Locality = require("../models/Locality");
 mongoose.connect("mongodb://localhost:27017/realestate");
 
 // 🔥 Replace with your actual Bangalore North ID
-const bangaloreNorthId = "69a2b5330b1b388f878f62ff";
+const bangaloreNorthId = "69a668c30e28797f03f8a801";
 
 const localities = [
   { name: "Hebbal", city: bangaloreNorthId },

@@ -301,7 +301,7 @@ const ThankYou = ()=> {
               backgroundColor: "#fff",
               "&:hover": { backgroundColor: "#f0f7ff" },
             }}
-            onClick={()=>navigate("/post-property/other-details")}
+            onClick={()=>navigate("/post-property/property-dashboard")}
           >
             Edit / Preview
           </Button>

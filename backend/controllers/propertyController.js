@@ -29,6 +29,42 @@ const createProperty = async (req, res) => {
     });
   }
 };
+
+const updatePrimaryDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { lookingFor, propertyType, category } = req.body;
+
+    const property = await Property.findById(id);
+
+    if (!property) {
+      return res.status(404).json({
+        message: "Property not found",
+      });
+    }
+
+    // Update only provided fields
+    property.lookingFor = lookingFor || property.lookingFor;
+    property.propertyType = propertyType || property.propertyType;
+    property.category = category || property.category;
+
+    // Optional: update stepCompleted
+    property.stepCompleted = 1;
+
+    await property.save();
+
+    res.status(200).json({
+      message: "Property updated successfully",
+      property,
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+      error: error.message,
+    });
+  }
+};
 // ================= STEP 2 - SAVE LOCATION =================
 const updatePropertyLocation = async (req, res) => {
   try {
@@ -140,6 +176,7 @@ const updatePropertyProfile = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("Update profile error:", error);
     res.status(500).json({
       message: "Server error",
       error: error.message,
@@ -164,6 +201,110 @@ const getPropertyById = async (req, res) => {
   }
 };
 
+const updatePhoto = async (req, res) => {
+  try {
+    const { propertyId } = req.params;
+    const { description, email } = req.body;
+
+    const property = await Property.findById(propertyId);
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
+    }
+
+    // ===== HANDLE FILES =====
+    let videoPath = property.video;
+    let photoPaths = property.photos || [];
+
+    if (req.files) {
+      if (req.files.video) {
+        videoPath = req.files.video[0].path;
+      }
+
+      if (req.files.photos) {
+        const newPhotos = req.files.photos.map(
+          (file) => file.path
+        );
+        photoPaths = [...photoPaths, ...newPhotos];
+      }
+    }
+
+    // ===== UPDATE FIELDS =====
+    property.video = videoPath;
+    property.photos = photoPaths;
+    property.description = description;
+    property.email = email;
+
+    property.stepCompleted = 4;
+
+    await property.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Step 4 completed successfully",
+      property,
+    });
+  } catch (error) {
+    console.error("Step 4 Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+const updateOtherDetails = async (req, res) => {
+  try {
+    const { propertyId } = req.params;
+
+    const {
+      amenities,
+      overlooking,
+      propertyFacing,
+      locationAdvantages,
+      otherFeatures,
+    } = req.body;
+
+    const property = await Property.findById(propertyId);
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
+    }
+
+    // Update fields
+    property.amenities = amenities || [];
+    property.overlooking = overlooking || [];
+    property.propertyFacing = propertyFacing || "";
+    // property.roadWidth = roadWidth || {};
+    property.locationAdvantages = locationAdvantages || [];
+    property.otherFeatures = otherFeatures || {};
+
+    property.stepCompleted = 5;
+
+    await property.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Other details saved successfully",
+      property,
+    });
+  } catch (error) {
+    console.error("Update Other Details Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
 module.exports = {
-  createProperty, updatePropertyLocation,updatePropertyProfile,getPropertyById
+  createProperty, updatePropertyLocation,updatePropertyProfile,
+  getPropertyById,updatePhoto,updateOtherDetails,updatePrimaryDetails
 };

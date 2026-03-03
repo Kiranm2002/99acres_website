@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect } from "react";
 
 const PrimaryDetails = ({ user }) => {
   const navigate = useNavigate();
@@ -19,17 +20,11 @@ const PrimaryDetails = ({ user }) => {
   // const [lookingFor, setLookingFor] = useState("Sell");
   // const [propertyType, setPropertyType] = useState("Residential");
   // const [category, setCategory] = useState("Independent House / Villa");
-  const [lookingFor, setLookingFor] = useState(
-  localStorage.getItem("lookingFor") || "Sell"
-);
+  const [lookingFor, setLookingFor] = useState("");
 
-const [propertyType, setPropertyType] = useState(
-  localStorage.getItem("propertyType") || "Residential"
-);
+const [propertyType, setPropertyType] = useState("");
 
-const [category, setCategory] = useState(
-  localStorage.getItem("category") || "Flat/Apartment"
-);
+const [category, setCategory] = useState("");
 
   const propertyOptions = [
     "Flat/Apartment",
@@ -45,28 +40,58 @@ const [category, setCategory] = useState(
   const handleContinue = async() => {
     
     try {
-      localStorage.setItem("lookingFor", lookingFor);
-      localStorage.setItem("propertyType", propertyType);
-      localStorage.setItem("category", category);
-      const response = await axios.post(
-        "http://localhost:5000/property/create",
+    const existingPropertyId = localStorage.getItem("propertyId");
+
+    let response;
+
+    if (existingPropertyId) {
+      // 🔁 UPDATE PROPERTY
+      response = await axios.put(
+        `http://localhost:5000/property/update-primaryDetails/${existingPropertyId}`,
         {
-          lookingFor: lookingFor,
-          propertyType: propertyType,
-          category: category,
+          lookingFor,
+          propertyType,
+          category,
         }
       );
 
-      // Store propertyId in localStorage
+      console.log("Property Updated Successfully");
+    } else {
+      // 🆕 CREATE NEW PROPERTY
+      response = await axios.post(
+        "http://localhost:5000/property/create",
+        {
+          lookingFor,
+          propertyType,
+          category,
+        }
+      );
+
+      // Save new propertyId
       localStorage.setItem("propertyId", response.data.propertyId);
 
-      //  Navigate to next step
-      navigate("/post-property/location");
-
-    } catch (error) {
-      console.error("Error saving primary details:", error);
+      console.log("Property Created Successfully");
     }
+
+    navigate("/post-property/location");
+
+  } catch (error) {
+    console.error("Error saving primary details:", error);
+  }
   };
+
+  useEffect(()=>{
+    const propertyId = localStorage.getItem("propertyId")
+    if(propertyId){
+      axios.get(`http://localhost:5000/property/${propertyId}`)
+      .then(res=>{const data = res.data
+      
+      setLookingFor(data.lookingFor || "")
+      setPropertyType(data.propertyType || "")
+      setCategory(data.category || "")
+     
+      })}
+  },[])
 
   return (
     <Box sx={{ px: 6, py: 6, }}>

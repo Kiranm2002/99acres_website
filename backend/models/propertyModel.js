@@ -119,17 +119,80 @@ const propertySchema = new mongoose.Schema(
 
     allInclusivePrice: {
       type: Boolean,
-      default: false
+      // default: false
     },
 
     taxExcluded: {
       type: Boolean,
-      default: false
+      // default: false
     },
 
     priceNegotiable: {
       type: Boolean,
-      default: false
+      // default: false
+    },
+
+      // ===== STEP 4 FIELDS =====
+    video: {
+      type: String, // store video file path or cloud URL
+    },
+
+    photos: 
+      {
+        type: [String],
+        default:undefined // store image file paths
+      },
+    
+
+    description: {
+      type: String,
+      // minlength: 30,
+      maxlength: 5000,
+    },
+
+    email: {
+      type: String,
+      trim: true,
+      lowercase: true,
+    },
+
+    stepCompleted: {
+      type: Number,
+      default: 1,
+    },
+      // Step 5 - Other Details
+    amenities: 
+      {
+        type: [String],
+        default:undefined
+      },
+    
+    overlooking: {
+        type: [String],
+        default:undefined
+      },
+
+    propertyFacing: {
+      type: String,
+    },
+   
+    locationAdvantages: {
+        type: [String],
+        default:undefined
+      },
+    otherFeatures: {
+      corner: {
+        type: Boolean,
+        // default: false,
+      },
+      gated: {
+        type: Boolean,
+        // default: false,
+      },
+      wheelchair: {
+        type: Boolean,
+        // default: false,
+      },
     },
     // ================= PROGRESS TRACKING =================
     stepCompleted: {

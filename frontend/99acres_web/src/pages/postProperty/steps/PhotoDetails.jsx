@@ -19,8 +19,10 @@ import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Gallery from "./gallery.png";
 import IconButton from "@mui/material/IconButton";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
-
+import axios from "axios";
+import { useEffect } from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -32,6 +34,12 @@ const PhotoDetails = () => {
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
 const [uploadedPhotos, setUploadedPhotos] = useState([]);
+// const [videoUploaded, setVideoUploaded] = useState(false);
+const [imagesUploaded, setImagesUploaded] = useState(false);
+const [existingPhotos, setExistingPhotos] = useState([]);
+const [existingVideo, setExistingVideo] = useState(null);
+const [newVideo, setNewVideo] = useState(null); // newly selected
+const [videoUploaded, setVideoUploaded] = useState(false); // success flag
 
   const fileInputRef = useRef(null);
 
@@ -46,6 +54,9 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files);
     setUploadedPhotos(files)
+    if (files.length > 0) {
+    setImagesUploaded(true);
+  }
     // console.log(files);
   };
   const handleEmailChange = (e) => {
@@ -66,7 +77,86 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
     setEmailError("");
   }
 };
-    
+    const handleOnContinue= async()=>{
+       try {
+        // propertyId should already exist (created in Step 1)
+        const propertyId = localStorage.getItem("propertyId");
+
+        if (!propertyId) {
+          alert("Property ID missing. Please start again.");
+          return;
+        }
+
+        const formData = new FormData();
+
+        // STEP 4 FIELDS
+        formData.append("description", description);
+        if (email) {
+          formData.append("email", email);
+        }
+
+        // VIDEO (single)
+        const videoInput = document.getElementById("videoUpload");
+        if (videoInput?.files?.length > 0) {
+          formData.append("video", videoInput.files[0]);
+        }
+
+        // PHOTOS (multiple)
+        if (uploadedPhotos.length > 0) {
+          uploadedPhotos.forEach((photo) => {
+            formData.append("photos", photo);
+          });
+        }
+
+        // API CALL
+        await axios.put(
+          `http://localhost:5000/property/photo-details/${propertyId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        // GO TO STEP 5
+        navigate("/post-property/other-details");
+      } catch (error) {
+        console.error("Step 4 Error:", error);
+        alert("Something went wrong while saving photos. Try again.");
+      }
+    }
+    useEffect(() => {
+      const fetchProperty = async () => {
+        try {
+          const propertyId = localStorage.getItem("propertyId");
+
+          const res = await axios.get(
+            `http://localhost:5000/property/${propertyId}`
+          );
+          console.log("API RESPONSE:", res.data);
+          const property = res.data;
+          console.log("Description from API:", property.description);
+          setDescription(property.description || "");
+          setEmail(property.email || "");
+
+          // MEDIA
+          if (property.video) {
+            setExistingVideo(property.video);
+            // setVideoUploaded(true);
+          }
+
+          if (property.photos?.length > 0) {
+            setExistingPhotos(property.photos);
+            setImagesUploaded(true);
+          }
+        } catch (error) {
+          console.log("Fetch error:", error);
+        }
+      };
+
+      fetchProperty();
+    }, []);
 
   return (
     <Box display="flex" height="100%" mt={6} width={500} ml={5} >
@@ -148,8 +238,33 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
             </Typography>
           </Box>
         </Box>
+       {/* CASE 1 → Existing Video from DB */}
+        {existingVideo && !videoUploaded && (
+          <Box mt={1} display="flex" alignItems="center" gap={0.5}>
+            <CheckCircleIcon sx={{ color: "green", fontSize: 18 }} />
+            <Typography sx={{ color: "green", fontSize: 14 }}>
+              Video already uploaded
+            </Typography>
+          </Box>
+        )}
 
-        <input type="file" accept="video/*" id="videoUpload" hidden />
+        {/* CASE 2 → New Video Selected */}
+        {videoUploaded && (
+          <Box mt={1} display="flex" alignItems="center" gap={0.5}>
+            <CheckCircleIcon sx={{ color: "green", fontSize: 18 }} />
+            <Typography sx={{ color: "green", fontSize: 14 }}>
+              Video uploaded successfully
+            </Typography>
+          </Box>
+        )}
+
+        <input type="file" accept="video/*" id="videoUpload" hidden
+          onChange={(e) => {
+            if (e.target.files.length > 0) {
+              setVideoUploaded(true);
+              setExistingVideo(null);
+            }
+          }} />
 
         <Box mt={4} p={1} borderRadius="4px" bgcolor="#fff3e0" display="flex" alignItems="center" gap={2}>
           <WarningAmberIcon sx={{ color: "#f57c00" }} />
@@ -176,9 +291,19 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
 
         {/* 2. Upload Images */}
         <Box mt={4}>
-          <Typography fontWeight={500} mb={2}>
-            Upload images
-          </Typography>
+          <Box display="flex" alignItems="center" gap={1} mb={2}>
+            <Typography fontWeight={500} mb={2}>
+              Upload images
+            </Typography>
+            {imagesUploaded && (
+              <Box display="flex" alignItems="center" gap={0.5} mb={2}>
+                <CheckCircleIcon sx={{ color: "green", fontSize: 18 }} />
+                <Typography sx={{ color: "green", fontSize: 14 }}>
+                  Images uploaded successfully
+                </Typography>
+              </Box>
+            )}
+          </Box>
 
           <Paper
             onClick={handlePhotoUploadClick}
@@ -364,8 +489,12 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
         <TextField
             fullWidth
             placeholder="Email"
+            value={email}
             sx={{ mt: 2, maxWidth: 400,"& .MuiOutlinedInput-root":{borderRadius:0} }}
             onClick={() => setOpenEmailModal(true)}
+            InputProps={{
+            readOnly: true  // optional (recommended)
+          }}
         />
         </Box>
 
@@ -386,7 +515,7 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
                 backgroundColor: "#115293"
             }
             }}
-            onClick={()=>navigate("/post-property/other-details")}
+            onClick={handleOnContinue}
         >
             {uploadedPhotos.length >= 2
             ? "Continue"
@@ -482,7 +611,9 @@ const [uploadedPhotos, setUploadedPhotos] = useState([]);
         },borderRadius:"4px"
       }}
       onClick={() => {
-        setOpenEmailModal(false);
+        if (!emailError && email.length >= 8) {
+          setOpenEmailModal(false);
+        }
       }}
     >
       Share

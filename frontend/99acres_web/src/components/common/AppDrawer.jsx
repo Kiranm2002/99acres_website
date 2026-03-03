@@ -19,7 +19,7 @@ import { useLocation,useNavigate } from "react-router-dom";
 import PromoCard from "../home/PromoCard";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-const AppDrawer = ({ open, onClose, user,onOpenLogin }) => {
+const AppDrawer = ({ open, onClose, user,onOpenLogin, }) => {
   const [openProfile, setOpenProfile] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
