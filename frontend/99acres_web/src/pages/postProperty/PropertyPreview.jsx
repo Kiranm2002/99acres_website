@@ -205,7 +205,7 @@ export default function PropertyPreview() {
               sx={{ backgroundColor: "#00897b", color: "#fff", textTransform: "none", 
               fontWeight: 600, fontSize: "13px", borderRadius: "6px", px: 2, py: 0.8, 
               fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#00695c" } }}
-               onClick={()=>{navigate("/post-property/primary-details")}}
+               onClick={()=> window.open("/post-property/primary-details", "_blank")}
                 >
                 Edit property
               </Button>
@@ -269,7 +269,7 @@ export default function PropertyPreview() {
             sx={{ backgroundColor: "#00897b", color: "#fff", textTransform: "none", 
             fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, 
             fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#00695c" } }}
-            onClick={()=>navigate("/post-property/primary-details")}>
+            onClick={()=> window.open("/post-property/primary-details", "_blank")}>
               Edit property
             </Button>
             <Button variant="outlined" startIcon={<FavoriteBorderIcon />} sx={{ borderColor: "#c8d8ec", color: "#333", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, fontFamily: "'Segoe UI', sans-serif", "&:hover": { borderColor: "#1557a0" } }}>

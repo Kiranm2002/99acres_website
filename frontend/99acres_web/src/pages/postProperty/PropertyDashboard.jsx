@@ -507,7 +507,7 @@ const handleNavigate = (path) => {
             }}
           >
             {/* Preview */}
-            <MenuItem onClick={() => handleNavigate("/post-property/property-preview")}>
+            <MenuItem onClick={() =>  window.open("/post-property/property-preview", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Preview</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -517,7 +517,7 @@ const handleNavigate = (path) => {
             <Divider />
 
             {/* Add/Edit Details */}
-            <MenuItem onClick={() => handleNavigate("/post-property/primary-details")}>
+            <MenuItem onClick={() =>  window.open("/post-property/primary-details", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Add/Edit Details</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -527,7 +527,7 @@ const handleNavigate = (path) => {
             <Divider />
 
             {/* Delete */}
-            <MenuItem onClick={() => handleNavigate("/delete")}>
+            <MenuItem onClick={() =>  window.open("/delete", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Delete</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -537,7 +537,7 @@ const handleNavigate = (path) => {
             <Divider />
 
             {/* Upgrade */}
-            <MenuItem onClick={() => handleNavigate("/upgrade")}>
+            <MenuItem onClick={() =>  window.open("/upgrade", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Upgrade</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
