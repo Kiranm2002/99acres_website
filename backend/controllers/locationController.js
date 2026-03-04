@@ -23,7 +23,7 @@ exports.searchCities = async (req, res) => {
     const { query } = req.query;
 
     const cities = await City.find({
-      name: new RegExp( query, "i")   
+      name: new RegExp( "^"+ query, "i")   
     }).limit(10);
 
     res.json(cities);
@@ -80,7 +80,7 @@ exports.searchSubLocalities = async (req, res) => {
 
     const subLocalities = await SubLocality.find({
       localityId,
-      name: new RegExp( query, "i")
+      name: new RegExp( "^" + query, "i")
     }).limit(10);
 
     res.json(subLocalities);
@@ -103,7 +103,7 @@ exports.searchProjects = async (req, res) => {
 
     const projects = await PropertyProject.find({
       subLocalityId: subLocalityId,
-      name: new RegExp(query, "i")
+      name: new RegExp("^"+ query, "i")
     })
     .limit(10);
 

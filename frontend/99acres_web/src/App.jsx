@@ -18,6 +18,7 @@ import OtherDetails from "./pages/postProperty/steps/OtherDetails";
 import ThankYou from "./pages/postProperty/steps/ThankYou";
 import PropertyDashboard from "./pages/postProperty/PropertyDashboard";
 import PropertyPreview from "./pages/postProperty/PropertyPreview";
+import UserPropertydashboard from "./pages/postProperty/UserPropertyDashboard"
 
 function App() {
   const [user, setUser] = useState(null);
@@ -44,6 +45,7 @@ function App() {
           <Route path="thank-you" element={<ThankYou/>}/>
           <Route path="property-dashboard" element={<PropertyDashboard/>}/>
           <Route path="property-preview" element={<PropertyPreview/>}/>
+          <Route path="user-property-dashboard" element={<UserPropertydashboard/>}/>
         </Route>
         
         

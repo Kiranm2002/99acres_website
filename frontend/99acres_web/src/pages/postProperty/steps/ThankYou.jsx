@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -19,8 +19,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import CheckIcon from "@mui/icons-material/Check";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import PostNavbar from "../PostNavbar";
+import Footer from "../../../components/home/Footer";
+import axios from "axios";
 
 // House SVG illustration (inline, matching the image style)
 const HouseIllustration = () => (
@@ -198,6 +200,22 @@ const ComparePlansTable = () => (
 
 const ThankYou = ()=> {
   const navigate = useNavigate();
+  const propertyId  = localStorage.getItem("propertyId")
+
+    const [property, setProperty] = useState(null);
+
+    useEffect(() => {
+      const fetchProperty = async () => {
+        try {
+          const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+          setProperty(res.data);
+        } catch (error) {
+          console.error("Error fetching property:", error);
+        }
+      };
+
+      fetchProperty();
+    }, []);
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'Segoe UI', sans-serif" }}>
       {/* ── Navbar ── */}
@@ -271,18 +289,55 @@ const ThankYou = ()=> {
               <HouseIllustration />
             </Box>
 
-            <Typography sx={{ fontSize: "12px", color: "#8a9bb0", fontFamily: "'Segoe UI', sans-serif", mb: 0.3 }}>
-              Property ID: H89224249
-            </Typography>
-            <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 0.3 }}>
-              Sell Residential Land/Plot
-            </Typography>
-            <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif", mb: 1, lineHeight: 1.4 }}>
-              Skyline City Apartment Chandra Layout Extension 2nd Stage
-            </Typography>
-            <Typography sx={{ fontSize: "15px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
-              ₹2 Lac
-            </Typography>
+            {property && (
+              <>
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                    color: "#8a9bb0",
+                    fontFamily: "'Segoe UI', sans-serif",
+                    mb: 0.3,
+                  }}
+                >
+                  Property ID: {property._id}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: "#071c2c",
+                    fontFamily: "'Segoe UI', sans-serif",
+                    mb: 0.3,
+                  }}
+                >
+                  {property.lookingFor} {property.propertyType} {property.category}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: "13px",
+                    color: "#555",
+                    fontFamily: "'Segoe UI', sans-serif",
+                    mb: 1,
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {property.project?.name}, {property.SubLoaclity?.name}, {property.city?.name}
+                </Typography>
+
+                <Typography
+                  sx={{
+                    fontSize: "15px",
+                    fontWeight: 700,
+                    color: "#071c2c",
+                    fontFamily: "'Segoe UI', sans-serif",
+                  }}
+                >
+                  ₹ {property.expectedPrice}
+                </Typography>
+              </>
+            )}
           </Box>
 
           {/* Edit / Preview */}
@@ -482,7 +537,7 @@ const ThankYou = ()=> {
 
       {/* ── Compare Plans Table (NEW) ── */}
       <ComparePlansTable />
-
+        <Footer/>    
     </Box>
   );
 }

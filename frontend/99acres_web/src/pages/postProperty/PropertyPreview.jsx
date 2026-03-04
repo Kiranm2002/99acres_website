@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import RecommendedProperties from "../../components/home/RecommendedProperties";
 import Footer from "../../components/home/Footer";
+import axios from "axios";
 
 // ── Dummy PostNavbar (replace with your actual import) ──
 const PostNavbar = () => (
@@ -114,6 +115,7 @@ export default function PropertyPreview() {
   const navbarRef = useRef(null);
   const tabsRef = useRef(null);
   const priceSectionRef = useRef(null);
+  const [property, setProperty] = useState(null);
   const lastScrollY = useRef(0);
 
   useEffect(() => {
@@ -137,6 +139,20 @@ export default function PropertyPreview() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const propertyId = localStorage.getItem("propertyId")
+  useEffect(() => {
+  const fetchProperty = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+      setProperty(res.data);
+    } catch (error) {
+      console.error("Error fetching property:", error);
+    }
+  };
+
+  fetchProperty();
+}, []);
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'Segoe UI', sans-serif" }}>
@@ -251,9 +267,9 @@ export default function PropertyPreview() {
           <Box>
             <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, mb: 0.5 }}>
               <Typography sx={{ fontSize: "34px", fontWeight: 800, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", lineHeight: 1 }}>
-                ₹<span style={{ fontSize: "40px" }}>75 Lac</span>
+                ₹<span style={{ fontSize: "40px" }}>{property?.expectedPrice}</span>
               </Typography>
-              <Typography sx={{ fontSize: "15px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>@ 6,250 per sq.ft.</Typography>
+              <Typography sx={{ fontSize: "15px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>@ {property?.pricePerSqft} per {property?.areaUnit}</Typography>
             </Box>
             <Typography sx={{ fontSize: "14px", color: "#00897b", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif" }}>
               Estimated EMI ₹59,903
@@ -261,8 +277,8 @@ export default function PropertyPreview() {
           </Box>
           <Box sx={{ textAlign: "center", flex: 1, px: 4 }}>
             <Typography sx={{ fontSize: "28px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>2BHK 1Bath</Typography>
-            <Typography sx={{ fontSize: "15px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>Flat/Apartment for Sale</Typography>
-            <Typography sx={{ fontSize: "13px", color: "#777", fontFamily: "'Segoe UI', sans-serif" }}>in Skyline City Apartment, Chandra Layout, Bangalore</Typography>
+            <Typography sx={{ fontSize: "15px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>{property?.category} for {property?.lookingFor}</Typography>
+            <Typography sx={{ fontSize: "13px", color: "#777", fontFamily: "'Segoe UI', sans-serif" }}>in {property?.project?.name}, {property?.subLocality?.name}, {property?.city?.name}</Typography>
           </Box>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, flexShrink: 0 }}>
             <Button variant="contained" startIcon={<EditIcon />} 
@@ -356,7 +372,7 @@ export default function PropertyPreview() {
                 <span style={{ color: "#071c2c", fontWeight: 700 }}>1</span>
               </Typography>
               <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>
-                Localities : Chandra Layout
+                Localities : {property?.locality.name}
               </Typography>
             </Box>
           </Box>
@@ -370,9 +386,9 @@ export default function PropertyPreview() {
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<SquareFootIcon sx={{ fontSize: "20px" }} />} label="Area">
                     <Box sx={{ display: "flex", alignItems: "baseline", gap: 1 }}>
-                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>Carpet area: 1200</Typography>
+                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>Carpet area: {property?.plotArea}</Typography>
                       <Typography sx={{ fontSize: "14px", color: "#1557a0", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif", display: "flex", alignItems: "center" }}>
-                        sq.ft. <KeyboardArrowDownIcon sx={{ fontSize: "16px" }} />
+                        {property?.areaUnit} <KeyboardArrowDownIcon sx={{ fontSize: "16px" }} />
                       </Typography>
                     </Box>
                     <Typography sx={{ fontSize: "12px", color: "#888", fontFamily: "'Segoe UI', sans-serif" }}>(111.48 sq.m.)</Typography>
@@ -388,15 +404,15 @@ export default function PropertyPreview() {
               <Box sx={{ display: "flex", gap: 2 }}>
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<CurrencyRupeeIcon sx={{ fontSize: "20px" }} />} label="Price">
-                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>₹ 75 Lac</Typography>
-                    <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>@ 6,250 per sq.ft.</Typography>
+                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>₹ {property?.expectedPrice}</Typography>
+                    <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>@ {property?.pricePerSqft} per {property?.areaUnit}</Typography>
                   </DetailItem>
                 </Box>
                 <Divider orientation="vertical" flexItem sx={{ my: 1.5, borderColor: "#f0f2f5" }} />
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<LocationOnOutlinedIcon sx={{ fontSize: "20px" }} />} label="Address">
-                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>Skyline City Apartment</Typography>
-                    <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>Chandra Layout, Bangalore</Typography>
+                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.project.name}</Typography>
+                    <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>{property?.subLocality.name}, {property?.city.name}</Typography>
                   </DetailItem>
                 </Box>
               </Box>
@@ -404,7 +420,7 @@ export default function PropertyPreview() {
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<LayersOutlinedIcon sx={{ fontSize: "20px" }} />} label="Floor Number">
                     <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>6<sup style={{ fontSize: "10px" }}>th</sup></Typography>
+                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.floorsAllowed}<sup style={{ fontSize: "10px" }}>th</sup></Typography>
                       <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>of 12 Floors</Typography>
                     </Box>
                   </DetailItem>
@@ -412,7 +428,7 @@ export default function PropertyPreview() {
                 <Divider orientation="vertical" flexItem sx={{ my: 1.5, borderColor: "#f0f2f5" }} />
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<CalendarTodayOutlinedIcon sx={{ fontSize: "20px" }} />} label="Possession in">
-                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>By 2027</Typography>
+                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.possession}</Typography>
                   </DetailItem>
                 </Box>
               </Box>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   Box,
   Typography,
@@ -34,6 +34,7 @@ import Footer from "../../components/home/Footer";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // ── Building illustration SVG ──
 const BuildingIllustration = () => (
@@ -392,6 +393,7 @@ const PlansComparisonBox = () => (
 const ListingsSection = () => { 
   const [anchorEl, setAnchorEl] = useState(null);
 const open = Boolean(anchorEl);
+const [property, setProperty] = useState(null);
 const navigate = useNavigate();
 
 const handleClick = (event) => {
@@ -406,6 +408,28 @@ const handleNavigate = (path) => {
   handleClose();
   navigate(path); // You can change path later
 };
+const propertyId = localStorage.getItem("propertyId") 
+console.log("propertyId:",propertyId)
+useEffect(() => {
+  const fetchProperty = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+      setProperty(res.data);
+    } catch (error) {
+      console.error("Error fetching property:", error);
+    }
+  };
+
+  fetchProperty();
+}, []);
+
+const formatDate = (date) => {
+  if (!date) return "";
+
+  const options = { day: "numeric", month: "short", year: "numeric" };
+  return new Date(date).toLocaleDateString("en-IN", options);
+};
+
   return(
   <Box sx={{ flex: 1, minWidth: 0 }}>
     <Typography sx={{ fontSize: "14px", color: "#666", fontFamily: "'Segoe UI', sans-serif", mb: 1.2 }}>
@@ -424,7 +448,7 @@ const handleNavigate = (path) => {
     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 2.5, cursor: "pointer" }}>
       <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>
         Manage listing for{" "}
-        <strong style={{ color: "#071c2c" }}>Property ID - U89266127 (2 BHK Flat/Ap...)</strong>
+        <strong style={{ color: "#071c2c" }}>Property ID - {property?._id} ({property?.category})</strong>
       </Typography>
       <KeyboardArrowDownIcon sx={{ fontSize: "19px", color: "#555" }} />
     </Box>
@@ -450,24 +474,24 @@ const handleNavigate = (path) => {
         {/* Details */}
         <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography sx={{ fontSize: "17px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 0.4 }}>
-            Sell 2 BHK Flat/Apartment
+            {property?.lookingFor} {property?.propertyType} {property?.category}
           </Typography>
           <Typography sx={{ fontSize: "13px", color: "#777", fontFamily: "'Segoe UI', sans-serif", mb: 2 }}>
-            in Skyline City Apartment Chandra Layout
+            in {property?.project?.name} {property?.subLocality?.name} {property?.city?.name}
           </Typography>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
             <Box>
               <Typography sx={{ fontSize: "12px", color: "#999", fontFamily: "'Segoe UI', sans-serif" }}>Price</Typography>
-              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>₹ 75 Lac</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>₹ {property?.expectedPrice}</Typography>
             </Box>
             <Box>
               <Typography sx={{ fontSize: "12px", color: "#999", fontFamily: "'Segoe UI', sans-serif" }}>Property ID</Typography>
-              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>U89266127</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>{property?._id}</Typography>
             </Box>
             <Box>
               <Typography sx={{ fontSize: "12px", color: "#999", fontFamily: "'Segoe UI', sans-serif" }}>Duration</Typography>
-              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Posted today</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Posted on {formatDate(property?.createdAt)}</Typography>
             </Box>
             <Button
             variant="outlined"
@@ -527,7 +551,7 @@ const handleNavigate = (path) => {
             <Divider />
 
             {/* Delete */}
-            <MenuItem onClick={() =>  window.open("/delete", "_blank")}>
+            <MenuItem onClick={() =>  window.open("/post-property/user-property-dashboard", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Delete</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -537,7 +561,7 @@ const handleNavigate = (path) => {
             <Divider />
 
             {/* Upgrade */}
-            <MenuItem onClick={() =>  window.open("/upgrade", "_blank")}>
+            <MenuItem onClick={() =>  window.open("/post-property/user-property-dashboard", "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Upgrade</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />

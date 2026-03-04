@@ -4,7 +4,7 @@ const upload = require("../middleware/upload")
 
 const { createProperty,updatePropertyLocation,
     updatePropertyProfile,getPropertyById,updatePhoto,
-    updateOtherDetails,updatePrimaryDetails } = require("../controllers/propertyController");
+    updateOtherDetails,updatePrimaryDetails,deleteProperty } = require("../controllers/propertyController");
 
 
 router.post("/create", createProperty);
@@ -17,5 +17,6 @@ router.put("/photo-details/:propertyId", upload.fields([
 ]),updatePhoto)
 router.put("/other-details/:propertyId",updateOtherDetails)
 router.put("/update-primaryDetails/:id",updatePrimaryDetails)
+router.delete("/delete-property/:id",deleteProperty)
 
 module.exports = router;

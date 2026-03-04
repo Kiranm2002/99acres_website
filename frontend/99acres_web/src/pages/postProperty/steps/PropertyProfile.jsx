@@ -51,6 +51,28 @@ const [allInclusivePrice, setAllInclusivePrice] = useState(false);
 const [taxExcluded, setTaxExcluded] = useState(false);
 const [priceNegotiable, setPriceNegotiable] = useState(false);
 
+// Builder Floor Type
+const [builderFloorType, setBuilderFloorType] = useState("");
+
+// Floor Details
+const [totalFloors, setTotalFloors] = useState("");
+const [propertyOnFloor, setPropertyOnFloor] = useState("");
+
+// Extra Areas
+const [showCarpet, setShowCarpet] = useState(false);
+const [showBuiltUp, setShowBuiltUp] = useState(false);
+const [showSuperBuiltUp, setShowSuperBuiltUp] = useState(false);
+
+const [carpetArea, setCarpetArea] = useState("");
+const [builtUpArea, setBuiltUpArea] = useState("");
+const [superBuiltUpArea, setSuperBuiltUpArea] = useState("");
+
+// Rooms
+const [bedrooms, setBedrooms] = useState("");
+const [bathrooms, setBathrooms] = useState("");
+const [balconies, setBalconies] = useState("");
+const [availabilityStatus, setAvailabilityStatus] = useState("");
+
   const inputStyle = {
     width: 380,
     height: 48,
@@ -90,6 +112,53 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
       console.error("Error saving profile details:", error);
     }
   }
+
+  const AreaInputBox = ({
+  placeholder,
+  value,
+  onChange
+}) => (
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      border: "1px solid #c4c4c4",
+      borderRadius: "4px",
+      width: 380,
+      height: 48,
+      px: 2,
+      mt: 2
+    }}
+  >
+    <TextField
+      variant="standard"
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      InputProps={{ disableUnderline: true }}
+      sx={{ flex: 1 }}
+    />
+
+    <Divider orientation="vertical" flexItem />
+
+    <Select
+      value={areaUnit}
+      onChange={(e) => setAreaUnit(e.target.value)}
+      variant="standard"
+      disableUnderline
+      sx={{ ml: 2, width: 100 }}
+    >
+      <MenuItem value="sq.ft.">sq.ft.</MenuItem>
+      <MenuItem value="sq.yards">sq.yards</MenuItem>
+      <MenuItem value="sq.m">sq.m</MenuItem>
+      <MenuItem value="acres">acres</MenuItem>
+      <MenuItem value="marla">marla</MenuItem>
+      <MenuItem value="cents">cents</MenuItem>
+      <MenuItem value="guntha">guntha</MenuItem>
+    </Select>
+  </Box>
+);
+
   useEffect(() => {
   const propertyId = localStorage.getItem("propertyId");
 
@@ -144,6 +213,88 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
         Tell us about your Property
       </Typography>
 
+      {/* Builder Floor Type */}
+        <Box sx={{ mb: 5 }}>
+          <Typography fontWeight={500} fontSize={18} mb={2}>
+            Select the type of Builder floor
+          </Typography>
+
+          <Box display="flex" gap={2}>
+            {["Single Floor", "Duplex", "Triplex"].map((type) => (
+              <Button
+                key={type}
+                variant="outlined"
+                onClick={() => setBuilderFloorType(type)}
+                sx={{
+                  borderRadius: 5,
+                  textTransform: "none",
+                  fontSize: 14,
+                  px: 3,
+                  borderColor: "#d0d5dd",
+                  backgroundColor:
+                    builderFloorType === type ? "#e3f2fd" : "#f8f9fb",
+                  color: "#333",
+                  "&:hover": { backgroundColor: "#e3f2fd" }
+                }}
+              >
+                {type}
+              </Button>
+            ))}
+          </Box>
+        </Box>
+
+        {/* Floor Details */}
+          <Box sx={{ mb: 5 }}>
+            <Typography fontWeight={500} fontSize={18}>
+              Floor Details
+            </Typography>
+            <Typography fontSize={14} color="#8a94a6" mb={2}>
+              Total no of floors and your floor details
+            </Typography>
+
+            <Box display="flex" gap={2}>
+              {/* Total Floors */}
+              <TextField
+                label="Total floors in building"
+                value={totalFloors}
+                onChange={(e) => setTotalFloors(e.target.value)}
+                sx={{
+                  width: 200,
+                  "& .MuiOutlinedInput-root": { borderRadius: "4px" }
+                }}
+              />
+
+              {/* Property On Floor */}
+              <TextField
+                select
+                label="Property on floor"
+                value={propertyOnFloor}
+                onChange={(e) => setPropertyOnFloor(e.target.value)}
+                sx={{
+                  width: 200,
+                  "& .MuiOutlinedInput-root": { borderRadius: "4px" }
+                }}
+                SelectProps={{
+                  MenuProps: {
+                    PaperProps: {
+                      style: { maxHeight: 180 } // small scrollable dropdown
+                    }
+                  }
+                }}
+              >
+                <MenuItem value="Basement">Basement</MenuItem>
+                <MenuItem value="Lower Ground">Lower Ground</MenuItem>
+                <MenuItem value="Ground">Ground</MenuItem>
+
+                {[...Array(Number(totalFloors || 0))].map((_, i) => (
+                  <MenuItem key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Box>
+          </Box>
+
       {/* 3️⃣ Add Area Details */}
       <Box sx={{ mb: 5 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
@@ -153,49 +304,128 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
           <HelpOutlineIcon sx={{ fontSize: 18, color: "gray" }} />
         </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            border: "1px solid #c4c4c4",
-            borderRadius: "4px",
-            width: 380,
-            height: 48,
-            px: 2
-          }}
-        >
-          <TextField
-            variant="standard"
-            placeholder="Plot Area"
-            // label="Plot Area"
-            value={plotArea}
-            onChange={(e) => setPlotArea(e.target.value)}
-            InputProps={{ disableUnderline: true }}
-            sx={{ flex: 1 }}
-          />
-
-          <Divider orientation="vertical" flexItem />
-
-          <Select
-            value={areaUnit}
-            onChange={(e) => setAreaUnit(e.target.value)}
-            variant="standard"
-            disableUnderline
-            sx={{ ml: 2, width: 100 }}
+        <AreaInputBox
+          placeholder="Plot Area"
+          value={plotArea}
+          onChange={(e) => setPlotArea(e.target.value)}
+        />
+        <Box mt={2} display="flex" flexDirection="column" gap={1}>
+          <Typography
+            sx={{ color: "#1976d2", cursor: "pointer", fontSize: 14 }}
+            onClick={() => setShowCarpet(true)}
           >
-            <MenuItem value="sq.ft.">sq.ft.</MenuItem>
-            <MenuItem value="sq.yards">sq.yards</MenuItem>
-            <MenuItem value="sq.m">sq.m</MenuItem>
-            <MenuItem value="acres">acres</MenuItem>
-            <MenuItem value="marla">marla</MenuItem>
-            <MenuItem value="cents">cents</MenuItem>
-            <MenuItem value="guntha">guntha</MenuItem>
-          </Select>
+            + Carpet Area
+          </Typography>
+
+          <Typography
+            sx={{ color: "#1976d2", cursor: "pointer", fontSize: 14 }}
+            onClick={() => setShowBuiltUp(true)}
+          >
+            + Built-up Area
+          </Typography>
+
+          <Typography
+            sx={{ color: "#1976d2", cursor: "pointer", fontSize: 14 }}
+            onClick={() => setShowSuperBuiltUp(true)}
+          >
+            + Super Built-up Area
+          </Typography>
+        </Box>
+        {showCarpet && (
+          <AreaInputBox
+            placeholder="Carpet Area"
+            value={carpetArea}
+            onChange={(e) => setCarpetArea(e.target.value)}
+          />
+        )}
+
+        {showBuiltUp && (
+          <AreaInputBox
+            placeholder="Built-up Area"
+            value={builtUpArea}
+            onChange={(e) => setBuiltUpArea(e.target.value)}
+          />
+        )}
+
+        {showSuperBuiltUp && (
+          <AreaInputBox
+            placeholder="Super Built-up Area"
+            value={superBuiltUpArea}
+            onChange={(e) => setSuperBuiltUpArea(e.target.value)}
+          />
+        )}
+      </Box>
+
+      {/* Add Room Details */}
+      <Box sx={{ mt: 5 }}>
+        <Typography fontWeight={500} fontSize={18} mb={2}>
+          Add Room Details
+        </Typography>
+
+        {/* Bedrooms */}
+        <Typography fontSize={14} mb={1}>No. of Bedrooms</Typography>
+        <Box display="flex" gap={1} mb={3}>
+          {[1,2,3,4].map((num) => (
+            <Button
+              key={num}
+              onClick={() => setBedrooms(num)}
+              sx={{
+                minWidth: 36,
+                borderRadius: "50%",
+                color:"#000",
+                backgroundColor:
+                  bedrooms === num ? "#e3f2fd" : "#f5f5f5"
+              }}
+            >
+              {num}
+            </Button>
+          ))}
+        </Box>
+        <Typography sx={{color:"#2a7dddff" ,mt:-2}}>+ Add other</Typography>
+
+        {/* Bathrooms */}
+        <Typography fontSize={14} mb={1}>No. of Bathrooms</Typography>
+        <Box display="flex" gap={1} mb={3}>
+          {[1,2,3,4].map((num) => (
+            <Button
+              key={num}
+              onClick={() => setBathrooms(num)}
+              sx={{
+                minWidth: 36,
+                borderRadius: "50%",
+                color:"#000",
+                backgroundColor:
+                  bathrooms === num ? "#e3f2fd" : "#f5f5f5"
+              }}
+            >
+              {num}
+            </Button>
+          ))}
+        </Box>
+          <Typography sx={{color:"#2a7dddff",mt:-2}}>+ Add other</Typography>
+        {/* Balconies */}
+        <Typography fontSize={14} mb={1}>No. of Balconies</Typography>
+        <Box display="flex" gap={1}>
+          {[0,1,2,3,"More than 3"].map((num) => (
+            <Button
+              key={num}
+              onClick={() => setBalconies(num)}
+              sx={{
+                borderRadius: 3,
+                textTransform: "none",
+                color:"#000",
+                backgroundColor:
+                  balconies === num ? "#e3f2fd" : "#f5f5f5"
+              }}
+            >
+              {num} 
+            </Button>
+          ))}
         </Box>
       </Box>
 
       {/* 4️⃣ Property Dimensions */}
-      <Box sx={{ mb: 5 }}>
+      {/* <Box sx={{ mb: 5 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h6" sx={{fontWeight:500,fontSize:18}}>
             Property Dimensions
@@ -218,10 +448,10 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
           onChange={(e) => setPlotBreadth(e.target.value)}
           sx={inputStyle}
         />
-      </Box>
+      </Box> */}
 
       {/* 5️⃣ Floors Allowed */}
-      <Box sx={{ mb: 5 }}>
+      {/* <Box sx={{ mb: 5 }}>
         <Typography variant="h6" sx={{ mb: 2,fontWeight:500,fontSize:18 }}>
           Floors Allowed For Construction
         </Typography>
@@ -232,10 +462,10 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
           onChange={(e) => setFloorsAllowed(e.target.value)}
           sx={inputStyle}
         />
-      </Box>
+      </Box> */}
 
       {/* 6️⃣ Boundary Wall */}
-      <Box sx={{ mb: 5 }}>
+      {/* <Box sx={{ mb: 5 }}>
         <Typography variant="h6" sx={{ mb: 2,fontWeight:500,fontSize:18 }}>
           Is there a boundary wall around the property?
         </Typography>
@@ -264,10 +494,10 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
                     </Button>
                 ))}
             </Box>
-      </Box>
+      </Box> */}
 
       {/* 7️⃣ No of Open Sides */}
-      <Box sx={{ mb: 5 }}>
+      {/* <Box sx={{ mb: 5 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
           <Typography variant="h6" sx={{fontWeight:500,fontSize:18}}>
             No. of open sides
@@ -302,10 +532,10 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
                 </Button>
               ))}
             </Box>
-      </Box>
+      </Box> */}
 
       {/* 8️⃣ Any Construction */}
-      <Box sx={{ mb: 5 }}>
+      {/* <Box sx={{ mb: 5 }}>
         <Box sx={{ display: "flex", alignItems: "center", mb: 2,}}>
           <Typography variant="h6" sx={{fontWeight:500,fontSize:18 }}>
             Any construction done on this property
@@ -337,9 +567,76 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
                     </Button>
                 ))}
             </Box>
-      </Box>
+      </Box> */}
+
+        
+         {/* Availability Status    */}
+         
+        <Box mt={4}>
+          <Box display="flex" alignItems="center" gap={1}>
+            <Typography fontWeight={500} fontSize={18}>
+              Availability Status
+            </Typography>
+            <HelpOutlineIcon sx={{ fontSize: 18, color: "#8a94a6" }} />
+          </Box>
+
+          <Box mt={2} display="flex" flexWrap="wrap" gap={1}>
+            {["Ready to Move", "Under construction"].map((type, index) => (
+              <Button
+                key={index}
+                onClick={() => setAvailabilityStatus(type)}
+                variant="outlined"
+                sx={{
+                  borderRadius: 5,
+                  textTransform: "none",
+                  fontSize: 13,
+                  borderColor: "#d0d5dd",
+                  color: "#555",
+                  backgroundColor:
+                    availabilityStatus === type ? "#e3f2fd" : "#fff",
+                  "&:hover": { backgroundColor: "#e3f2fd" }
+                }}
+              >
+                {type}
+              </Button>
+            ))}
+          </Box>
+        </Box>
+
+        {/* Age of Property */}
+        {availabilityStatus === "Ready to Move" && (
+        <Box mt={4}>
+        <Box display="flex" alignItems="center" gap={1}>
+            <Typography fontWeight={500} fontSize={18}>
+            Age of Property
+            </Typography>
+            <HelpOutlineIcon sx={{ fontSize: 18, color: "#8a94a6" }} />
+        </Box>
+
+        <Box mt={2} display="flex" flexWrap="wrap" gap={1}>
+            {["0-1 years","1-5 years","5-10 years","10+ years"].map((type,index) => (
+            <Button
+                key={index}
+                onClick={() => setOwnerShip(type)}
+                variant="outlined"
+                sx={{
+                borderRadius: 5,
+                textTransform: "none",
+                fontSize: 13,
+                borderColor: "#d0d5dd",
+                color: "#555",
+                backgroundColor: ownerShip === type ? "#e3f2fd" : "#fff",
+                "&:hover": {
+                    backgroundColor: "#e3f2fd"
+                }
+                }}
+            >{type}</Button>
+            ))}
+        </Box>
+        </Box>)}
 
         {/* Possession By */}
+        {availabilityStatus === "Under construction" && (
         <Box mt={4}>
         <Typography fontWeight={500} mb={2} fontSize={18}>
             Possession By
@@ -367,8 +664,8 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
             <MenuItem value="2027">By 2027</MenuItem>
             <MenuItem value="2028">By 2028</MenuItem>
         </TextField>
-        </Box>
-            
+        </Box>)}
+
         {/* Ownership */}
         <Box mt={4}>
         <Box display="flex" alignItems="center" gap={1}>
@@ -401,7 +698,7 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
         </Box>
 
         {/* Authority Section */}
-        <Box mt={4}>
+        {/* <Box mt={4}>
         <Box display="flex" alignItems="center" gap={1}>
             <Typography fontWeight={500} fontSize={18}>
             Which authority the property is approved by ?
@@ -445,7 +742,7 @@ const [priceNegotiable, setPriceNegotiable] = useState(false);
                 );
             })}
         </Box>
-        </Box>
+        </Box> */}
 
         {/* Price Details */}
         <Box mt={5} >

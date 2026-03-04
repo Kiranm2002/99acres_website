@@ -303,8 +303,43 @@ const updateOtherDetails = async (req, res) => {
   }
 };
 
+const deleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+
+    // Check if property exists
+    const property = await Property.findById(id);
+
+    if (!property) {
+      return res.status(404).json({
+        success: false,
+        message: "Property not found",
+      });
+    }
+
+    // Optional: store delete reason somewhere (if you have field)
+    // property.deleteReason = reason;
+    // await property.save();
+
+    // Hard delete
+    await Property.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: "Property deleted successfully",
+    });
+
+  } catch (error) {
+    console.error("Delete Property Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error while deleting property",
+    });
+  }
+};
 
 module.exports = {
   createProperty, updatePropertyLocation,updatePropertyProfile,
-  getPropertyById,updatePhoto,updateOtherDetails,updatePrimaryDetails
+  getPropertyById,updatePhoto,updateOtherDetails,updatePrimaryDetails,deleteProperty
 };
