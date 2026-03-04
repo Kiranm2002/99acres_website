@@ -114,33 +114,54 @@ const updatePropertyLocation = async (req, res) => {
     });
   }
 };
-  // ================= STEP 3 - Property Profile =================
+
+ // ================= STEP 3 - Property Profile =================
 
 const updatePropertyProfile = async (req, res) => {
   try {
-    
-
     const {
       propertyId,
+
+      // Area
       plotArea,
       areaUnit,
-      plotLength,
-      plotBreadth,
-      floorsAllowed,
-      boundaryWall,
-      openSides,
-      construction,
+      carpetArea,
+      builtUpArea,
+      superBuiltUpArea,
+
+      // Builder Floor
+      builderFloorType,
+      totalFloors,
+      propertyOnFloor,
+
+      // Rooms
+      bedrooms,
+      bathrooms,
+      balconies,
+
+      // Availability
+      availabilityStatus,
+      ageOfProperty,
       possession,
-      ownerShip,
-      authority,
+
+      // Ownership
+      ownershipType,
+
+      // Price
       expectedPrice,
       pricePerSqft,
       allInclusivePrice,
       taxExcluded,
-      priceNegotiable,
+      priceNegotiable
     } = req.body;
 
-    const property = await Property.findByIdAndUpdate(propertyId);
+    if (!propertyId) {
+      return res.status(400).json({
+        message: "Property ID is required",
+      });
+    }
+
+    const property = await Property.findById(propertyId);
 
     if (!property) {
       return res.status(404).json({
@@ -148,24 +169,49 @@ const updatePropertyProfile = async (req, res) => {
       });
     }
 
-    // Update fields
+    // ========== UPDATE FIELDS ==========
+
+    // Area
     property.plotArea = plotArea;
     property.areaUnit = areaUnit;
-    property.plotLength = plotLength;
-    property.plotBreadth = plotBreadth;
-    property.floorsAllowed = floorsAllowed;
-    property.boundaryWall = boundaryWall;
-    property.openSides = openSides;
-    property.construction = construction;
-    property.possession = possession;
-    property.ownerShip = ownerShip;
-    property.authority = authority;
+    property.carpetArea = carpetArea;
+    property.builtUpArea = builtUpArea;
+    property.superBuiltUpArea = superBuiltUpArea;
+
+    // Builder Floor
+    property.builderFloorType = builderFloorType;
+    property.totalFloors = totalFloors;
+    property.propertyOnFloor = propertyOnFloor;
+
+    // Rooms
+    property.bedrooms = bedrooms;
+    property.bathrooms = bathrooms;
+    property.balconies = balconies;
+
+    // Availability Logic
+    property.availabilityStatus = availabilityStatus;
+
+    if (availabilityStatus === "Ready to Move") {
+      property.ageOfProperty = ageOfProperty;
+      property.possession = null;
+    }
+
+    if (availabilityStatus === "Under construction") {
+      property.possession = possession;
+      property.ageOfProperty = null;
+    }
+
+    // Ownership
+    property.ownershipType = ownershipType;
+
+    // Price
     property.expectedPrice = expectedPrice;
     property.pricePerSqft = pricePerSqft;
     property.allInclusivePrice = allInclusivePrice;
     property.taxExcluded = taxExcluded;
     property.priceNegotiable = priceNegotiable;
 
+    // Step Completion
     property.stepCompleted = 3;
 
     await property.save();

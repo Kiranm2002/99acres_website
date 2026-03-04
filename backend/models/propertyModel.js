@@ -55,60 +55,77 @@ const propertySchema = new mongoose.Schema(
     
     // ================= STEP 3 (Property Profile) =================
 
-    // Area Details
+    // -------- Area Details --------
     plotArea: {
       type: Number
     },
+
     areaUnit: {
+      type: String,
+      enum: ["sq.ft.", "sq.yards", "sq.m", "acres", "marla", "cents", "guntha"]
+    },
+
+    carpetArea: {
+      type: Number
+    },
+
+    builtUpArea: {
+      type: Number
+    },
+
+    superBuiltUpArea: {
+      type: Number
+    },
+
+    // -------- Builder Floor Details --------
+    builderFloorType: {
+      type: String,
+      enum: ["Single Floor", "Duplex", "Triplex"]
+    },
+
+    totalFloors: {
+      type: Number
+    },
+
+    propertyOnFloor: {
       type: String
     },
 
-    // Dimensions (optional)
-    plotLength: {
-      type: Number
-    },
-    plotBreadth: {
+    // -------- Room Details --------
+    bedrooms: {
       type: Number
     },
 
-    // Floors
-    floorsAllowed: {
+    bathrooms: {
       type: Number
     },
 
-    // Boundary
-    boundaryWall: {
-      type: String,
-      enum: ["Yes", "No"]
-    },
-
-    // Open sides
-    openSides: {
+    balconies: {
       type: String
     },
 
-    // Construction
-    construction: {
+    // -------- Availability --------
+    availabilityStatus: {
       type: String,
-      enum: ["Yes", "No"]
+      enum: ["Ready to Move", "Under construction"]
     },
 
-    // Possession
+    ageOfProperty: {
+      type: String,
+      enum: ["0-1 years", "1-5 years", "5-10 years", "10+ years"]
+    },
+
     possession: {
       type: String
     },
 
-    // Ownership
-    ownerShip: {
-      type: String
+    // -------- Ownership --------
+    ownershipType: {
+      type: String,
+      enum: ["Freehold", "Leasehold", "Co-operative society", "Power of Attorney"]
     },
 
-    // Authority (optional)
-    authority: {
-      type: String
-    },
-
-    // Price Details
+    // -------- Price Details --------
     expectedPrice: {
       type: Number
     },
@@ -119,17 +136,17 @@ const propertySchema = new mongoose.Schema(
 
     allInclusivePrice: {
       type: Boolean,
-      // default: false
+      default: false
     },
 
     taxExcluded: {
       type: Boolean,
-      // default: false
+      default: false
     },
 
     priceNegotiable: {
       type: Boolean,
-      // default: false
+      default: false
     },
 
       // ===== STEP 4 FIELDS =====
