@@ -185,16 +185,9 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
                       handleMenuClose();
                     }}
                   >
-                    Login
+                    Login / Register
                   </MenuItem>
-                  <MenuItem
-                    onClick={() => {
-                      setOpenRegister(true);
-                      handleMenuClose();
-                    }}
-                  >
-                    Register
-                  </MenuItem>
+                  
                 </>
               ) : (
                 <MenuItem
@@ -207,6 +200,9 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
                   Logout
                 </MenuItem>
               )}
+              <MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
+                ShortListed
+              </MenuItem>
             </Menu>
 
           {/* MENU */}

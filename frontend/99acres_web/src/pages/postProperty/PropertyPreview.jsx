@@ -33,6 +33,8 @@ import RecommendedProjects from "../../components/home/RecommendedProjects";
 import RecommendedProperties from "../../components/home/RecommendedProperties";
 import Footer from "../../components/home/Footer";
 import axios from "axios";
+import { keyframes } from "@mui/system";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 // ── Dummy PostNavbar (replace with your actual import) ──
 const PostNavbar = () => (
@@ -116,8 +118,34 @@ export default function PropertyPreview() {
   const tabsRef = useRef(null);
   const priceSectionRef = useRef(null);
   const [property, setProperty] = useState(null);
+  const [user, setUser] = useState(null);
+  const [shortlisted, setShortlisted] = useState(false);
+  const [showMessage, setShowMessage] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const lastScrollY = useRef(0);
+  // const navigate = useNavigate("");
 
+  const slideDown = keyframes`
+  from {
+    transform: translateY(-60px);
+    opacity:0
+  }
+  to {
+    transform: translateY(0);
+    opacity:1
+  }
+`;
+  const handleShortlist = () => {
+    setShowToast(true)
+    // setShortlisted(true);
+    // setShowMessage(true);
+
+    setTimeout(() => {
+      setShowToast(false);
+      navigate("/post-property/shortlist-property")
+    }, 2000);
+
+  };
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -154,6 +182,29 @@ export default function PropertyPreview() {
   fetchProperty();
 }, []);
 
+//user details
+useEffect(() => {
+
+  const fetchUser = async () => {
+    try {
+
+      const userId = localStorage.getItem("userId");
+
+      const res = await axios.get(
+        `http://localhost:5000/user/${userId}`
+      );
+
+      setUser(res.data.data);
+
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    }
+  };
+
+  fetchUser();
+
+}, []);
+
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'Segoe UI', sans-serif" }}>
 
@@ -175,7 +226,8 @@ export default function PropertyPreview() {
       {/* ── Breadcrumb ── */}
       <Box sx={{ backgroundColor: "#fff", borderBottom: "1px solid #eef0f4", px: { xs: 2, sm: 6 }, py: 1.2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.3 }}>
-          {["Home", "Property in Bangalore", "Flats for sale in Bangalore", "Flats for sale in Chandra Layout", "2 BHK Flats for sale in Chandra Layout"].map((crumb, i, arr) => (
+          {["Home", "Property in Bangalore", "Flats for sale in Bangalore", "Flats for sale in Chandra Layout", 
+          `${property?.bedrooms} BHK ${property?.category} for ${property?.lookingFor} in ${property?.subLocality.name}`].map((crumb, i, arr) => (
             <Box key={crumb} sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ fontSize: "12px", color: i < arr.length - 1 ? "#1557a0" : "#555", fontFamily: "'Segoe UI', sans-serif", cursor: i < arr.length - 1 ? "pointer" : "default" }}>
                 {crumb}
@@ -211,7 +263,7 @@ export default function PropertyPreview() {
                 ₹<span style={{ fontSize: "28px" }}>75 Lac</span>
               </Typography>
               <Box sx={{ width: "1px", height: "26px", backgroundColor: "#ccc" }} />
-              <Typography sx={{ fontSize: "18px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>2BHK 1Bath</Typography>
+              <Typography sx={{ fontSize: "18px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{String(property?.bedrooms)}BHK {String(property?.bathrooms)}Bath</Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
               <IconButton sx={{ border: "1px solid #e0e6ef", borderRadius: "6px", p: 0.8 }}>
@@ -276,7 +328,7 @@ export default function PropertyPreview() {
             </Typography>
           </Box>
           <Box sx={{ textAlign: "center", flex: 1, px: 4 }}>
-            <Typography sx={{ fontSize: "28px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>2BHK 1Bath</Typography>
+            <Typography sx={{ fontSize: "28px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.bedrooms}BHK {property?.bathrooms}Bath</Typography>
             <Typography sx={{ fontSize: "15px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>{property?.category} for {property?.lookingFor}</Typography>
             <Typography sx={{ fontSize: "13px", color: "#777", fontFamily: "'Segoe UI', sans-serif" }}>in {property?.project?.name}, {property?.subLocality?.name}, {property?.city?.name}</Typography>
           </Box>
@@ -288,7 +340,38 @@ export default function PropertyPreview() {
             onClick={()=> window.open("/post-property/primary-details", "_blank")}>
               Edit property
             </Button>
-            <Button variant="outlined" startIcon={<FavoriteBorderIcon />} sx={{ borderColor: "#c8d8ec", color: "#333", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, fontFamily: "'Segoe UI', sans-serif", "&:hover": { borderColor: "#1557a0" } }}>
+            
+            {showToast && (
+              <Box
+                sx={{
+                  position: "fixed",
+                  top: "220px",
+                  right: "70px",
+                  width: "260px",
+                  backgroundColor: "#000",
+                  color: "#fff",
+                  px: 2,
+                  py: 1.3,
+                  borderRadius: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 1,
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  boxShadow: "0 3px 10px rgba(0,0,0,0.3)",
+                  animation: `${slideDown} 0.35s ease`,
+                  zIndex: 9999
+                }}
+              >
+                <FavoriteIcon sx={{ color: "#ff4d6d", fontSize: "18px" }} />
+                Property added to your shortlist
+              </Box>
+            )}
+            <Button variant="outlined" startIcon={<FavoriteBorderIcon sx={{ color: setShowToast ? "hotpink" : "#333" }} />} 
+            sx={{ borderColor: "#c8d8ec", color: "#333", textTransform: "none", 
+            fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, 
+            fontFamily: "'Segoe UI', sans-serif", "&:hover": { borderColor: "#1557a0" } }}
+              onClick={handleShortlist}>
               Shortlist
             </Button>
           </Box>
@@ -350,7 +433,7 @@ export default function PropertyPreview() {
                 />
                 <Box>
                   <Typography sx={{ fontSize: "17px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 0.4 }}>
-                    Kiran M
+                    {user?.firstName} {user?.lastName}
                   </Typography>
                   <Typography sx={{ fontSize: "13px", color: "#888", fontFamily: "'Segoe UI', sans-serif", mb: 2 }}>
                     Owner
@@ -397,7 +480,7 @@ export default function PropertyPreview() {
                 <Divider orientation="vertical" flexItem sx={{ my: 1.5, borderColor: "#f0f2f5" }} />
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<ApartmentIcon sx={{ fontSize: "20px" }} />} label="Configuration">
-                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>2 Bedrooms , 1 Bathroom, No Balcony</Typography>
+                    <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.bedrooms} Bedrooms, {property?.bathrooms} Bathrooms, {property?.balconies} Balconies</Typography>
                   </DetailItem>
                 </Box>
               </Box>
@@ -420,7 +503,7 @@ export default function PropertyPreview() {
                 <Box sx={{ flex: 1 }}>
                   <DetailItem icon={<LayersOutlinedIcon sx={{ fontSize: "20px" }} />} label="Floor Number">
                     <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
-                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.floorsAllowed}<sup style={{ fontSize: "10px" }}>th</sup></Typography>
+                      <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{property?.propertyOnFloor}</Typography>
                       <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>of 12 Floors</Typography>
                     </Box>
                   </DetailItem>
@@ -467,7 +550,7 @@ export default function PropertyPreview() {
                 <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 1.5 }}>
                   {/* Name */}
                   <TextField
-                    value="Kiran M"
+                    value={`${user?.firstName || ""} ${user?.lastName || ""}`}
                     size="small"
                     sx={{ "& .MuiOutlinedInput-root": { borderRadius: "6px", fontSize: "14px", fontFamily: "'Segoe UI', sans-serif" } }}
                   />
@@ -481,7 +564,7 @@ export default function PropertyPreview() {
                       <MenuItem value="IND" sx={{ fontSize: "14px" }}>IND (+91)</MenuItem>
                     </Select>
                     <TextField
-                      value="7619401943"
+                      value={`${user?.phone}`}
                       size="small"
                       fullWidth
                       sx={{ "& .MuiOutlinedInput-root": { borderRadius: "6px", fontSize: "14px", fontFamily: "'Segoe UI', sans-serif" } }}

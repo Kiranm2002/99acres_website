@@ -273,6 +273,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
               >
                 Login / Register
               </MenuItem>
+              
             ) : (
                 <MenuItem
                   onClick={() => {
@@ -284,6 +285,9 @@ const Navbar = ({isHomePage,user,setUser}) => {
                   Logout
                 </MenuItem>
               )}
+              <MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
+              ShortListed
+              </MenuItem>
             </Menu>
 
             

@@ -152,6 +152,7 @@ const AuthModal = ({ open, handleClose }) => {
                   }
                 );
                 if(response.data.success){
+                  localStorage.setItem("userId",response.data.userId)
                   setRegisterSuccess(true)
                   setTimeout(()=>{
                     handleClose();
@@ -197,6 +198,8 @@ const AuthModal = ({ open, handleClose }) => {
           setLoginSuccess(true)
           setPasswordError("")
           setLoading(false)
+          // console.log(res.data)
+          localStorage.setItem("userId", res.data.user.userId)
           setTimeout(()=>{
             handleClose();
             navigate("/dashboard");

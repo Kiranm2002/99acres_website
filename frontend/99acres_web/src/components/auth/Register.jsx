@@ -108,25 +108,17 @@ const RegisterModal = ({ open, handleMenuClose,user,setUser }) => {
   setError("");
 
   try {
-    const formData = new FormData();
-    formData.append("fullName", fullName);
-    formData.append("email", email);
-    formData.append("password", password);
-    formData.append("isAgent", isAgent);
-    if (profilePic) {
-      formData.append("profilePic", profilePic);
-    }
-
     const res = await axios.post(
       "http://localhost:5000/register",
-      formData,
-      {
-        headers: { "Content-Type": "multipart/form-data" },
-        // withCredentials:true
-      }
+      {firstName, lastName, email ,phone,password, isAgent}
     );
-    // localStorage.setItem("accessToken", res.data.accessToken);
-    setSuccess(true)
+    console.log(res.data);
+
+    if (res.data.success) {
+      localStorage.setItem("userId", res.data.userId);
+      setSuccess(true)
+    }
+    
    
     setTimeout(() => {
         setFullName("");
@@ -244,7 +236,7 @@ const RegisterModal = ({ open, handleMenuClose,user,setUser }) => {
             />
 
             {/* PROFILE UPLOAD */}
-            <Box sx={{ mb: 2 }}>
+            {/* <Box sx={{ mb: 2 }}>
               <Button variant="outlined" component="label" fullWidth>
                 Upload Profile Photo
                 <input
@@ -258,7 +250,7 @@ const RegisterModal = ({ open, handleMenuClose,user,setUser }) => {
                   Selected: {profilePic.name}
                 </Typography>
               )}
-            </Box>
+            </Box> */}
 
             <Typography mb={1}>Are you a Real Estate Agent?</Typography>
 

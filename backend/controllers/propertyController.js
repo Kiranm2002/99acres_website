@@ -145,7 +145,7 @@ const updatePropertyProfile = async (req, res) => {
       possession,
 
       // Ownership
-      ownershipType,
+      ownerShip,
 
       // Price
       expectedPrice,
@@ -202,7 +202,7 @@ const updatePropertyProfile = async (req, res) => {
     }
 
     // Ownership
-    property.ownershipType = ownershipType;
+    property.ownerShip = ownerShip
 
     // Price
     property.expectedPrice = expectedPrice;

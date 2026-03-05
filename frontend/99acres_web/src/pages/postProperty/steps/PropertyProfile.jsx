@@ -29,17 +29,17 @@ const PropertyProfile = () => {
 //   const [boundaryWall, setPropertyType] = useState("Farmhouse");
     
   const [areaUnit, setAreaUnit] = useState("sq.ft.");
-  const [boundaryWall, setBoundaryWall] = useState("");
-  const [openSides, setOpenSides] = useState("");
-  const [construction, setConstruction] = useState("");
+  // const [boundaryWall, setBoundaryWall] = useState("");
+  // const [openSides, setOpenSides] = useState("");
+  // const [construction, setConstruction] = useState("");
   const [possession, setPossession] = useState("");
   const [ownerShip,setOwnerShip] = useState("");
-  const [authority,setAuthority] = useState('');
+  // const [authority,setAuthority] = useState('');
   // Area
 const [plotArea, setPlotArea] = useState("");
-const [plotLength, setPlotLength] = useState("");
-const [plotBreadth, setPlotBreadth] = useState("");
-const [floorsAllowed, setFloorsAllowed] = useState("");
+// const [plotLength, setPlotLength] = useState("");
+// const [plotBreadth, setPlotBreadth] = useState("");
+// const [floorsAllowed, setFloorsAllowed] = useState("");
 
 
 
@@ -72,6 +72,7 @@ const [bedrooms, setBedrooms] = useState("");
 const [bathrooms, setBathrooms] = useState("");
 const [balconies, setBalconies] = useState("");
 const [availabilityStatus, setAvailabilityStatus] = useState("");
+const [ageOfProperty,setAgeOfProperty] = useState("");
 
   const inputStyle = {
     width: 380,
@@ -83,27 +84,43 @@ const [availabilityStatus, setAvailabilityStatus] = useState("");
   const handleOnContinue = async()=>{
     try{
       const propertyId = localStorage.getItem("propertyId");
-      console.log(construction,possession,ownerShip,authority)
+      // console.log(construction,possession,ownerShip,authority)
       await axios.put(
         `http://localhost:5000/property/update-profile`,
         {
           propertyId,
+
+          // Area
           plotArea,
           areaUnit,
-          plotLength,
-          plotBreadth,
-          floorsAllowed,
-          boundaryWall,
-          openSides,
-          construction,
+          carpetArea,
+          builtUpArea,
+          superBuiltUpArea,
+
+          // Builder Floor
+          builderFloorType,
+          totalFloors,
+          propertyOnFloor,
+
+          // Rooms
+          bedrooms,
+          bathrooms,
+          balconies,
+
+          // Availability
+          availabilityStatus,
+          ageOfProperty,
           possession,
+
+          // Ownership
           ownerShip,
-          authority,
+
+          // Price
           expectedPrice,
           pricePerSqft,
           allInclusivePrice,
           taxExcluded,
-          priceNegotiable,
+          priceNegotiable
         }
       );
 
@@ -166,23 +183,29 @@ const [availabilityStatus, setAvailabilityStatus] = useState("");
     axios.get(`http://localhost:5000/property/${propertyId}`)
       .then(res => {
         const data = res.data;
-
+        if(data.carpetArea) setShowCarpet(true);
+        if(data.builtUpArea) setShowBuiltUp(true);
+        if(data.superBuiltUpArea) setShowSuperBuiltUp(true);
       setPlotArea(data.plotArea || "");
-    setAreaUnit(data.areaUnit || "");
-    setPlotLength(data.plotLength || "");
-    setPlotBreadth(data.plotBreadth || "");
-    setFloorsAllowed(data.floorsAllowed || "");
-    setBoundaryWall(data.boundaryWall || "");
-    setOpenSides(data.openSides || "");
-    setConstruction(data.construction || "");
-    setPossession(data.possession || "");
-    setOwnerShip(data.ownerShip || "");
-    setAuthority(data.authority || "");
-    setExpectedPrice(data.expectedPrice || "");
-    setPricePerSqft(data.pricePerSqft || "");
-    setAllInclusivePrice(data.allInclusivePrice || false);
-    setTaxExcluded(data.taxExcluded || false);
-    setPriceNegotiable(data.priceNegotiable || false);
+      setAreaUnit(data.areaUnit || "sq.ft.");
+      setTotalFloors(data.totalFloors || "");
+      setBuilderFloorType(data.builderFloorType || "");
+      setPropertyOnFloor(data.propertyOnFloor || "");
+      setCarpetArea(data.carpetArea || "");
+      setBuiltUpArea(data.builtUpArea || "");
+      setSuperBuiltUpArea(data.superBuiltUpArea || "");
+      setBedrooms(data.bedrooms || "");
+      setBathrooms(data.bathrooms || "");
+      setBalconies(data.balconies !== undefined ? Number(data.balconies) : "");
+      setPossession(data.possession || "");
+      setOwnerShip(data.ownerShip || "");
+      setAvailabilityStatus(data.availabilityStatus || "");
+      setAgeOfProperty(data.ageOfProperty || "");
+      setExpectedPrice(data.expectedPrice || "");
+      setPricePerSqft(data.pricePerSqft || "");
+      setAllInclusivePrice(data.allInclusivePrice || false);
+      setTaxExcluded(data.taxExcluded || false);
+      setPriceNegotiable(data.priceNegotiable || false);
       });
   }
 }, []);
@@ -617,7 +640,7 @@ const [availabilityStatus, setAvailabilityStatus] = useState("");
             {["0-1 years","1-5 years","5-10 years","10+ years"].map((type,index) => (
             <Button
                 key={index}
-                onClick={() => setOwnerShip(type)}
+                onClick={() => setAgeOfProperty(type)}
                 variant="outlined"
                 sx={{
                 borderRadius: 5,
@@ -625,7 +648,7 @@ const [availabilityStatus, setAvailabilityStatus] = useState("");
                 fontSize: 13,
                 borderColor: "#d0d5dd",
                 color: "#555",
-                backgroundColor: ownerShip === type ? "#e3f2fd" : "#fff",
+                backgroundColor: ageOfProperty === type ? "#e3f2fd" : "#fff",
                 "&:hover": {
                     backgroundColor: "#e3f2fd"
                 }
@@ -646,6 +669,7 @@ const [availabilityStatus, setAvailabilityStatus] = useState("");
             select
             fullWidth
             label="Expected by"
+            value={possession}
             onChange={(e) => setPossession(e.target.value)}
             // SelectProps={{ native: true }}
             sx={{ maxWidth: 350,

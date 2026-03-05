@@ -120,7 +120,7 @@ const propertySchema = new mongoose.Schema(
     },
 
     // -------- Ownership --------
-    ownershipType: {
+    ownerShip: {
       type: String,
       enum: ["Freehold", "Leasehold", "Co-operative society", "Power of Attorney"]
     },
