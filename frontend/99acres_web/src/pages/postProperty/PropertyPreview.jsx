@@ -32,7 +32,7 @@ import { useNavigate } from "react-router-dom";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import RecommendedProperties from "../../components/home/RecommendedProperties";
 import Footer from "../../components/home/Footer";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import { keyframes } from "@mui/system";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 
@@ -172,7 +172,7 @@ export default function PropertyPreview() {
   useEffect(() => {
   const fetchProperty = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+      const res = await axiosInstance.get(`/property/${propertyId}`);
       setProperty(res.data);
     } catch (error) {
       console.error("Error fetching property:", error);
@@ -190,8 +190,8 @@ useEffect(() => {
 
       const userId = localStorage.getItem("userId");
 
-      const res = await axios.get(
-        `http://localhost:5000/user/${userId}`
+      const res = await axiosInstance.get(
+        `/user/${userId}`
       );
 
       setUser(res.data.data);

@@ -34,7 +34,7 @@ import Footer from "../../components/home/Footer";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 
 // ── Building illustration SVG ──
 const BuildingIllustration = () => (
@@ -102,7 +102,7 @@ const Navbar = () => {
     <Toolbar sx={{ minHeight: "68px !important", px: { xs: 2, sm: 4 }, gap: 2.5 }}>
 
       {/* Logo */}
-      <Typography sx={{ fontWeight: 800, fontSize: "24px", color: "#fff", letterSpacing: "-0.5px", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", mr: 0.5 }}>
+      <Typography sx={{ fontWeight: 800, fontSize: "35px", color: "#fff", letterSpacing: "-0.5px", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", mr: 0.5 }}>
         99<span style={{ fontWeight: 400 }}>acres</span>
       </Typography>
 
@@ -413,7 +413,7 @@ console.log("propertyId:",propertyId)
 useEffect(() => {
   const fetchProperty = async () => {
     try {
-      const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+      const res = await axiosInstance.get(`/property/${propertyId}`);
       setProperty(res.data);
     } catch (error) {
       console.error("Error fetching property:", error);

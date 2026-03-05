@@ -22,7 +22,7 @@ import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { useNavigate,useParams } from "react-router-dom";
 import PostNavbar from "../PostNavbar";
 import Footer from "../../../components/home/Footer";
-import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 
 // House SVG illustration (inline, matching the image style)
 const HouseIllustration = () => (
@@ -207,7 +207,7 @@ const ThankYou = ()=> {
     useEffect(() => {
       const fetchProperty = async () => {
         try {
-          const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+          const res = await axiosInstance.get(`/property/${propertyId}`);
           setProperty(res.data);
         } catch (error) {
           console.error("Error fetching property:", error);

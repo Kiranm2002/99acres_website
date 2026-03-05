@@ -321,3 +321,33 @@ exports.passwordResetMail = async (req, res) => {
     });
   }
 };
+
+exports.refreshToken = async (req, res) => {
+
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({ message: "Refresh token required" });
+  }
+
+  try {
+
+    const decoded = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
+
+    const user = await User.findById(decoded.id);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      return res.status(403).json({ message: "Invalid refresh token" });
+    }
+
+    const newAccessToken = generateAccessToken(user);
+
+    res.json({message:"new access token generated",
+      accessToken: newAccessToken
+    });
+
+  } catch (err) {
+    return res.status(403).json({ message: "Refresh token expired" });
+  }
+
+};

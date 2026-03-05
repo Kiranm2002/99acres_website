@@ -11,7 +11,7 @@ import {
 // import SecondaryNavbar from "../../components/navbar/SecondaryNavbar"
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/home/Footer";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const ForgotPassword = () => {
@@ -24,8 +24,8 @@ const ForgotPassword = () => {
         setSuccessMsg("");
         setErrorMsg("");
 
-        const res = await axios.post(
-        "http://localhost:5000/password-reset-mail",
+        const res = await axiosInstance.post(
+        "/password-reset-mail",
         { email }
         );
 

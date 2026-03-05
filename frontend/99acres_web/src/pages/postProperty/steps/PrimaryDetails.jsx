@@ -10,7 +10,7 @@ import {
   Button,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect } from "react";
 
 const PrimaryDetails = ({ user }) => {
@@ -46,8 +46,8 @@ const [category, setCategory] = useState("");
 
     if (existingPropertyId) {
       // 🔁 UPDATE PROPERTY
-      response = await axios.put(
-        `http://localhost:5000/property/update-primaryDetails/${existingPropertyId}`,
+      response = await axiosInstance.put(
+        `/property/update-primaryDetails/${existingPropertyId}`,
         {
           lookingFor,
           propertyType,
@@ -58,8 +58,8 @@ const [category, setCategory] = useState("");
       console.log("Property Updated Successfully");
     } else {
       // 🆕 CREATE NEW PROPERTY
-      response = await axios.post(
-        "http://localhost:5000/property/create",
+      response = await axiosInstance.post(
+        "/property/create",
         {
           lookingFor,
           propertyType,
@@ -83,7 +83,7 @@ const [category, setCategory] = useState("");
   useEffect(()=>{
     const propertyId = localStorage.getItem("propertyId")
     if(propertyId){
-      axios.get(`http://localhost:5000/property/${propertyId}`)
+      axiosInstance.get(`/property/${propertyId}`)
       .then(res=>{const data = res.data
       
       setLookingFor(data.lookingFor || "")

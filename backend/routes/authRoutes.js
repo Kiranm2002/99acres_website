@@ -12,6 +12,7 @@ router.post("/verify-otp", authController.verifyOtp);
 router.post("/register", authController.register);
 router.post("/password-reset-mail",authController.passwordResetMail)
 router.post("/reset-password",authController.resetPassword)
+router.post("/refresh-token",authController.refreshToken)
 
 router.get("/me", verifyAccessToken, (req, res) => {
   res.json({ user: req.user });

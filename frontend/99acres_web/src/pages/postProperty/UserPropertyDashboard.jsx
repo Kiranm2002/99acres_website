@@ -27,7 +27,7 @@ import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import AppDrawer from "../../components/common/AppDrawer";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import {useNavigate } from "react-router-dom";
 
 
@@ -262,8 +262,8 @@ const PropertyCard = ({ property }) =>{
   const handleDeleteListing = async () => {
   try {
       const propertyId = localStorage.getItem("propertyId")
-      await axios.delete(
-        `http://localhost:5000/property/delete-property/${propertyId}`,
+      await axiosInstance.delete(
+        `property/delete-property/${propertyId}`,
         {
           data: {
             reason: deleteReason === "Others" ? otherText : deleteReason,
@@ -605,10 +605,10 @@ const MainContent = () => {
 
   const fetchPropertyFromBackend = async () => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/property/${propertyId}`
+      const response = await axiosInstance.get(
+        `/property/${propertyId}`
       );
-      const data = await response.json();
+      const data = response.data;
 
       const formattedProperty = {
         id: data._id,  
@@ -700,7 +700,7 @@ const MainContent = () => {
             overflow: "hidden",
           }}
         >
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0, px: 2.5, py: 1.5, flexWrap: "wrap", gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", px: 2.5, py: 1.5, flexWrap: "wrap", gap: 2 }}>
             {/* Activation status */}
             <Box>
               <Typography sx={{ fontSize: "11px", color: "#888", fontFamily: "'Segoe UI', sans-serif", mb: 0.5, letterSpacing: "0.4px", textTransform: "uppercase" }}>

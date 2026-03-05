@@ -11,7 +11,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import InputAdornment from "@mui/material/InputAdornment";
 import IconButton from "@mui/material/IconButton";
@@ -57,7 +57,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
       if (city.length >= 1 && !selectedCity) {
         try {
           setLoadingCity(true);
-          const res = await axios.get(`http://localhost:5000/location/cities?query=${city}`);
+          const res = await axiosInstance.get(`/location/cities?query=${city}`);
           console.log(res.data)
           setCitySuggestions(res.data);
         } catch (err) {
@@ -81,8 +81,8 @@ const [loadingProjects, setLoadingProjects] = useState(false);
       if (locality.length >= 1 && selectedCity && !selectedLocality) {
         try {
           setLoadingLocality(true);
-          const res = await axios.get(
-            `http://localhost:5000/location/localities?query=${locality}&cityId=${selectedCity._id}`
+          const res = await axiosInstance.get(
+            `/location/localities?query=${locality}&cityId=${selectedCity._id}`
           );
           setLocalitySuggestions(res.data);
         } catch (err) {
@@ -107,8 +107,8 @@ const [loadingProjects, setLoadingProjects] = useState(false);
       try {
         setLoadingSubLocality(true);
 
-        const res = await axios.get(
-          `http://localhost:5000/location/sublocalities?query=${subLocality}&localityId=${selectedLocality._id}`
+        const res = await axiosInstance.get(
+          `/location/sublocalities?query=${subLocality}&localityId=${selectedLocality._id}`
         );
 
         setSubLocalitySuggestions(res.data);
@@ -137,8 +137,8 @@ const [loadingProjects, setLoadingProjects] = useState(false);
       try {
         setLoadingProjects(true);
 
-        const res = await axios.get(
-          `http://localhost:5000/location/projects/?query=${project}&subLocalityId=${selectedSubLocality._id}`
+        const res = await axiosInstance.get(
+          `location/projects/?query=${project}&subLocalityId=${selectedSubLocality._id}`
         );
 
         setProjectSuggestions(res.data);
@@ -177,7 +177,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
 
   const handleOnContinue = async()=>{
     try{
-        const res =  await axios.put("http://localhost:5000/property/update-location", {
+        const res =  await axiosInstance.put("/property/update-location", {
           propertyId: localStorage.getItem("propertyId"),
           city: selectedCity._id,
           locality: selectedLocality._id,
@@ -194,7 +194,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
   const propertyId = localStorage.getItem("propertyId");
 
   if (propertyId) {
-    axios.get(`http://localhost:5000/property/${propertyId}`)
+    axiosInstance.get(`/property/${propertyId}`)
       .then(res => {
         const data = res.data;
 

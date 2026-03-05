@@ -14,7 +14,7 @@ import MicIcon from "@mui/icons-material/Mic";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Footer from "../../components/home/Footer";
-import axios from "axios"
+import axiosInstance from "../../utils/axiosInstance"
 
 // ── Building illustration (reused from other pages) ──
 const BuildingPlaceholder = () => (
@@ -150,7 +150,7 @@ const PropertyCard = ({ onToggle }) =>{
     useEffect(() => {
     const fetchProperty = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/property/${propertyId}`);
+        const res = await axiosInstance.get(`/property/${propertyId}`);
         setProperty(res.data);
       } catch (error) {
         console.error("Error fetching property:", error);

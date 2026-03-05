@@ -11,11 +11,12 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import {useNavigate} from "react-router-dom"
 import { useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
 import LockIcon from "@mui/icons-material/Lock";
 import InputAdornment from "@mui/material/InputAdornment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ForgotPassword from "../../pages/auth/ForgotPassword";
+import axiosInstance from "../../utils/axiosInstance";
 
 const AuthModal = ({ open, handleClose }) => {
   // console.log("AuthModal Mounted");
@@ -68,10 +69,7 @@ const AuthModal = ({ open, handleClose }) => {
     setEmailError("");
 
     //  Check if email exists
-    const checkRes = await axios.post(
-      "http://localhost:5000/check-email",
-      { email }
-    );
+    const checkRes = await axiosInstance.post("check-email",{ email });
     if (checkRes.data.exists) {
       setEmailError("Email already registered please login");
       setLoading(false);
@@ -79,10 +77,7 @@ const AuthModal = ({ open, handleClose }) => {
     }
 
     //  Send OTP
-    await axios.post(
-      "http://localhost:5000/send-otp",
-      { email }
-    );
+    await axiosInstance.post("/send-otp",{ email });
 
     setStep("otp");
   }catch(error){
@@ -100,13 +95,7 @@ const AuthModal = ({ open, handleClose }) => {
     setOtpLoading(true);
     setOtpError("");
 
-    const res = await axios.post(
-      "http://localhost:5000/verify-otp",
-      {
-        email,
-        otp,
-      }
-    );
+    const res = await axiosInstance.post("/verify-otp",{email,otp,} );
 
     if (res.data.success) {
       setStep("register");
@@ -122,10 +111,7 @@ const AuthModal = ({ open, handleClose }) => {
 };
   const resendOtp = async()=>{
     try {
-      await axios.post(
-        "http://localhost:5000/send-otp",
-        { email }
-      );
+      await axiosInstance.post("/send-otp",{ email });
     } catch (error) {
       console.error("Resend OTP failed");
     }
@@ -140,8 +126,8 @@ const AuthModal = ({ open, handleClose }) => {
 
   const handleRegister=async () => {
             try {
-              const response = await axios.post(
-              "http://localhost:5000/register",
+              const response = await axiosInstance.post(
+              "/register",
                   {
                     firstName: formData.firstName,
                     lastName: formData.lastName,
@@ -152,7 +138,9 @@ const AuthModal = ({ open, handleClose }) => {
                   }
                 );
                 if(response.data.success){
-                  localStorage.setItem("userId",response.data.userId)
+                  localStorage.setItem("userId",response.data.user.userId)
+                  localStorage.setItem("accessToken",response.data.accessToken)
+                  localStorage.setItem("refreshToken",response.data.refreshToken)
                   setRegisterSuccess(true)
                   setTimeout(()=>{
                     handleClose();
@@ -169,8 +157,8 @@ const AuthModal = ({ open, handleClose }) => {
     const handleUsernameContinue = async () => {
       try {
         setEmailError("")
-        const res = await axios.post(
-          "http://localhost:5000/check-email",
+        const res = await axiosInstance.post(
+          "/check-email",
           { email:loginInput }
         );
 
@@ -189,12 +177,14 @@ const AuthModal = ({ open, handleClose }) => {
 };
     const handlePasswordLogin = async () => {
       try {
-        const res = await axios.post(
-          "http://localhost:5000/login",
+        const res = await axiosInstance.post(
+          "/login",
           {email,password}
         );
 
         if (res.data.success) {
+          localStorage.setItem("accessToken",res.data.accessToken)
+          localStorage.setItem("refreshToken",res.data.refreshToken)
           setLoginSuccess(true)
           setPasswordError("")
           setLoading(false)

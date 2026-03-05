@@ -14,7 +14,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"
+import axiosInstance from "../../../utils/axiosInstance"
 import { useEffect } from "react";
 
 const amenitiesOptions = [
@@ -79,8 +79,8 @@ const OtherDetails = () => {
           otherFeatures: otherFeatures,
         };
 
-        const response = await axios.put(
-          `http://localhost:5000/property/other-details/${propertyId}`,
+        const response = await axiosInstance.put(
+          `/property/other-details/${propertyId}`,
           payload
         );
 
@@ -97,7 +97,7 @@ const OtherDetails = () => {
   useEffect(()=>{
     const propertyId = localStorage.getItem("propertyId")
     if(propertyId){
-      axios.get(`http://localhost:5000/property/${propertyId}`)
+      axiosInstance.get(`/property/${propertyId}`)
       .then(res=>{const data = res.data
       
       setSelectedAmenities(data.amenities || "")

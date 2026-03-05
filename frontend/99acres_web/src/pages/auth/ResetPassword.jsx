@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../../utils/axiosInstance";
 import Navbar from "../../components/navbar/Navbar";
 import Footer from "../../components/home/Footer"
 
@@ -39,8 +39,8 @@ const ResetPassword = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:5000/reset-password",
+      const res = await axiosInstance.post(
+        "/reset-password",
         {
           email:email,
           password: newPassword,

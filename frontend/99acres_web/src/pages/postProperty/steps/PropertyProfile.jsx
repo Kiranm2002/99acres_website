@@ -21,7 +21,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
-import axios from "axios"
+import axiosInstance from "../../../utils/axiosInstance"
 import { useEffect } from "react";
 
 const PropertyProfile = () => {
@@ -85,8 +85,8 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
     try{
       const propertyId = localStorage.getItem("propertyId");
       // console.log(construction,possession,ownerShip,authority)
-      await axios.put(
-        `http://localhost:5000/property/update-profile`,
+      await axiosInstance.put(
+        `/property/update-profile`,
         {
           propertyId,
 
@@ -180,7 +180,7 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
   const propertyId = localStorage.getItem("propertyId");
 
   if (propertyId) {
-    axios.get(`http://localhost:5000/property/${propertyId}`)
+    axiosInstance.get(`/property/${propertyId}`)
       .then(res => {
         const data = res.data;
         if(data.carpetArea) setShowCarpet(true);

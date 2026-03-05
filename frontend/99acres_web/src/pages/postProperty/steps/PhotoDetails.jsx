@@ -21,7 +21,7 @@ import Gallery from "./gallery.png";
 import IconButton from "@mui/material/IconButton";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
+import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect } from "react";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -109,8 +109,8 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
         }
 
         // API CALL
-        await axios.put(
-          `http://localhost:5000/property/photo-details/${propertyId}`,
+        await axiosInstance.put(
+          `/property/photo-details/${propertyId}`,
           formData,
           {
             headers: {
@@ -131,8 +131,8 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
         try {
           const propertyId = localStorage.getItem("propertyId");
 
-          const res = await axios.get(
-            `http://localhost:5000/property/${propertyId}`
+          const res = await axiosInstance.get(
+            `/property/${propertyId}`
           );
           console.log("API RESPONSE:", res.data);
           const property = res.data;
