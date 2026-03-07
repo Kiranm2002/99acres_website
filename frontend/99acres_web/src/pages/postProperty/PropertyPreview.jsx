@@ -28,7 +28,7 @@ import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternate
 import PhoneIcon from "@mui/icons-material/Phone";
 import MenuIcon from "@mui/icons-material/Menu";
 // import SecondaryNavbar from "../../components/navbar/SecondaryNavbar";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import RecommendedProperties from "../../components/home/RecommendedProperties";
 import Footer from "../../components/home/Footer";
@@ -123,7 +123,10 @@ export default function PropertyPreview() {
   const [showMessage, setShowMessage] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const lastScrollY = useRef(0);
+  const [isShortlisted, setIsShortlisted] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
   // const navigate = useNavigate("");
+  const {propertyId} = useParams();
 
   const slideDown = keyframes`
   from {
@@ -135,17 +138,31 @@ export default function PropertyPreview() {
     opacity:1
   }
 `;
-  const handleShortlist = () => {
-    setShowToast(true)
-    // setShortlisted(true);
-    // setShowMessage(true);
+ const handleShortlist = async () => {
+  try {
+    const res = await axiosInstance.patch(`/property/shortlist/${propertyId}`);
+
+    const newStatus = res.data.shortlisted;
+
+    setIsShortlisted(newStatus);
+
+    if (newStatus) {
+      setToastMessage(" Property shortlisted");
+    } else {
+      setToastMessage("Property removed from shortlist");
+    }
+
+    setShowToast(true);
 
     setTimeout(() => {
       setShowToast(false);
       navigate("/post-property/shortlist-property")
     }, 2000);
 
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -168,12 +185,18 @@ export default function PropertyPreview() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const propertyId = localStorage.getItem("propertyId")
+  
   useEffect(() => {
   const fetchProperty = async () => {
     try {
       const res = await axiosInstance.get(`/property/${propertyId}`);
-      setProperty(res.data);
+
+      const propertyData = res.data.property || res.data;
+
+      setProperty(propertyData);
+
+      setIsShortlisted(propertyData.shortlisted);
+
     } catch (error) {
       console.error("Error fetching property:", error);
     }
@@ -227,7 +250,7 @@ useEffect(() => {
       <Box sx={{ backgroundColor: "#fff", borderBottom: "1px solid #eef0f4", px: { xs: 2, sm: 6 }, py: 1.2, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Box sx={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 0.3 }}>
           {["Home", "Property in Bangalore", "Flats for sale in Bangalore", "Flats for sale in Chandra Layout", 
-          `${property?.bedrooms} BHK ${property?.category} for ${property?.lookingFor} in ${property?.subLocality.name}`].map((crumb, i, arr) => (
+          `${property?.bedrooms} BHK ${property?.category} for ${property?.lookingFor} in ${property?.subLocality?.name}`].map((crumb, i, arr) => (
             <Box key={crumb} sx={{ display: "flex", alignItems: "center" }}>
               <Typography sx={{ fontSize: "12px", color: i < arr.length - 1 ? "#1557a0" : "#555", fontFamily: "'Segoe UI', sans-serif", cursor: i < arr.length - 1 ? "pointer" : "default" }}>
                 {crumb}
@@ -273,7 +296,7 @@ useEffect(() => {
               sx={{ backgroundColor: "#00897b", color: "#fff", textTransform: "none", 
               fontWeight: 600, fontSize: "13px", borderRadius: "6px", px: 2, py: 0.8, 
               fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#00695c" } }}
-               onClick={()=> window.open("/post-property/primary-details", "_blank")}
+               onClick={()=> window.open(`/post-property/primary-details/${propertyId}`, "_blank")}
                 >
                 Edit property
               </Button>
@@ -337,7 +360,7 @@ useEffect(() => {
             sx={{ backgroundColor: "#00897b", color: "#fff", textTransform: "none", 
             fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, 
             fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#00695c" } }}
-            onClick={()=> window.open("/post-property/primary-details", "_blank")}>
+            onClick={()=> window.open(`/post-property/primary-details/${propertyId}`, "_blank")}>
               Edit property
             </Button>
             
@@ -363,11 +386,18 @@ useEffect(() => {
                   zIndex: 9999
                 }}
               >
-                <FavoriteIcon sx={{ color: "#ff4d6d", fontSize: "18px" }} />
-                Property added to your shortlist
+                {isShortlisted ? (
+                  <FavoriteIcon sx={{ color: "#ff4d6d", fontSize: "18px" }} />
+                ) : (
+                  <FavoriteBorderIcon sx={{ color: "#fff", fontSize: "18px" }} />
+                )}
+                {toastMessage}
               </Box>
             )}
-            <Button variant="outlined" startIcon={<FavoriteBorderIcon sx={{ color: setShowToast ? "hotpink" : "#333" }} />} 
+            <Button variant="outlined" startIcon={
+              isShortlisted ? (<FavoriteIcon sx={{ color:"hotpink"}} />):
+              (<FavoriteBorderIcon sx={{ color: "#333" }} />)
+              } 
             sx={{ borderColor: "#c8d8ec", color: "#333", textTransform: "none", 
             fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 3, py: 1, 
             fontFamily: "'Segoe UI', sans-serif", "&:hover": { borderColor: "#1557a0" } }}

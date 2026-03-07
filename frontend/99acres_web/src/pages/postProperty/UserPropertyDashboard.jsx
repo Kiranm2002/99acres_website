@@ -28,7 +28,7 @@ import FilterListIcon from "@mui/icons-material/FilterList";
 import AppDrawer from "../../components/common/AppDrawer";
 import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "../../utils/axiosInstance";
-import {useNavigate } from "react-router-dom";
+import {useNavigate,useParams } from "react-router-dom";
 
 
 // ─── Sidebar menu config ───────────────────────────────────────────────────────
@@ -250,20 +250,21 @@ const Sidebar = ({ activeItem, setActiveItem }) => (
 );
 
 // ─── Property Card ─────────────────────────────────────────────────────────────
-const PropertyCard = ({ property }) =>{
+const PropertyCard = ({ property,onDelete }) =>{
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteReason, setDeleteReason] = useState("");
   const [otherText, setOtherText] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const [successOpen, setSuccessOpen] = useState(false);
-  const [properties, setProperties] = useState([]);
+  
+
   const navigate = useNavigate()
 
   const handleDeleteListing = async () => {
   try {
-      const propertyId = localStorage.getItem("propertyId")
+      // const propertyId = localStorage.getItem("propertyId")
       await axiosInstance.delete(
-        `property/delete-property/${propertyId}`,
+        `property/delete-property/${property.id}`,
         {
           data: {
             reason: deleteReason === "Others" ? otherText : deleteReason,
@@ -272,7 +273,8 @@ const PropertyCard = ({ property }) =>{
       );
 
     // remove from UI
-    setProperties(prev => prev.filter(p => p.id !== deletingId));
+    // setProperties(prev => prev.filter(p => p.id !== deletingId));
+     
 
     setDeleteOpen(false);
     setDeleteReason("");
@@ -284,8 +286,9 @@ const PropertyCard = ({ property }) =>{
    
     setTimeout(() => {
       setSuccessOpen(false);
-    }, 3000);
-    localStorage.removeItem("propertyId")
+      onDelete(property.id)
+    }, 2000);
+    // localStorage.removeItem("propertyId")
 
   } catch (error) {
     console.error("Delete failed:", error);
@@ -296,6 +299,8 @@ const handleCloseDeleteModal = () => {
   setDeleteReason("");
   setOtherText("");
 };
+
+
   return(<>
   <Box
     sx={{
@@ -355,7 +360,7 @@ const handleCloseDeleteModal = () => {
         >
           Show Contact
         </Typography>
-        <IconButton sx={{ p: 0.6 }} onClick={()=>window.open("/post-property/primary-details","_blank")}>
+        <IconButton sx={{ p: 0.6 }} onClick={()=>window.open(`/post-property/primary-details/${property.id}`,"_blank")}>
           <EditOutlinedIcon sx={{ fontSize: "18px", color: "#888" }} />
         </IconButton>
         <IconButton sx={{ p: 0.6 }} onClick={() => {
@@ -597,55 +602,57 @@ const MainContent = () => {
   
 
   const FILTERS = ["ALL", "Active", "Reported", "Underscreening", "Expired", "Deleted"];
+  const handleDeleteProperty = (id) => {
+  setProperties(prev => prev.filter(p => p.id !== id));
+};
 
   useEffect(() => {
-  const propertyId = localStorage.getItem("propertyId");
-
-  if (!propertyId) return;
-
-  const fetchPropertyFromBackend = async () => {
+  const fetchPropertiesFromBackend = async () => {
     try {
-      const response = await axiosInstance.get(
-        `/property/${propertyId}`
-      );
-      const data = response.data;
+      const response = await axiosInstance.get("/property/all-properties");
 
-      const formattedProperty = {
-        id: data._id,  
+      const formattedProperties = response.data.properties.map((data) => ({
+        id: data._id,
 
-        title: `${data.bhk || ""} ${data.propertyType} ${data.category} for ${data.lookingFor} in ${data.project.name}, ${data.subLocality.name}, ${data.city.name}`, 
+        title: `${data.bhk || ""} ${data.propertyType} ${data.category} for ${data.lookingFor} in ${data.project?.name}, ${data.subLocality?.name}, ${data.city?.name}`,
 
-        price: data.expectedPrice,   
+        price: data.expectedPrice,
 
-        carpetArea: `${data.plotArea} ${data.areaUnit}`, 
+        carpetArea: `${data.plotArea} ${data.areaUnit}`,
 
         badge: "Plain",
         badgeColor: "#e07b00",
+
         status: "Active",
 
         postedOn: new Date(data.createdAt).toLocaleDateString("en-GB", {
           day: "2-digit",
           month: "short",
           year: "numeric",
-        }),   
+        }),
 
         expiryOn: "30 Oct 2026",
-        completion: 65,
-        summaryViews: 0,
-        detailViews: 3,
-        listingPrice: "0 Credits",
-      };
 
-      setProperties([formattedProperty]);
+        completion: 65,
+
+        summaryViews: 0,
+
+        detailViews: 3,
+
+        listingPrice: "0 Credits",
+      }));
+
+      setProperties(formattedProperties);
+
       setLoading(false);
 
     } catch (error) {
-      console.error("Error fetching property:", error);
-      setLoading(false)
+      console.error("Error fetching properties:", error);
+      setLoading(false);
     }
   };
 
-  fetchPropertyFromBackend();
+  fetchPropertiesFromBackend();
 }, []);
 
   
@@ -848,7 +855,8 @@ const MainContent = () => {
           </Box>
         ) : (
           properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard key={property.id} property={property} 
+            onDelete={handleDeleteProperty}/>
           ))
         )}
 

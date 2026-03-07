@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import PostNavbar from "./PostNavbar";
-import { Outlet, useLocation,useNavigate } from "react-router-dom";
+import { Outlet, useLocation,useNavigate,useParams } from "react-router-dom";
 import { useState } from "react";
 import LocationHelp from "./location-help.png";
 import PhoneIcon from "@mui/icons-material/Phone";
@@ -17,11 +17,13 @@ const steps = [
 const PrimaryDetailsLayout = () => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const location = useLocation();
-  const currentPath = location.pathname.split("/").pop();
+  const {propertyId} = useParams();
+  // const id = propertyId || sessionStorage.getItem("propertyId")
+  const currentPath = location.pathname.split("/")[2];
   const navigate = useNavigate()
 
   const getActiveStep = () => {
-    const current = location.pathname.split("/").pop();
+    const current = location.pathname.split("/")[2];
     const index = steps.findIndex((step) => step.path === current);
     return index === -1 ? 0 : index;
   };
@@ -169,7 +171,10 @@ const PrimaryDetailsLayout = () => {
                         {/* Show Edit only if step is completed */}
                         {isCompleted && (
                           <Typography
-                            onClick={() => navigate(`/post-property/${step.path}`)}
+                            onClick={() =>{
+                              const id = propertyId || sessionStorage.getItem("propertyId");
+                              navigate(`/post-property/${step.path}/${id}`);
+                            }}
                             sx={{
                               fontSize: 12,
                               fontWeight: 500,

@@ -24,11 +24,12 @@ import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect } from "react";
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 
 const PhotoDetails = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const {propertyId} = useParams();
   const [description, setDescription] = useState("");
     const [openEmailModal, setOpenEmailModal] = useState(false);
     const [email, setEmail] = useState("");
@@ -80,9 +81,9 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
     const handleOnContinue= async()=>{
        try {
         // propertyId should already exist (created in Step 1)
-        const propertyId = localStorage.getItem("propertyId");
+        const id = propertyId || sessionStorage.getItem("propertyId");
 
-        if (!propertyId) {
+        if (!id) {
           alert("Property ID missing. Please start again.");
           return;
         }
@@ -110,7 +111,7 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
 
         // API CALL
         await axiosInstance.put(
-          `/property/photo-details/${propertyId}`,
+          `/property/photo-details/${id}`,
           formData,
           {
             headers: {
@@ -120,7 +121,7 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
         );
 
         // GO TO STEP 5
-        navigate("/post-property/other-details");
+        navigate(`/post-property/other-details/${id}`);
       } catch (error) {
         console.error("Step 4 Error:", error);
         alert("Something went wrong while saving photos. Try again.");
@@ -129,10 +130,10 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
     useEffect(() => {
       const fetchProperty = async () => {
         try {
-          const propertyId = localStorage.getItem("propertyId");
+          const id = propertyId || sessionStorage.getItem("propertyId");
 
           const res = await axiosInstance.get(
-            `/property/${propertyId}`
+            `/property/${id}`
           );
           console.log("API RESPONSE:", res.data);
           const property = res.data;
@@ -156,7 +157,7 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
       };
 
       fetchProperty();
-    }, []);
+    }, [propertyId]);
 
   return (
     <Box display="flex" height="100%" mt={6} width={500} ml={5} >
@@ -172,7 +173,9 @@ const [videoUploaded, setVideoUploaded] = useState(false); // success flag
             width: "fit-content",
             "&:hover": { color: "#1976d2" }
           }}
-          onClick={() => navigate("/post-property/basic-details")}
+          onClick={() => {
+          const id = propertyId || sessionStorage.getItem("propertyId")
+          navigate(`/post-property/basic-details/${id}`)}}
         >
           <ArrowBackIcon sx={{ mr: 0.5, fontSize: 22, color: "#808080" }} />
           <Typography sx={{ fontSize: 13, color: "#808080" }}>

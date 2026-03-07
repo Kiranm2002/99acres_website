@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
 import axiosInstance from "../../../utils/axiosInstance"
@@ -26,6 +26,7 @@ import { useEffect } from "react";
 
 const PropertyProfile = () => {
   const navigate = useNavigate();
+const {propertyId} = useParams();
 //   const [boundaryWall, setPropertyType] = useState("Farmhouse");
     
   const [areaUnit, setAreaUnit] = useState("sq.ft.");
@@ -83,12 +84,12 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
   };
   const handleOnContinue = async()=>{
     try{
-      const propertyId = localStorage.getItem("propertyId");
+      const id = propertyId || sessionStorage.getItem("propertyId");
       // console.log(construction,possession,ownerShip,authority)
       await axiosInstance.put(
         `/property/update-profile`,
         {
-          propertyId,
+          propertyId:id,
 
           // Area
           plotArea,
@@ -124,7 +125,7 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
         }
       );
 
-      navigate("/post-property/photo-details");
+      navigate(`/post-property/photo-details/${id}`);
     }catch(error){
       console.error("Error saving profile details:", error);
     }
@@ -177,10 +178,10 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
 );
 
   useEffect(() => {
-  const propertyId = localStorage.getItem("propertyId");
+  const id = propertyId || sessionStorage.getItem("propertyId")
 
-  if (propertyId) {
-    axiosInstance.get(`/property/${propertyId}`)
+  if (id) {
+    axiosInstance.get(`/property/${id}`)
       .then(res => {
         const data = res.data;
         if(data.carpetArea) setShowCarpet(true);
@@ -208,7 +209,7 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
       setPriceNegotiable(data.priceNegotiable || false);
       });
   }
-}, []);
+}, [propertyId]);
 
   return (
     <Box sx={{ ml: 6, mt: 6, width: 500,}}>
@@ -223,7 +224,9 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
           width: "fit-content",
           "&:hover": { color: "#1976d2" }
         }}
-        onClick={() => navigate("/post-property/location")}
+        onClick={() => {
+          const id = propertyId || sessionStorage.getItem("propertyId")
+          navigate(`/post-property/location/${id}`)}}
       >
         <ArrowBackIcon sx={{ mr: 0.5, fontSize: 22, color: "#808080" }} />
         <Typography sx={{ fontSize: 13, color: "#808080" }}>

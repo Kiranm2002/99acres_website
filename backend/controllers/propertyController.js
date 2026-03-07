@@ -385,7 +385,69 @@ const deleteProperty = async (req, res) => {
   }
 };
 
+const getAllProperties = async (req, res) => {
+  try {
+    const properties = await Property.find()
+      .populate("city")
+      .populate("locality")
+      .populate("subLocality")
+      .populate("project");
+
+    res.status(200).json({message:"success",properties});
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const toggleShortlist = async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.propertyId);
+
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    property.shortlisted = !property.shortlisted;
+
+    await property.save();
+
+    res.status(200).json({
+      success: true,
+      shortlisted: property.shortlisted,
+      message: property.shortlisted
+        ? "Property shortlisted"
+        : "Property removed from shortlist"
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getShortlistedProperties = async (req, res) => {
+  try {
+
+    const properties = await Property.find({ shortlisted: true })
+    .populate("project", "name")
+    .populate("subLocality", "name")
+    .populate("locality", "name")
+    .populate("city", "name");
+
+    res.status(200).json({
+      success: true,
+      properties
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching shortlisted properties",
+      error
+    });
+  }
+};
+
 module.exports = {
   createProperty, updatePropertyLocation,updatePropertyProfile,
-  getPropertyById,updatePhoto,updateOtherDetails,updatePrimaryDetails,deleteProperty
+  getPropertyById,updatePhoto,updateOtherDetails,updatePrimaryDetails,
+  deleteProperty,getAllProperties,toggleShortlist,getShortlistedProperties
 };

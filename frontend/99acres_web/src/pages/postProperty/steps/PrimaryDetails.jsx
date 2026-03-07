@@ -9,12 +9,13 @@ import {
   FormControlLabel,
   Button,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect } from "react";
 
 const PrimaryDetails = ({ user }) => {
   const navigate = useNavigate();
+  const {propertyId} = useParams();
 
   // States
   // const [lookingFor, setLookingFor] = useState("Sell");
@@ -40,9 +41,10 @@ const [category, setCategory] = useState("");
   const handleContinue = async() => {
     
     try {
-    const existingPropertyId = localStorage.getItem("propertyId");
+    const existingPropertyId = propertyId || sessionStorage.getItem("propertyId");
 
     let response;
+    let id;
 
     if (existingPropertyId) {
       // 🔁 UPDATE PROPERTY
@@ -54,12 +56,12 @@ const [category, setCategory] = useState("");
           category,
         }
       );
-
+         id = existingPropertyId;
       console.log("Property Updated Successfully");
     } else {
       // 🆕 CREATE NEW PROPERTY
       response = await axiosInstance.post(
-        "/property/create",
+        "/property/primary-details",
         {
           lookingFor,
           propertyType,
@@ -68,12 +70,13 @@ const [category, setCategory] = useState("");
       );
 
       // Save new propertyId
-      localStorage.setItem("propertyId", response.data.propertyId);
+      id = response.data.propertyId;
+      sessionStorage.setItem("propertyId", id);
 
       console.log("Property Created Successfully");
     }
 
-    navigate("/post-property/location");
+    navigate(`/post-property/location/${id}`);
 
   } catch (error) {
     console.error("Error saving primary details:", error);
@@ -81,9 +84,9 @@ const [category, setCategory] = useState("");
   };
 
   useEffect(()=>{
-    const propertyId = localStorage.getItem("propertyId")
-    if(propertyId){
-      axiosInstance.get(`/property/${propertyId}`)
+    const id = propertyId || sessionStorage.getItem("propertyId")
+    if(id){
+      axiosInstance.get(`/property/${id}`)
       .then(res=>{const data = res.data
       
       setLookingFor(data.lookingFor || "")
@@ -91,7 +94,7 @@ const [category, setCategory] = useState("");
       setCategory(data.category || "")
      
       })}
-  },[])
+  },[propertyId])
 
   return (
     <Box sx={{ px: 6, py: 6, }}>

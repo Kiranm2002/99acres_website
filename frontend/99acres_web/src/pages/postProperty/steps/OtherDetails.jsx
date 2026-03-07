@@ -13,7 +13,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance"
 import { useEffect } from "react";
 
@@ -47,7 +47,7 @@ const locationAdvantages = [
 
 const OtherDetails = () => {
   const navigate = useNavigate();
-
+  const {propertyId} = useParams();
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [selectedOverlooking, setSelectedOverlooking] = useState([]);
   const [PropertyFacing, setPropertyFacing] = useState("");
@@ -69,7 +69,7 @@ const OtherDetails = () => {
 
   const handleOnContinue =async()=>{
      try {
-        const propertyId = localStorage.getItem("propertyId"); // or from params
+        const id = propertyId || sessionStorage.getItem("propertyId"); // or from params
 
         const payload = {
           amenities: selectedAmenities,
@@ -80,24 +80,29 @@ const OtherDetails = () => {
         };
 
         const response = await axiosInstance.put(
-          `/property/other-details/${propertyId}`,
+          `/property/other-details/${id}`,
           payload
         );
 
        
-
         console.log("Other Details Saved:", response);
 
-        navigate("/post-property/thank-you");
+        sessionStorage.removeItem("propertyId");
+
+        navigate(`/post-property/thank-you/${id}`);
+        
+       
+
+        
       } catch (error) {
         console.error("Save Error:", error);
       }
 
   }
   useEffect(()=>{
-    const propertyId = localStorage.getItem("propertyId")
-    if(propertyId){
-      axiosInstance.get(`/property/${propertyId}`)
+    const id = propertyId || sessionStorage.getItem("propertyId")
+    if(id){
+      axiosInstance.get(`/property/${id}`)
       .then(res=>{const data = res.data
       
       setSelectedAmenities(data.amenities || "")
@@ -108,7 +113,7 @@ const OtherDetails = () => {
       })
 
     }
-  },[])
+  },[propertyId])
   return (
     <Box p={4} mt={1}>
       
@@ -122,7 +127,9 @@ const OtherDetails = () => {
           width: "fit-content",
           "&:hover": { color: "#1976d2" }
         }}
-        onClick={() => navigate("/post-property/photo-details")}
+        onClick={() => {
+          const id = propertyId || sessionStorage.getItem("propertyId")
+          navigate(`/post-property/photo-details/${id}`)}}
       >
         <ArrowBackIcon sx={{ mr: 0.5, fontSize: 22, color: "#808080" }} />
         <Typography sx={{ fontSize: 13, color: "#808080" }}>

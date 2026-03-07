@@ -37,15 +37,15 @@ function App() {
         <Route path="/post-property" >
           <Route index element={<PostProperty/>}/>
           <Route element={<PrimaryDetailsLayout />}>
-            <Route path="primary-details" element={<PrimaryDetails />} />
-            <Route path="location" element={<LocationDetails/>}/>
-            <Route path="basic-details" element={<PropertyProfile/>}/>
-            <Route path="photo-details" element={<PhotoDetails/>}/>
-            <Route path="other-details" element={<OtherDetails/>}/>
+            <Route path="primary-details/:propertyId?" element={<PrimaryDetails />} />
+            <Route path="location/:propertyId?" element={<LocationDetails/>}/>
+            <Route path="basic-details/:propertyId?" element={<PropertyProfile/>}/>
+            <Route path="photo-details/:propertyId?" element={<PhotoDetails/>}/>
+            <Route path="other-details/:propertyId?" element={<OtherDetails/>}/>
           </Route>
-          <Route path="thank-you" element={<ThankYou/>}/>
-          <Route path="property-dashboard" element={<PropertyDashboard/>}/>
-          <Route path="property-preview" element={<PropertyPreview/>}/>
+          <Route path="thank-you/:propertyId" element={<ThankYou/>}/>
+          <Route path="property-dashboard/:propertyId" element={<PropertyDashboard/>}/>
+          <Route path="property-preview/:propertyId" element={<PropertyPreview/>}/>
           <Route path="user-property-dashboard" element={<UserPropertydashboard/>}/>
           <Route path="shortlist-property" element={<ShortlistPage/>}/>
         </Route>

@@ -211,6 +211,9 @@ const propertySchema = new mongoose.Schema(
         // default: false,
       },
     },
+    shortlisted:{
+      type:Boolean,
+    },
     // ================= PROGRESS TRACKING =================
     stepCompleted: {
       type: Number,

@@ -12,9 +12,118 @@ import Navbar from "../../components/navbar/Navbar";
 import SecondaryNavbar from "../../components/navbar/SecondaryNavbar";
 import GuestUserCard from "../../components/home/GuestUserCard";
 import PromoCard from "../../components/home/PromoCard";
+import axiosInstance from "../../utils/axiosInstance";
+import {Button} from "@mui/material"
+
+const PropertyCard = ({ property }) => {
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  };
+
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "flex-start",
+        gap: 2.5,
+        px: 2.5,
+        pb: 2.5,
+        border: "1px solid #eee",
+        borderRadius: 2,
+        mb: 2,
+        backgroundColor: "#fff",
+      }}
+    >
+      {/* Property Image */}
+      <Box
+        sx={{
+          position: "relative",
+          width: "175px",
+          height: "118px",
+          borderRadius: "8px",
+          overflow: "hidden",
+          flexShrink: 0,
+          backgroundColor: "#f5f5f5",
+        }}
+      >
+        <img
+          src="https://imagecdn.99acres.com/microsite/wp-content/blogs.dir/6161/files/2025/01/white-and-brown-concrete-building-stockpack-pexels-320x180.jpg?1737463414000"
+          alt="Property"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        {!property?.isVerified && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              backgroundColor: "rgba(0,0,0,0.55)",
+              color: "#fff",
+              fontSize: "11px",
+              fontWeight: 600,
+              px: 1,
+              py: 0.3,
+              borderRadius: "4px",
+              fontFamily: "'Segoe UI', sans-serif",
+            }}
+          >
+            Not Verified
+          </Box>
+        )}
+      </Box>
+
+      {/* Property Details */}
+      <Box sx={{ flex: 1, minWidth: 0 }}>
+        <Typography
+          sx={{
+            fontSize: "17px",
+            fontWeight: 700,
+            color: "#071c2c",
+            mb: 0.4,
+          }}
+        >
+          {property?.lookingFor} {property?.propertyType} {property?.category}
+        </Typography>
+        <Typography
+          sx={{ fontSize: "13px", color: "#777", mb: 2 }}
+        >
+          in {property?.project?.name} {property?.subLocality?.name} {property?.city?.name}
+        </Typography>
+
+        <Box sx={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
+          <Box>
+            <Typography sx={{ fontSize: "12px", color: "#999" }}>Price</Typography>
+            <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>₹ {property?.expectedPrice}</Typography>
+          </Box>
+          <Box>
+            <Typography sx={{ fontSize: "12px", color: "#999" }}>Property ID</Typography>
+            <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>{property?._id}</Typography>
+          </Box>
+          <Box>
+            <Typography sx={{ fontSize: "12px", color: "#999" }}>Duration</Typography>
+            <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>
+              Posted on {formatDate(property?.createdAt)}
+            </Typography>
+          </Box>
+        </Box>
+        <Button
+          variant="contained"
+          size="small"
+          sx={{ mt: 2 }}
+          onClick={() => window.open(`/post-property/property-dashboard/${property._id}`,"_blank")}
+        >
+          View
+        </Button>
+      </Box>
+    </Box>
+  );
+}
 
 const Dashboard = ({user,setUser}) => {
   const [showSecondaryNav, setShowSecondaryNav] = useState(false);
+  const [properties, setProperties] = useState([]);
   // const [user, setUser] = useState(null);
     const searchRef = useRef(null);
   // const user = {
@@ -38,6 +147,20 @@ const Dashboard = ({user,setUser}) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+   useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const { data } = await axiosInstance.get("/property/all-properties"); // endpoint relative to baseURL
+      setProperties(data.properties); // assuming API returns { properties: [...] }
+    } catch (error) {
+      console.error("Error fetching properties:", error);
+    }
+  };
+
+  fetchProperties();
+}, []);
+
+
   return (<>
     <SecondaryNavbar isHomePage={true} user={user} setUser={setUser} show={showSecondaryNav}/>
     <Navbar isHomePage={true} user={user} setUser={setUser}  />
@@ -51,6 +174,17 @@ const Dashboard = ({user,setUser}) => {
         }}
       >
         <Box sx={{flex:3, minWidth:0, }}>
+
+          <Typography
+            sx={{ fontSize: "26px", fontWeight: 700, color: "#071c2c", mb: 1, mt:2 }}
+          >
+            Your Listings
+          </Typography>
+          {properties.length > 0 ? (
+            properties.map((property) => <PropertyCard key={property._id} property={property} />)
+          ) : (
+            <p>No properties found.</p>
+          )}
           
         <RecommendedProperties />
         <RecommendedProjects/>

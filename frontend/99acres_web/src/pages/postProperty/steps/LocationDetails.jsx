@@ -10,7 +10,7 @@ import {
   Button,
   CircularProgress
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -21,6 +21,7 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
 const LocationDetails = () => {
   const navigate = useNavigate();
+  const {propertyId} = useParams();
   const wrapperRef = useRef(null);
   const [isCityFocused, setIsCityFocused] = useState(false);
   const [city, setCity] = useState("");
@@ -177,24 +178,24 @@ const [loadingProjects, setLoadingProjects] = useState(false);
 
   const handleOnContinue = async()=>{
     try{
+        const id = propertyId || sessionStorage.getItem("propertyId");
         const res =  await axiosInstance.put("/property/update-location", {
-          propertyId: localStorage.getItem("propertyId"),
+          propertyId: id,
           city: selectedCity._id,
           locality: selectedLocality._id,
           subLocality: selectedSubLocality?._id,
           project: selectedProject?._id,
       });
-      navigate("/post-property/basic-details");
+      navigate(`/post-property/basic-details/${id}`);
     }catch(error){
       console.error("Error saving location details:", error);
     }
   }
   //data fetching from backend
   useEffect(() => {
-  const propertyId = localStorage.getItem("propertyId");
-
-  if (propertyId) {
-    axiosInstance.get(`/property/${propertyId}`)
+    const id = propertyId || sessionStorage.getItem("propertyId")
+  if (id) {
+    axiosInstance.get(`/property/${id}`)
       .then(res => {
         const data = res.data;
 
@@ -219,7 +220,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
         }
       });
   }
-}, []);
+}, [propertyId]);
 
   return (
     <Box sx={{ mt: 4, ml: 4, width: 400 }} ref={wrapperRef}>
@@ -233,7 +234,9 @@ const [loadingProjects, setLoadingProjects] = useState(false);
           width: "fit-content",
           "&:hover": { color: "#1976d2" }
         }}
-        onClick={() => navigate("/post-property/primary-details")}
+        onClick={() => {
+          const id = propertyId || sessionStorage.getItem("propertyId")
+          navigate(`/post-property/primary-details/${id}`)}}
       >
         <ArrowBackIcon sx={{ mr: 0.5, fontSize: 22, color: "#808080" }} />
         <Typography sx={{ fontSize: 13, color: "#808080" }}>

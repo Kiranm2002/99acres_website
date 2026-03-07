@@ -33,7 +33,7 @@ import AppDrawer from "../../components/common/AppDrawer";
 import Footer from "../../components/home/Footer";
 import RecommendedProjects from "../../components/home/RecommendedProjects";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
 
 // ── Building illustration SVG ──
@@ -275,7 +275,7 @@ const COMPARE_PLANS = [
     visibility: 73, gaugeColor: "#1557a0",
     responses: "8X", relationshipMgr: false,
     facebook: "7,500 impressions", premium: true, freeVerify: true,
-    duration: "4 Months", cost: "₹7,622",
+    duration: "4 Months", cost: 7622,
   },
   {
     name: "ASSIST PLUS", nameColor: "#e07b00", group: "assisted",
@@ -283,7 +283,7 @@ const COMPARE_PLANS = [
     visibility: 97, gaugeColor: "#e07b00",
     responses: "10X", relationshipMgr: true,
     facebook: "15,000 impressions", premium: true, freeVerify: true,
-    duration: "3 Months", cost: "₹23,107",
+    duration: "3 Months", cost: 23107,
   },
 ];
 
@@ -320,74 +320,305 @@ const PlanCellValue = ({ rowKey, plan }) => {
   return <Typography sx={textSx}>{val}</Typography>;
 };
 
-const PlansComparisonBox = () => (
-  <Box sx={{ border: "1.5px solid #c8ddf0", borderRadius: "10px", overflow: "hidden" }}>
+// ─────────────────────────────────────────────────────────────────────────────
+// PATCH: Replace your existing PlansComparisonBox component with this one.
+// No other changes needed in your file.
+// ─────────────────────────────────────────────────────────────────────────────
 
-    {/* Group header row */}
-    <Box sx={{ display: "flex" }}>
-      <Box sx={{ width: "38%", flexShrink: 0, borderRight: "1px solid #dde6f0" }} />
-      <Box sx={{ flex: 1, backgroundColor: "#e8f2fb", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.2, borderRight: "2px solid #1557a0" }}>
-        <TrendingUpIcon sx={{ fontSize: "16px", color: "#1557a0" }} />
-        <Typography sx={{ fontWeight: 700, fontSize: "12px", color: "#1557a0", letterSpacing: "0.5px", fontFamily: "'Segoe UI', sans-serif" }}>SELF SERVICE PLANS</Typography>
-      </Box>
-      <Box sx={{ flex: 1, backgroundColor: "#fdf6e8", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.2 }}>
-        <PersonOutlineIcon sx={{ fontSize: "16px", color: "#e07b00" }} />
-        <Typography sx={{ fontWeight: 700, fontSize: "12px", color: "#e07b00", letterSpacing: "0.5px", fontFamily: "'Segoe UI', sans-serif" }}>ASSISTED PLANS</Typography>
-      </Box>
-    </Box>
+const PlansComparisonBox = () => {
+  const [cartOpen, setCartOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
 
-    {/* Plan name headers */}
-    <Box sx={{ display: "flex", borderTop: "1.5px solid #dde6f0", borderBottom: "1.5px solid #dde6f0" }}>
-      <Box sx={{ width: "38%", flexShrink: 0, p: 1.5, display: "flex", alignItems: "center", borderRight: "1px solid #dde6f0", backgroundColor: "#fafbfc" }}>
-        <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Plan Benefits</Typography>
-      </Box>
-      {COMPARE_PLANS.map((plan, idx) => (
-        <Box key={plan.name} sx={{ flex: 1, p: 1.5, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderRight: idx === 0 ? "2px solid #1557a0" : "none", backgroundColor: "#fff", overflow: "visible" }}>
-          {plan.badge && (
-            <Box sx={{ position: "absolute", top: 0, right: 0, backgroundColor: plan.badge.color, color: "#fff", fontSize: "9px", fontWeight: 700, px: 1, py: 0.4, borderRadius: "0 0 0 8px", fontFamily: "'Segoe UI', sans-serif", zIndex: 2 }}>
-              {plan.badge.color === "#4caf50" ? "★ " : "⊕ "}{plan.badge.label}
+  // Opens the Cart sidebar
+  const handleBuyNow = (plan) => {
+    setSelectedPlan(plan);
+    setCartOpen(true);
+  };
+
+  // Called from "Proceed To Purchase" — hits your backend then opens Razorpay
+  const handlePayment = async () => {
+    if (!selectedPlan) return;
+    try {
+      const { data } = await axiosInstance.post("/payment/create-order", {
+        amount: selectedPlan.cost,
+      });
+
+      const options = {
+        key: "rzp_test_SNwh4tt2M7ZmNW",
+        amount: data.order.amount,
+        currency: "INR",
+        name: "99acres Clone",
+        description: selectedPlan.name,
+        order_id: data.order.id,
+        handler: async function (response) {
+          const userId = localStorage.getItem("userId"); // no parse needed
+          if (!userId) {
+            alert("User not logged in!");
+            return;
+          }
+          const payload={
+            userId, // from your auth context or state
+            planName: selectedPlan.name,
+            amount: selectedPlan.cost,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            paymentMethod: "razorpay"
+          }
+          await axiosInstance.post("/payment/verify-payment", payload);
+          setCartOpen(false);
+          // alert("Payment Successful");
+        },
+        theme: { color: "#1557a0" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // GST split (18%)
+  const gstRate = 0.18;
+  const baseAmount   = selectedPlan ? Math.round(selectedPlan.cost / (1 + gstRate)) : 0;
+  const gstAmount    = selectedPlan ? selectedPlan.cost - baseAmount : 0;
+  const durationNum  = selectedPlan ? parseInt(selectedPlan.duration) || 1 : 1;
+  const perMonth     = selectedPlan ? Math.round(selectedPlan.cost / durationNum) : 0;
+
+  // Pretty plan name  e.g. "ADVANCED PLUS" → "Advanced Plus"
+  const prettyName = (name = "") =>
+    name.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
+
+  return (
+    <>
+      {/* ── Comparison table (unchanged layout) ── */}
+      <Box sx={{ border: "1.5px solid #c8ddf0", borderRadius: "10px", overflow: "hidden" }}>
+
+        {/* Group header row */}
+        <Box sx={{ display: "flex" }}>
+          <Box sx={{ width: "38%", flexShrink: 0, borderRight: "1px solid #dde6f0" }} />
+          <Box sx={{ flex: 1, backgroundColor: "#e8f2fb", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.2, borderRight: "2px solid #1557a0" }}>
+            <TrendingUpIcon sx={{ fontSize: "16px", color: "#1557a0" }} />
+            <Typography sx={{ fontWeight: 700, fontSize: "12px", color: "#1557a0", letterSpacing: "0.5px", fontFamily: "'Segoe UI', sans-serif" }}>
+              SELF SERVICE PLANS
+            </Typography>
+          </Box>
+          <Box sx={{ flex: 1, backgroundColor: "#fdf6e8", display: "flex", alignItems: "center", justifyContent: "center", gap: 1, py: 1.2 }}>
+            <PersonOutlineIcon sx={{ fontSize: "16px", color: "#e07b00" }} />
+            <Typography sx={{ fontWeight: 700, fontSize: "12px", color: "#e07b00", letterSpacing: "0.5px", fontFamily: "'Segoe UI', sans-serif" }}>
+              ASSISTED PLANS
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Plan name headers */}
+        <Box sx={{ display: "flex", borderTop: "1.5px solid #dde6f0", borderBottom: "1.5px solid #dde6f0" }}>
+          <Box sx={{ width: "38%", flexShrink: 0, p: 1.5, display: "flex", alignItems: "center", borderRight: "1px solid #dde6f0", backgroundColor: "#fafbfc" }}>
+            <Typography sx={{ fontSize: "13px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Plan Benefits</Typography>
+          </Box>
+          {COMPARE_PLANS.map((plan, idx) => (
+            <Box key={plan.name} sx={{ flex: 1, p: 1.5, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", borderRight: idx === 0 ? "2px solid #1557a0" : "none", backgroundColor: "#fff", overflow: "visible" }}>
+              {plan.badge && (
+                <Box sx={{ position: "absolute", top: 0, right: 0, backgroundColor: plan.badge.color, color: "#fff", fontSize: "9px", fontWeight: 700, px: 1, py: 0.4, borderRadius: "0 0 0 8px", fontFamily: "'Segoe UI', sans-serif", zIndex: 2 }}>
+                  {plan.badge.color === "#4caf50" ? "★ " : "⊕ "}{plan.badge.label}
+                </Box>
+              )}
+              <Typography sx={{ fontSize: "14px", fontWeight: 800, color: plan.nameColor, fontFamily: "'Segoe UI', sans-serif", textAlign: "center" }}>
+                {plan.name}
+              </Typography>
             </Box>
-          )}
-          <Typography sx={{ fontSize: "14px", fontWeight: 800, color: plan.nameColor, fontFamily: "'Segoe UI', sans-serif", textAlign: "center" }}>
-            {plan.name}
-          </Typography>
+          ))}
         </Box>
-      ))}
-    </Box>
 
-    {/* Data rows */}
-    {COMPARE_ROWS.map((row, rowIdx) => (
-      <Box key={row.key} sx={{ display: "flex", borderBottom: rowIdx < COMPARE_ROWS.length - 1 ? "1px solid #eef1f5" : "none", backgroundColor: rowIdx % 2 === 0 ? "#fafbfc" : "#fff" }}>
-        <Box sx={{ width: "38%", flexShrink: 0, p: 1.8, display: "flex", alignItems: "center", gap: 0.8, borderRight: "1px solid #dde6f0" }}>
-          <Typography sx={{ fontSize: "13px", color: "#444", fontFamily: "'Segoe UI', sans-serif", lineHeight: 1.4 }}>{row.label}</Typography>
-          <InfoOutlinedIcon sx={{ fontSize: "14px", color: "#bbb", flexShrink: 0 }} />
-        </Box>
-        {COMPARE_PLANS.map((plan, idx) => (
-          <Box key={plan.name} sx={{ flex: 1, p: "14px 8px", display: "flex", alignItems: "center", justifyContent: "center", borderRight: idx === 0 ? "2px solid #1557a0" : "none" }}>
-            {row.key === "cost" ? (
-              <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1.2, width: "100%" }}>
-                <PlanCellValue rowKey={row.key} plan={plan} />
-                <Button variant="outlined" sx={{ borderColor: "#1557a0", color: "#1557a0", fontWeight: 700, fontSize: "13px", textTransform: "none", borderRadius: "6px", px: 3, py: 0.8, width: "80%", fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#f0f7ff" } }}>
-                  Buy Now
-                </Button>
+        {/* Data rows */}
+        {COMPARE_ROWS.map((row, rowIdx) => (
+          <Box key={row.key} sx={{ display: "flex", borderBottom: rowIdx < COMPARE_ROWS.length - 1 ? "1px solid #eef1f5" : "none", backgroundColor: rowIdx % 2 === 0 ? "#fafbfc" : "#fff" }}>
+            <Box sx={{ width: "38%", flexShrink: 0, p: 1.8, display: "flex", alignItems: "center", gap: 0.8, borderRight: "1px solid #dde6f0" }}>
+              <Typography sx={{ fontSize: "13px", color: "#444", fontFamily: "'Segoe UI', sans-serif", lineHeight: 1.4 }}>{row.label}</Typography>
+              <InfoOutlinedIcon sx={{ fontSize: "14px", color: "#bbb", flexShrink: 0 }} />
+            </Box>
+            {COMPARE_PLANS.map((plan, idx) => (
+              <Box key={plan.name} sx={{ flex: 1, p: "14px 8px", display: "flex", alignItems: "center", justifyContent: "center", borderRight: idx === 0 ? "2px solid #1557a0" : "none" }}>
+                {row.key === "cost" ? (
+                  <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1.2, width: "100%" }}>
+                    <PlanCellValue rowKey={row.key} plan={plan} />
+                    {/* ← only change: onClick now opens Cart sidebar */}
+                    <Button
+                      variant="outlined"
+                      onClick={() => handleBuyNow(plan)}
+                      sx={{ borderColor: "#1557a0", color: "#1557a0", fontWeight: 700, fontSize: "13px", textTransform: "none", borderRadius: "6px", px: 3, py: 0.8, width: "80%", fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#f0f7ff" } }}
+                    >
+                      Buy Now
+                    </Button>
+                  </Box>
+                ) : (
+                  <PlanCellValue rowKey={row.key} plan={plan} />
+                )}
               </Box>
-            ) : (
-              <PlanCellValue rowKey={row.key} plan={plan} />
-            )}
+            ))}
           </Box>
         ))}
-      </Box>
-    ))}
 
-    {/* Footer */}
-    <Box sx={{ backgroundColor: "#fff", borderTop: "1.5px solid #dde6f0", py: 1.5, display: "flex", alignItems: "center", justifyContent: "center", gap: 1, cursor: "pointer" }}>
-      <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1557a0", fontFamily: "'Segoe UI', sans-serif" }}>
-        View all plans and benefits
-      </Typography>
-      <ArrowForwardIcon sx={{ fontSize: "18px", color: "#1557a0" }} />
-    </Box>
-  </Box>
-);
+        {/* Footer */}
+        <Box sx={{ backgroundColor: "#fff", borderTop: "1.5px solid #dde6f0", py: 1.5, display: "flex", alignItems: "center", justifyContent: "center", gap: 1, cursor: "pointer" }}>
+          <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#1557a0", fontFamily: "'Segoe UI', sans-serif" }}>
+            View all plans and benefits
+          </Typography>
+          <ArrowForwardIcon sx={{ fontSize: "18px", color: "#1557a0" }} />
+        </Box>
+      </Box>
+
+      {/* ── Cart Sidebar ── */}
+      {cartOpen && (
+        <>
+          {/* Dark backdrop */}
+          <Box
+            onClick={() => setCartOpen(false)}
+            sx={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.4)", zIndex: 1300 }}
+          />
+
+          {/* Slide-in panel */}
+          <Box
+            sx={{
+              position: "fixed",
+              top: 0,
+              right: 0,
+              width: { xs: "100%", sm: "520px" },
+              height: "100vh",
+              backgroundColor: "#fff",
+              zIndex: 1400,
+              display: "flex",
+              flexDirection: "column",
+              boxShadow: "-4px 0 28px rgba(0,0,0,0.15)",
+            }}
+          >
+            {/* Header */}
+            <Box sx={{ px: 3.5, py: 2.5, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #eef0f4" }}>
+              <Typography sx={{ fontSize: "24px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
+                Cart
+              </Typography>
+              <IconButton onClick={() => setCartOpen(false)} sx={{ color: "#555" }}>
+                <CloseIcon sx={{ fontSize: "24px" }} />
+              </IconButton>
+            </Box>
+
+            {/* Scrollable body */}
+            <Box sx={{ flex: 1, overflowY: "auto", px: 3.5, py: 3, "&::-webkit-scrollbar": { width: "4px" }, "&::-webkit-scrollbar-thumb": { backgroundColor: "#ddd", borderRadius: "4px" } }}>
+
+              {/* Plan title */}
+              <Typography sx={{ fontSize: "20px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 2.5 }}>
+                {prettyName(selectedPlan?.name)} - Plan Options
+              </Typography>
+
+              {/* Duration option card — selected state */}
+              <Box sx={{ border: "2px solid #1557a0", borderRadius: "10px", p: 2.5, mb: 3, backgroundColor: "#fff" }}>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>
+                    {selectedPlan?.duration}
+                  </Typography>
+                  {/* Filled radio */}
+                  <Box sx={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid #1557a0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Box sx={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: "#1557a0" }} />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: "20px", fontWeight: 800, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 0.3 }}>
+                  ₹{selectedPlan?.cost.toLocaleString("en-IN")}/-{" "}
+                  <Typography component="span" sx={{ fontSize: "13px", fontWeight: 400, color: "#888" }}>incl. GST</Typography>
+                </Typography>
+                <Typography sx={{ fontSize: "13px", color: "#888", fontFamily: "'Segoe UI', sans-serif" }}>
+                  ₹{perMonth.toLocaleString("en-IN")} / month
+                </Typography>
+              </Box>
+
+              {/* Assistance link */}
+              <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif", mb: 3 }}>
+                Still confused?{" "}
+                <Typography component="span" sx={{ color: "#1557a0", fontWeight: 600, cursor: "pointer", textDecoration: "underline" }}>
+                  Get assistance
+                </Typography>
+              </Typography>
+
+              <Divider sx={{ borderColor: "#eef0f4", mb: 3 }} />
+
+              {/* Payment Summary */}
+              <Typography sx={{ fontSize: "18px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif", mb: 2 }}>
+                Payment Summary
+              </Typography>
+
+              <Box sx={{ backgroundColor: "#f7f9fc", borderRadius: "8px", px: 2.5, py: 2, mb: 2.5 }}>
+                {/* Base price row */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1.5 }}>
+                  <Typography sx={{ fontSize: "14px", color: "#888", fontFamily: "'Segoe UI', sans-serif" }}>
+                    {prettyName(selectedPlan?.name)}
+                  </Typography>
+                  <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>
+                    ₹{baseAmount.toLocaleString("en-IN")}
+                  </Typography>
+                </Box>
+
+                {/* GST row */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", pb: 2, borderBottom: "1px dashed #dde6ef" }}>
+                  <Typography sx={{ fontSize: "14px", color: "#888", fontFamily: "'Segoe UI', sans-serif" }}>
+                    GST{" "}
+                    <Typography component="span" sx={{ color: "#1557a0", fontWeight: 600, cursor: "pointer", borderBottom: "1px dashed #1557a0" }}>
+                      Add GSTIN
+                    </Typography>{" "}
+                    <Typography component="span" sx={{ fontSize: "12px", color: "#bbb" }}>(Optional)</Typography>
+                  </Typography>
+                  <Typography sx={{ fontSize: "14px", color: "#555", fontFamily: "'Segoe UI', sans-serif" }}>
+                    ₹{gstAmount.toLocaleString("en-IN")}
+                  </Typography>
+                </Box>
+
+                {/* Total row */}
+                <Box sx={{ display: "flex", justifyContent: "space-between", pt: 2 }}>
+                  <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
+                    Total
+                  </Typography>
+                  <Typography sx={{ fontSize: "18px", fontWeight: 800, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
+                    ₹{selectedPlan?.cost.toLocaleString("en-IN")}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Upgrade info note */}
+              <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.2, p: 2, backgroundColor: "#fff8f0", borderRadius: "8px", border: "1px solid #ffe0c0" }}>
+                <InfoOutlinedIcon sx={{ fontSize: "18px", color: "#e07b00", flexShrink: 0, mt: 0.2 }} />
+                <Typography sx={{ fontSize: "13px", color: "#555", fontFamily: "'Segoe UI', sans-serif", lineHeight: 1.5 }}>
+                  Upgrading your property in Skyline City Apartment, Chandra Layout - Residential PG
+                </Typography>
+              </Box>
+            </Box>
+
+            {/* ── Proceed To Purchase — pinned footer ── */}
+            <Box sx={{ px: 3.5, py: 2.5, borderTop: "1px solid #eef0f4", backgroundColor: "#fff" }}>
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handlePayment}
+                sx={{
+                  backgroundColor: "#1557a0",
+                  color: "#fff",
+                  textTransform: "none",
+                  fontWeight: 700,
+                  fontSize: "16px",
+                  borderRadius: "8px",
+                  py: 1.6,
+                  fontFamily: "'Segoe UI', sans-serif",
+                  "&:hover": { backgroundColor: "#0e4080" },
+                }}
+              >
+                Proceed To Purchase
+              </Button>
+            </Box>
+          </Box>
+        </>
+      )}
+    </>
+  );
+};
+
 
 // ── Listings Section ──
 const ListingsSection = () => { 
@@ -408,7 +639,11 @@ const handleNavigate = (path) => {
   handleClose();
   navigate(path); // You can change path later
 };
-const propertyId = localStorage.getItem("propertyId") 
+
+
+
+//single property
+const {propertyId} = useParams();
 console.log("propertyId:",propertyId)
 useEffect(() => {
   const fetchProperty = async () => {
@@ -440,7 +675,9 @@ const formatDate = (date) => {
       <Typography sx={{ fontSize: "26px", fontWeight: 800, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
         Your Listings
       </Typography>
-      <Typography sx={{ fontSize: "15px", color: "#1557a0", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", "&:hover": { textDecoration: "underline" } }}>
+      <Typography sx={{ fontSize: "15px", color: "#1557a0", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif", 
+        cursor: "pointer", "&:hover": { textDecoration: "underline" } }} 
+        onClick={()=>window.open("/post-property/user-property-dashboard","_blank")}>
         View all Listings
       </Typography>
     </Box>
@@ -531,7 +768,7 @@ const formatDate = (date) => {
             }}
           >
             {/* Preview */}
-            <MenuItem onClick={() =>  window.open("/post-property/property-preview", "_blank")}>
+            <MenuItem onClick={() =>  window.open(`/post-property/property-preview/${propertyId}`, "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Preview</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -541,7 +778,7 @@ const formatDate = (date) => {
             <Divider />
 
             {/* Add/Edit Details */}
-            <MenuItem onClick={() =>  window.open("/post-property/primary-details", "_blank")}>
+            <MenuItem onClick={() =>  window.open(`/post-property/primary-details/${propertyId}`, "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Add/Edit Details</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -551,7 +788,7 @@ const formatDate = (date) => {
             <Divider />
 
             {/* Delete */}
-            <MenuItem onClick={() =>  window.open("/post-property/user-property-dashboard", "_blank")}>
+            <MenuItem onClick={() =>  window.open(`/post-property/user-property-dashboard`, "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Delete</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />
@@ -561,7 +798,7 @@ const formatDate = (date) => {
             <Divider />
 
             {/* Upgrade */}
-            <MenuItem onClick={() =>  window.open("/post-property/user-property-dashboard", "_blank")}>
+            <MenuItem onClick={() =>  window.open(`/post-property/user-property-dashboard`, "_blank")}>
               <ListItemText primaryTypographyProps={{fontSize:14}}>Upgrade</ListItemText>
               <ListItemIcon sx={{ minWidth: "auto" }}>
                 <ArrowForwardIosIcon sx={{ fontSize: 12 }} />

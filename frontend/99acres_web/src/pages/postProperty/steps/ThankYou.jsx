@@ -200,7 +200,8 @@ const ComparePlansTable = () => (
 
 const ThankYou = ()=> {
   const navigate = useNavigate();
-  const propertyId  = localStorage.getItem("propertyId")
+  // const propertyId  = localStorage.getItem("propertyId")
+  const {propertyId} = useParams();
 
     const [property, setProperty] = useState(null);
 
@@ -356,7 +357,7 @@ const ThankYou = ()=> {
               backgroundColor: "#fff",
               "&:hover": { backgroundColor: "#f0f7ff" },
             }}
-            onClick={()=>navigate("/post-property/property-dashboard")}
+            onClick={()=>navigate(`/post-property/property-dashboard/${propertyId}`)}
           >
             Edit / Preview
           </Button>

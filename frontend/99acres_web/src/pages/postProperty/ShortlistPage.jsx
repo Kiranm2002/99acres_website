@@ -15,6 +15,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Footer from "../../components/home/Footer";
 import axiosInstance from "../../utils/axiosInstance"
+import { useParams } from "react-router-dom";
 
 // ── Building illustration (reused from other pages) ──
 const BuildingPlaceholder = () => (
@@ -143,22 +144,22 @@ const Navbar = () => (
 );
 
 // ── Property Card ──
-const PropertyCard = ({ onToggle }) =>{
-  const [property,setProperty] = useState("");
+const PropertyCard = ({ property,onToggle }) =>{
+  // const [property,setProperty] = useState("");
 
-  const propertyId = localStorage.getItem("propertyId")
-    useEffect(() => {
-    const fetchProperty = async () => {
-      try {
-        const res = await axiosInstance.get(`/property/${propertyId}`);
-        setProperty(res.data);
-      } catch (error) {
-        console.error("Error fetching property:", error);
-      }
-    };
+  // const {propertyId} = useParams();
+  //   useEffect(() => {
+  //   const fetchProperty = async () => {
+  //     try {
+  //       const res = await axiosInstance.get(`/property/${propertyId}`);
+  //       setProperty(res.data);
+  //     } catch (error) {
+  //       console.error("Error fetching property:", error);
+  //     }
+  //   };
   
-    fetchProperty();
-  }, []);
+  //   fetchProperty();
+  // }, []);
   return (
   <Box sx={{ width: "220px", flexShrink: 0, cursor: "pointer", }}>
     {/* Image area */}
@@ -166,7 +167,7 @@ const PropertyCard = ({ onToggle }) =>{
       <BuildingPlaceholder />
       {/* Heart icon */}
       <IconButton
-        onClick={(e) => { e.stopPropagation(); onToggle(property.id); }}
+        onClick={(e) => { e.stopPropagation(); onToggle(property._id); }}
         sx={{
           position: "absolute",
           top: 8,
@@ -227,15 +228,30 @@ const EmptyState = ({ label }) => (
 // ── Main Page ──
 export default function ShortlistPage() {
   const [activeTab, setActiveTab] = useState("shortlisted");
-  const [properties, setProperties] = useState(SHORTLISTED_PROPERTIES);
+  const [properties, setProperties] = useState([]);
 
   const handleToggle = (id) => {
     setProperties(prev =>
-      prev.map(p => p.id === id ? { ...p, shortlisted: !p.shortlisted } : p)
+      prev.map(p => p._id === id ? { ...p, shortlisted: !p.shortlisted } : p)
     );
   };
 
   const shortlistedProps = properties.filter(p => p.shortlisted);
+
+  useEffect(() => {
+  const fetchProperties = async () => {
+    try {
+      const res = await axiosInstance.get("/property/shortlisted");
+
+      setProperties(res.data.properties);
+
+    } catch (error) {
+      console.error("Error fetching shortlisted properties:", error);
+    }
+  };
+
+  fetchProperties();
+}, []);
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#fff", fontFamily: "'Segoe UI', sans-serif" }}>
@@ -291,7 +307,7 @@ export default function ShortlistPage() {
             {shortlistedProps.length > 0 ? (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
                 {shortlistedProps.map(p => (
-                  <PropertyCard key={p.id} property={p} onToggle={handleToggle} />
+                  <PropertyCard key={p._id} property={p} onToggle={handleToggle} />
                 ))}
               </Box>
             ) : (
@@ -322,7 +338,7 @@ export default function ShortlistPage() {
             </Typography>
             <Box sx={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
               {properties.map(p => (
-                <PropertyCard key={p.id} property={p} onToggle={handleToggle} />
+                <PropertyCard key={p._id} property={p} onToggle={handleToggle} />
               ))}
             </Box>
           </Box>
