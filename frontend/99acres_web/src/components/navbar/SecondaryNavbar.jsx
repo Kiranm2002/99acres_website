@@ -22,6 +22,7 @@ import AppDrawer from "../common/AppDrawer";
 import LoginModal from "../auth/Login";
 import RegisterModal from "../auth/Register";
 import { useNavigate } from "react-router-dom";
+import AuthModal from "../auth/AuthModal";
 
 
 const SecondaryNavbar = ({ show,user,setUser }) => {
@@ -30,6 +31,7 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openLogin, setOpenLogin] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
+  const [openAuth, setOpenAuth] = useState(false)
   
   const handleMenuOpen = (event) => {
       setAnchorEl(event.currentTarget);
@@ -58,7 +60,14 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
           {/* LOGO */}
           <Typography
             variant="h6"
-            sx={{ fontWeight: 700, whiteSpace: "nowrap" }}
+            onClick={()=>{
+            const id = localStorage.getItem("userId")
+              if(id){
+                navigate('/dashboard')
+              }else{
+                navigate('/')
+              }}}
+            sx={{ fontWeight: 700, whiteSpace: "nowrap", cursor:"pointer" }}
           >
             99acres
           </Typography>
@@ -126,7 +135,14 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
 
           {/* POST PROPERTY */}
           <Button
-          onClick={()=>navigate("/post-property")}
+          onClick={()=>{
+             const accessToken = localStorage.getItem("accessToken")
+              if(accessToken){
+                navigate("/post-property/primary-details")
+              }else{
+                navigate("/post-property")
+              }
+          }}
             sx={{
               textTransform: "none",
               backgroundColor: "#fff",
@@ -157,16 +173,18 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
             {user ? (
               <Avatar
                 sx={{
-                  bgcolor: "#fff",
-                  color: "#000",
+                  bgcolor: "#ddf8df",
+                  color: "#5ea92f",
                   fontWeight: "bold",
-                  width: 35,
-                  height: 35,
-                  fontSize: 14,
+                  width: 28,  // responsive
+                  height: 28,
+                  fontSize: 12
+                  
                 }}
+                 title={`${user.firstName || ""} ${user.lastName || ""}`}
               >
-                {user.firstName.charAt(0).toUpperCase()}
-                {user.lastName.charAt(0).toUpperCase()}
+                {user.firstName?.charAt(0).toUpperCase() || ""} 
+                {user.lastName?.charAt(0).toUpperCase() || ""}
               </Avatar>
             ) : (
               <AccountCircleIcon />
@@ -181,7 +199,7 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
                 <>
                   <MenuItem
                     onClick={() => {
-                      setOpenLogin(true);
+                      setOpenAuth(true);
                       handleMenuClose();
                     }}
                   >
@@ -192,6 +210,8 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
               ) : (
                 <MenuItem
                   onClick={() => {
+                    localStorage.removeItem("userId");
+                    localStorage.removeItem("accessToken");
                     setUser(null); // log out user
                     handleMenuClose();
                     navigate('/')
@@ -200,26 +220,18 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
                   Logout
                 </MenuItem>
               )}
-              <MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
+              {user && (<MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
                 ShortListed
-              </MenuItem>
+              </MenuItem>)}
             </Menu>
 
           {/* MENU */}
           <IconButton sx={{ color: "#fff" }} onClick={() => setDrawerOpen(true)}>
             <MenuIcon />
           </IconButton>
-          <LoginModal
-              open={openLogin}
-              handleMenuClose={() => setOpenLogin(false)}
-              user={user}
-              setUser={setUser}
-            />
-
-            <RegisterModal
-              open={openRegister}
-              handleMenuClose={() => setOpenRegister(false)}
-              user={user}
+          <AuthModal
+              open={openAuth}
+              handleClose={() => setOpenAuth(false)}
               setUser={setUser}
             />
         </Toolbar>

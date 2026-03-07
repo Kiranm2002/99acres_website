@@ -9,7 +9,7 @@ import {
   Box,FormControlLabel,Checkbox
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import {useNavigate} from "react-router-dom"
+import {redirect, useNavigate} from "react-router-dom"
 import { useRef } from "react";
 // import axios from "axios";
 import LockIcon from "@mui/icons-material/Lock";
@@ -18,7 +18,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ForgotPassword from "../../pages/auth/ForgotPassword";
 import axiosInstance from "../../utils/axiosInstance";
 
-const AuthModal = ({ open, handleClose }) => {
+const AuthModal = ({ open, handleClose, redirectPath }) => {
   // console.log("AuthModal Mounted");
   const [step, setStep] = useState("email"); 
   const inputRefs = useRef([]);
@@ -45,21 +45,7 @@ const AuthModal = ({ open, handleClose }) => {
     phone: "",
   });
   
-//   useEffect(() => {
-//   if (open) {
-//     setStep("email");
-//     setEmail("");
-//     setOtp("");
-//     setLoginInput("");
-//     setPassword("");
-//     setEmailError("");
-//     setOtpError("");
-//     setPasswordError("");
-//     setLoginSuccess(false);
-//     setRegisterSuccess(false);
-//     setRegisterError("");
-//   }
-// }, [open]);
+
 
   const handleContinue = async() => {
     if (!email) return;
@@ -144,7 +130,12 @@ const AuthModal = ({ open, handleClose }) => {
                   setRegisterSuccess(true)
                   setTimeout(()=>{
                     handleClose();
-                    navigate("/dashboard")
+                    if(redirectPath){
+                      navigate(redirectPath)
+                    }else{
+                      navigate("/dashboard")
+                    }
+                    
                   },2000)
                   
                 }
@@ -192,7 +183,11 @@ const AuthModal = ({ open, handleClose }) => {
           localStorage.setItem("userId", res.data.user.userId)
           setTimeout(()=>{
             handleClose();
-            navigate("/dashboard");
+            if(redirectPath){
+                navigate(redirectPath)
+            }else{
+              navigate("/dashboard")
+            }
           },1000)
          
         }else{

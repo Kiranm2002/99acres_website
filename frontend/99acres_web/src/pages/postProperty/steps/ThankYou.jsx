@@ -198,7 +198,7 @@ const ComparePlansTable = () => (
 // ORIGINAL ThankYou component — unchanged
 // ─────────────────────────────────────────────
 
-const ThankYou = ()=> {
+const ThankYou = ({user,setUser})=> {
   const navigate = useNavigate();
   // const propertyId  = localStorage.getItem("propertyId")
   const {propertyId} = useParams();
@@ -220,7 +220,7 @@ const ThankYou = ()=> {
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'Segoe UI', sans-serif" }}>
       {/* ── Navbar ── */}
-      <PostNavbar/>
+      <PostNavbar user={user} setUser={setUser}/>
 
       {/* ── Main Content ── */}
       <Box

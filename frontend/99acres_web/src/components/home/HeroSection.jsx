@@ -219,7 +219,14 @@ const HeroSection = ({ searchRef, hideSearch }) => {
               <Box sx={{ flexGrow: 1 }} />
 
               <Button
-                onClick={()=>navigate("/post-property")}
+                onClick={()=>{
+                  const accessToken = localStorage.getItem("accessToken")
+                  if(accessToken){
+                    navigate("/post-property/primary-details")
+                  }else{
+                    navigate("/post-property")
+              }
+                }}
                 sx={{
                   textTransform: "none",
                   fontWeight: 600,

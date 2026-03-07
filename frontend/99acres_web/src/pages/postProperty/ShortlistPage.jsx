@@ -16,6 +16,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import Footer from "../../components/home/Footer";
 import axiosInstance from "../../utils/axiosInstance"
 import { useParams } from "react-router-dom";
+import CustomNavbar from "./CustomNavbar";
 
 // ── Building illustration (reused from other pages) ──
 const BuildingPlaceholder = () => (
@@ -68,80 +69,80 @@ const SHORTLISTED_PROPERTIES = [
 ];
 
 // ── Navbar ──
-const Navbar = () => (
-  <Box sx={{ backgroundColor: "#2a59c7ff", height: "62px", display: "flex", alignItems: "center", px: { xs: 2, sm: 4 }, gap: 3 }}>
-    {/* Logo */}
-    <Typography sx={{ fontWeight: 800, fontSize: "35px", color: "#fff", fontFamily: "'Segoe UI', sans-serif", flexShrink: 0, letterSpacing: "-0.5px" }}>
-      99<span style={{ fontWeight: 400 }}>acres</span>
-    </Typography>
+// const Navbar = () => (
+//   <Box sx={{ backgroundColor: "#2a59c7ff", height: "62px", display: "flex", alignItems: "center", px: { xs: 2, sm: 4 }, gap: 3 }}>
+//     {/* Logo */}
+//     <Typography sx={{ fontWeight: 800, fontSize: "35px", color: "#fff", fontFamily: "'Segoe UI', sans-serif", flexShrink: 0, letterSpacing: "-0.5px" }}>
+//       99<span style={{ fontWeight: 400 }}>acres</span>
+//     </Typography>
 
-    {/* Wide search bar */}
-    <Box
-      sx={{
-        flex: 2,
-        display: "flex",
-        alignItems: "center",
-        backgroundColor: "#fff",
-        borderRadius: "6px",
-        height: "44px",
-        overflow: "hidden",
-        border: "none",ml:6
-      }}
-    >
-      {/* Buy dropdown */}
-      <Box sx={{ display: "flex", alignItems: "center", px: 1.8, borderRight: "1px solid #ddd", height: "100%", gap: 0.3, cursor: "pointer", flexShrink: 0 }}>
-        <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Buy</Typography>
-        <KeyboardArrowDownIcon sx={{ fontSize: "17px", color: "#555" }} />
-      </Box>
-      {/* Input */}
-      <InputBase
-        placeholder="Enter Locality / Project / Society / Landmark"
-        sx={{ flex: 1, px: 2, fontSize: "14px", fontFamily: "'Segoe UI', sans-serif", color: "#333" }}
-      />
-      {/* Icons */}
-      <MyLocationIcon sx={{ fontSize: "20px", color: "#1c3060", mx: 1, cursor: "pointer" }} />
-      <MicIcon sx={{ fontSize: "20px", color: "#1c3060", mx: 0.5, cursor: "pointer" }} />
-      {/* Search button */}
-      <Box sx={{ backgroundColor: "#fff", height: "44px", px: 1.5, display: "flex", alignItems: "center", borderLeft: "1px solid #eee" }}>
-        <SearchIcon sx={{ color: "#333", fontSize: "22px", cursor: "pointer" }} />
-      </Box>
-    </Box>
+//     {/* Wide search bar */}
+//     <Box
+//       sx={{
+//         flex: 2,
+//         display: "flex",
+//         alignItems: "center",
+//         backgroundColor: "#fff",
+//         borderRadius: "6px",
+//         height: "44px",
+//         overflow: "hidden",
+//         border: "none",ml:6
+//       }}
+//     >
+//       {/* Buy dropdown */}
+//       <Box sx={{ display: "flex", alignItems: "center", px: 1.8, borderRight: "1px solid #ddd", height: "100%", gap: 0.3, cursor: "pointer", flexShrink: 0 }}>
+//         <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>Buy</Typography>
+//         <KeyboardArrowDownIcon sx={{ fontSize: "17px", color: "#555" }} />
+//       </Box>
+//       {/* Input */}
+//       <InputBase
+//         placeholder="Enter Locality / Project / Society / Landmark"
+//         sx={{ flex: 1, px: 2, fontSize: "14px", fontFamily: "'Segoe UI', sans-serif", color: "#333" }}
+//       />
+//       {/* Icons */}
+//       <MyLocationIcon sx={{ fontSize: "20px", color: "#1c3060", mx: 1, cursor: "pointer" }} />
+//       <MicIcon sx={{ fontSize: "20px", color: "#1c3060", mx: 0.5, cursor: "pointer" }} />
+//       {/* Search button */}
+//       <Box sx={{ backgroundColor: "#fff", height: "44px", px: 1.5, display: "flex", alignItems: "center", borderLeft: "1px solid #eee" }}>
+//         <SearchIcon sx={{ color: "#333", fontSize: "22px", cursor: "pointer" }} />
+//       </Box>
+//     </Box>
 
-    <Box sx={{ flex: 0.3 }} />
+//     <Box sx={{ flex: 0.3 }} />
 
-    {/* Post property */}
-    <Button
-      sx={{
-        backgroundColor: "#fff",
-        color: "#222",
-        textTransform: "none",
-        fontWeight: 600,
-        fontSize: "14px",
-        borderRadius: "6px",
-        px: 2,
-        py: 0.9,
-        fontFamily: "'Segoe UI', sans-serif",
-        flexShrink: 0,
-        whiteSpace: "nowrap",
-        "&:hover": { backgroundColor: "#f0f0f0" },
-      }}
-    >
-      Post property{" "}
-      <Box component="span" sx={{ backgroundColor: "#4caf50", color: "#fff", fontSize: "10px", fontWeight: 700, px: 0.7, py: 0.25, borderRadius: "3px", ml: 0.8 }}>
-        FREE
-      </Box>
-    </Button>
+//     {/* Post property */}
+//     <Button
+//       sx={{
+//         backgroundColor: "#fff",
+//         color: "#222",
+//         textTransform: "none",
+//         fontWeight: 600,
+//         fontSize: "14px",
+//         borderRadius: "6px",
+//         px: 2,
+//         py: 0.9,
+//         fontFamily: "'Segoe UI', sans-serif",
+//         flexShrink: 0,
+//         whiteSpace: "nowrap",
+//         "&:hover": { backgroundColor: "#f0f0f0" },
+//       }}
+//     >
+//       Post property{" "}
+//       <Box component="span" sx={{ backgroundColor: "#4caf50", color: "#fff", fontSize: "10px", fontWeight: 700, px: 0.7, py: 0.25, borderRadius: "3px", ml: 0.8 }}>
+//         FREE
+//       </Box>
+//     </Button>
 
-    {/* Avatar + hamburger */}
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}>
-      <Avatar sx={{ width: 30, height: 30, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}>KM</Avatar>
-      <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "18px" }} />
-    </Box>
-    <IconButton sx={{ color: "#fff", p: 0.5 }}>
-      <MenuIcon sx={{ fontSize: "22px" }} />
-    </IconButton>
-  </Box>
-);
+//     {/* Avatar + hamburger */}
+//     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer" }}>
+//       <Avatar sx={{ width: 30, height: 30, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}>KM</Avatar>
+//       <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "18px" }} />
+//     </Box>
+//     <IconButton sx={{ color: "#fff", p: 0.5 }}>
+//       <MenuIcon sx={{ fontSize: "22px" }} />
+//     </IconButton>
+//   </Box>
+// );
 
 // ── Property Card ──
 const PropertyCard = ({ property,onToggle }) =>{
@@ -226,7 +227,7 @@ const EmptyState = ({ label }) => (
 );
 
 // ── Main Page ──
-export default function ShortlistPage() {
+export default function ShortlistPage({user,setUser}) {
   const [activeTab, setActiveTab] = useState("shortlisted");
   const [properties, setProperties] = useState([]);
 
@@ -255,7 +256,8 @@ export default function ShortlistPage() {
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#fff", fontFamily: "'Segoe UI', sans-serif" }}>
-      <Navbar />
+      {/* <Navbar /> */}
+      <CustomNavbar user={user} setUser={setUser}/>
 
       {/* Page body */}
       <Box sx={{ maxWidth: "1280px", mx: "auto", px: { xs: 2, sm: 6 }, pt: 4 }}>

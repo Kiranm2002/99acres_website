@@ -1,6 +1,7 @@
 import { Box, Button, Typography, Paper } from "@mui/material";
-
+import { useNavigate } from "react-router-dom";
 function PromoCard() {
+  const navigate = useNavigate();
   return (
     <Paper
       elevation={3}
@@ -28,6 +29,14 @@ function PromoCard() {
         </Typography>
         <Button
           variant="contained"
+          onClick={()=>{
+            const accessToken = localStorage.getItem("accessToken")
+              if(accessToken){
+                navigate("/post-property/primary-details")
+              }else{
+                navigate("/post-property")
+              }
+          }}
           sx={{
             backgroundColor: "#0071e3",
             color: "#fff",

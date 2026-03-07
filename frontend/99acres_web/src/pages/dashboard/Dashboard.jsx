@@ -147,6 +147,21 @@ const Dashboard = ({user,setUser}) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  //fectching user
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await axiosInstance.get("/me"); 
+        setUser(data.user); 
+      } catch (err) {
+        console.log("No user logged in or token invalid");
+        setUser(null);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  //fetching properties
    useEffect(() => {
   const fetchProperties = async () => {
     try {

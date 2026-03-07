@@ -20,10 +20,22 @@ import PropertyDashboard from "./pages/postProperty/PropertyDashboard";
 import PropertyPreview from "./pages/postProperty/PropertyPreview";
 import UserPropertydashboard from "./pages/postProperty/UserPropertyDashboard"
 import ShortlistPage from "./pages/postProperty/ShortlistPage";
+import axiosInstance from "./utils/axiosInstance";
 
 function App() {
   const [user, setUser] = useState(null);
   
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data } = await axiosInstance.get("/me");
+        setUser(data.user);
+      } catch (err) {
+        setUser(null);
+      }
+    };
+    fetchUser();
+  }, []);
   
   return (
     
@@ -34,8 +46,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard user={user} setUser={setUser}/>}/>
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword/>}/>
-        <Route path="/post-property" >
-          <Route index element={<PostProperty/>}/>
+        <Route path="/post-property"  >
+          <Route index element={<PostProperty  user={user} setUser={setUser}/>}/>
           <Route element={<PrimaryDetailsLayout />}>
             <Route path="primary-details/:propertyId?" element={<PrimaryDetails />} />
             <Route path="location/:propertyId?" element={<LocationDetails/>}/>
@@ -43,11 +55,11 @@ function App() {
             <Route path="photo-details/:propertyId?" element={<PhotoDetails/>}/>
             <Route path="other-details/:propertyId?" element={<OtherDetails/>}/>
           </Route>
-          <Route path="thank-you/:propertyId" element={<ThankYou/>}/>
-          <Route path="property-dashboard/:propertyId" element={<PropertyDashboard/>}/>
+          <Route path="thank-you/:propertyId" element={<ThankYou user={user} setUser={setUser}/>}/>
+          <Route path="property-dashboard/:propertyId" element={<PropertyDashboard user={user} setUser={setUser}/>}/>
           <Route path="property-preview/:propertyId" element={<PropertyPreview/>}/>
-          <Route path="user-property-dashboard" element={<UserPropertydashboard/>}/>
-          <Route path="shortlist-property" element={<ShortlistPage/>}/>
+          <Route path="user-property-dashboard" element={<UserPropertydashboard user={user} setUser={setUser}/>}/>
+          <Route path="shortlist-property" element={<ShortlistPage user={user} setUser={setUser}/>}/>
         </Route>
         
         

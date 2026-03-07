@@ -29,6 +29,7 @@ import AppDrawer from "../../components/common/AppDrawer";
 import CloseIcon from "@mui/icons-material/Close";
 import axiosInstance from "../../utils/axiosInstance";
 import {useNavigate,useParams } from "react-router-dom";
+import PostNavbar from "./PostNavbar";
 
 
 // ─── Sidebar menu config ───────────────────────────────────────────────────────
@@ -60,53 +61,53 @@ const SIDEBAR_MENU = [
 
 
 // ─── Navbar ────────────────────────────────────────────────────────────────────
-const Navbar = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  return(
-  <Box
-    sx={{
-      backgroundColor: "#0b429cff",
-      height: "70px",
-      display: "flex",
-      alignItems: "center",
-      px: 3,
-      gap: 2,
-      flexShrink: 0,
-    }}
-  >
-    <Typography
-      sx={{ fontWeight: 800, fontSize: "34px", color: "#fff", fontFamily: "'Segoe UI', sans-serif", flexShrink: 0, letterSpacing: "-0.5px" }}
-    >
-      99<span style={{ fontWeight: 400 }}>acres</span>
-    </Typography>
-    <Box sx={{ flex: 1 }} />
-    {/* Notification bell */}
-    <IconButton
-      sx={{ color: "#fff", p: 0.8, width: 34, height: 34 }}
-    >
-      <NotificationsNoneIcon sx={{ fontSize: "18px" }} />
-    </IconButton>
-    {/* KM avatar */}
-    <Box sx={{ display: "flex", alignItems: "center", gap: 0.4, cursor: "pointer" }}>
-      <Avatar
-        sx={{ width: 30, height: 30, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}
-      >
-        KM
-      </Avatar>
-      <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "18px" }} />
-    </Box>
-    {/* Hamburger */}
-    <IconButton sx={{ color: "#fff", p: 0.5 }} onClick={() => setDrawerOpen(true)}>
-      <MenuIcon sx={{ fontSize: "22px" }} />
-    </IconButton>
-    <AppDrawer
-      open={drawerOpen}
-      onClose={() => setDrawerOpen(false)}
-      // user={user}
-      // onOpenLogin={handleOpenLogin}
-/>
-  </Box>
-)};
+// const Navbar = () => {
+//   const [drawerOpen, setDrawerOpen] = useState(false);
+//   return(
+//   <Box
+//     sx={{
+//       backgroundColor: "#0b429cff",
+//       height: "70px",
+//       display: "flex",
+//       alignItems: "center",
+//       px: 3,
+//       gap: 2,
+//       flexShrink: 0,
+//     }}
+//   >
+//     <Typography
+//       sx={{ fontWeight: 800, fontSize: "34px", color: "#fff", fontFamily: "'Segoe UI', sans-serif", flexShrink: 0, letterSpacing: "-0.5px" }}
+//     >
+//       99<span style={{ fontWeight: 400 }}>acres</span>
+//     </Typography>
+//     <Box sx={{ flex: 1 }} />
+//     {/* Notification bell */}
+//     <IconButton
+//       sx={{ color: "#fff", p: 0.8, width: 34, height: 34 }}
+//     >
+//       <NotificationsNoneIcon sx={{ fontSize: "18px" }} />
+//     </IconButton>
+//     {/* KM avatar */}
+//     <Box sx={{ display: "flex", alignItems: "center", gap: 0.4, cursor: "pointer" }}>
+//       <Avatar
+//         sx={{ width: 30, height: 30, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}
+//       >
+//         KM
+//       </Avatar>
+//       <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "18px" }} />
+//     </Box>
+//     {/* Hamburger */}
+//     <IconButton sx={{ color: "#fff", p: 0.5 }} onClick={() => setDrawerOpen(true)}>
+//       <MenuIcon sx={{ fontSize: "22px" }} />
+//     </IconButton>
+//     <AppDrawer
+//       open={drawerOpen}
+//       onClose={() => setDrawerOpen(false)}
+//       // user={user}
+//       // onOpenLogin={handleOpenLogin}
+// />
+//   </Box>
+// )};
 
 // ─── Left Sidebar ──────────────────────────────────────────────────────────────
 const Sidebar = ({ activeItem, setActiveItem }) => (
@@ -975,7 +976,7 @@ const MainContent = () => {
 };
 
 // ─── Root Component ────────────────────────────────────────────────────────────
-export default function UserPropertyDashboard() {
+export default function UserPropertyDashboard({user,setUser}) {
   const [activeItem, setActiveItem] = useState("All Listings");
 
   return (
@@ -983,7 +984,8 @@ export default function UserPropertyDashboard() {
 
       {/* Sticky Navbar */}
       <Box sx={{ position: "sticky", top: 0, zIndex: 1200 }}>
-        <Navbar />
+        {/* <Navbar /> */}
+        <PostNavbar user={user} setUser={setUser}/>
       </Box>
 
       {/* Body: sidebar + content */}

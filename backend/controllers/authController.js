@@ -351,3 +351,19 @@ exports.refreshToken = async (req, res) => {
   }
 
 };
+
+exports.getLoggedInUser = async (req, res) => {
+  try {
+    const userId = req.user.id; // set by authMiddleware
+    const user = await User.findById(userId).select("-password"); // exclude password
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.json({ user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

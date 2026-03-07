@@ -31,12 +31,14 @@ import { useNavigate } from "react-router-dom";
 
 
 const PostProperty = ({user,setUser,onOpenLogin}) => {
+  // console.log(user)
   const [anchorEl, setAnchorEl] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [lookingFor, setLookingFor] = useState("Sell");
   const [propertyCategory, setPropertyCategory] = useState("Residential");
   const [propertyType, setPropertyType] = useState("Farmhouse");
   const [openAuth, setOpenAuth] = useState(false);
+  const [authRedirect, setAuthRedirect] = useState(null);
   const navigate = useNavigate();
 
   const steps = [
@@ -74,7 +76,7 @@ const PostProperty = ({user,setUser,onOpenLogin}) => {
     <Box sx={{ backgroundColor: "#f5f7fa", minHeight: "80vh", borderRadius:6}}>
       
       {/* ================= NAVBAR ================= */}
-      <PostNavbar onLoginClick={() => setOpenAuth(true)}/>
+      <PostNavbar onLoginClick={() => setOpenAuth(true)} user={user} setUser={setUser}/>
       
 
       {/* ================= MAIN SECTION ================= */}
@@ -278,7 +280,15 @@ const PostProperty = ({user,setUser,onOpenLogin}) => {
             <Button
               fullWidth
               variant="contained"
-              onClick={()=>navigate("/post-property/primary-details")}
+              onClick={()=>{
+                const accessToken = localStorage.getItem("accessToken")
+                if(accessToken){
+                  navigate("/post-property/primary-details")
+                }else{
+                  setAuthRedirect("/post-property/primary-details");
+                  setOpenAuth(true)
+                }
+                }}
               sx={{
                 mt: 4,
                 py: 1.5,
@@ -298,6 +308,7 @@ const PostProperty = ({user,setUser,onOpenLogin}) => {
               open={openAuth}
               handleClose={() => setOpenAuth(false)}
               setUser={setUser}
+              redirectPath={authRedirect}
             />
     </Box>
     <Button

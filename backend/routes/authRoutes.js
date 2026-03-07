@@ -14,9 +14,7 @@ router.post("/password-reset-mail",authController.passwordResetMail)
 router.post("/reset-password",authController.resetPassword)
 router.post("/refresh-token",authController.refreshToken)
 
-router.get("/me", verifyAccessToken, (req, res) => {
-  res.json({ user: req.user });
-});
+router.get("/me", verifyAccessToken, authController.getLoggedInUser)
 
 
 module.exports = router;

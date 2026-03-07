@@ -68,7 +68,15 @@ const Navbar = ({isHomePage,user,setUser}) => {
           <Box sx={{ display: "flex", alignItems: "center", gap: {xs:1,sm:2,md:3},
             whiteSpace:"nowrap",flexShrink:1,minWidth:0
            }}>
-            <Typography variant="h5" fontWeight={700} sx={{fontSize:"2rem"}}>
+            <Typography variant="h5" 
+            onClick={()=>{
+            const id = localStorage.getItem("userId")
+              if(id){
+                navigate('/dashboard')
+              }else{
+                navigate('/')
+              }}}
+            fontWeight={700} sx={{fontSize:"2rem",cursor:"pointer"}}>
               99acres
             </Typography>
 
@@ -186,8 +194,13 @@ const Navbar = ({isHomePage,user,setUser}) => {
           <Button
             variant="contained"
             onClick={()=>{
-              // console.log("Clicked");
-              navigate("/post-property")}}
+              const accessToken = localStorage.getItem("accessToken")
+              if(accessToken){
+                navigate("/post-property/primary-details")
+              }else{
+                navigate("/post-property")
+              }
+              }}
             sx={{
               backgroundColor: "#fff",
               color: "#444",
@@ -243,16 +256,17 @@ const Navbar = ({isHomePage,user,setUser}) => {
                 {user ? (
               <Avatar
                 sx={{
-                  bgcolor: "#fff",
-                  color: "#000",
+                  bgcolor: "#ddf8df",
+                  color: "#5ea92f",
                   fontWeight: "bold",
-                  width: { xs: 28, sm: 35 },   // responsive
-                  height: { xs: 28, sm: 35 },
-                  fontSize: { xs: 12, sm: 14 },
+                  width: 28,  // responsive
+                  height: 28,
+                  fontSize: 12
                 }}
+                title={`${user.firstName} ${user.lastName}`}
               >
-                {user.firstName.charAt(0).toUpperCase()}
-                {user.lastName.charAt(0).toUpperCase()}
+                {user.firstName?.charAt(0)?.toUpperCase() || ""}
+                {user.lastName?.charAt(0)?.toUpperCase() || ""}
               </Avatar>
             ) : (
               <AccountCircleIcon sx={{ fontSize: { xs: 28, sm: 30 } }}/>
@@ -277,6 +291,8 @@ const Navbar = ({isHomePage,user,setUser}) => {
             ) : (
                 <MenuItem
                   onClick={() => {
+                    localStorage.removeItem("userId");
+                    localStorage.removeItem("accessToken");
                     setUser(null);          // log out user
                     handleMenuClose();
                     navigate('/')
@@ -285,9 +301,9 @@ const Navbar = ({isHomePage,user,setUser}) => {
                   Logout
                 </MenuItem>
               )}
-              <MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
+              {user &&(<MenuItem onClick={()=>navigate("/post-property/shortlist-property")}>
               ShortListed
-              </MenuItem>
+              </MenuItem>)}
             </Menu>
 
             

@@ -21,7 +21,6 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CampaignOutlinedIcon from "@mui/icons-material/CampaignOutlined";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
@@ -35,6 +34,8 @@ import RecommendedProjects from "../../components/home/RecommendedProjects";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../utils/axiosInstance";
+import GuestUserCard from "../../components/home/GuestUserCard";
+import CustomNavbar from "./CustomNavbar";
 
 // ── Building illustration SVG ──
 const BuildingIllustration = () => (
@@ -95,79 +96,79 @@ const RelationshipManagerIllustration = () => (
 );
 
 // ── Navbar ──
-const Navbar = () => {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  return(
-  <AppBar position="static" sx={{ backgroundColor: "#1557a0", boxShadow: "none", height: "68px", justifyContent: "center" }}>
-    <Toolbar sx={{ minHeight: "68px !important", px: { xs: 2, sm: 4 }, gap: 2.5 }}>
+// const Navbar = () => {
+//   const [drawerOpen, setDrawerOpen] = useState(false);
+//   return(
+//   <AppBar position="static" sx={{ backgroundColor: "#1557a0", boxShadow: "none", height: "68px", justifyContent: "center" }}>
+//     <Toolbar sx={{ minHeight: "68px !important", px: { xs: 2, sm: 4 }, gap: 2.5 }}>
 
-      {/* Logo */}
-      <Typography sx={{ fontWeight: 800, fontSize: "35px", color: "#fff", letterSpacing: "-0.5px", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", mr: 0.5 }}>
-        99<span style={{ fontWeight: 400 }}>acres</span>
-      </Typography>
+//       {/* Logo */}
+//       <Typography sx={{ fontWeight: 800, fontSize: "35px", color: "#fff", letterSpacing: "-0.5px", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", mr: 0.5 }}>
+//         99<span style={{ fontWeight: 400 }}>acres</span>
+//       </Typography>
 
-      {/* My Postings */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 0.3, cursor: "pointer", flexShrink: 0 }}>
-        <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", whiteSpace: "nowrap" }}>
-          My Postings (1)
-        </Typography>
-        <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "20px" }} />
-      </Box>
+//       {/* My Postings */}
+//       <Box sx={{ display: "flex", alignItems: "center", gap: 0.3, cursor: "pointer", flexShrink: 0 }}>
+//         <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", whiteSpace: "nowrap" }}>
+//           My Postings (1)
+//         </Typography>
+//         <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "20px" }} />
+//       </Box>
 
-      {/* Search Bar */}
-      <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#fff", borderRadius: "6px", flex: 1, maxWidth: "480px", height: "42px", overflow: "hidden" }}>
-        <Box sx={{ display: "flex", alignItems: "center", px: 1.5, borderRight: "1px solid #ddd", height: "100%", cursor: "pointer", flexShrink: 0 }}>
-          <Typography sx={{ fontSize: "14px", color: "#333", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif" }}>Buy</Typography>
-          <KeyboardArrowDownIcon sx={{ fontSize: "17px", color: "#555" }} />
-        </Box>
-        <InputBase placeholder="Enter Locality / Pro..." sx={{ flex: 1, px: 1.5, fontSize: "14px", fontFamily: "'Segoe UI', sans-serif", color: "#333" }} />
-        <MyLocationIcon sx={{ fontSize: "20px", color: "#1557a0", mx: 1, cursor: "pointer" }} />
-        <MicIcon sx={{ fontSize: "20px", color: "#1557a0", mx: 0.5, cursor: "pointer" }} />
-        <Box sx={{ backgroundColor: "#1557a0", height: "42px", px: 1.8, display: "flex", alignItems: "center" }}>
-          <SearchIcon sx={{ color: "#fff", fontSize: "22px" }} />
-        </Box>
-      </Box>
+//       {/* Search Bar */}
+//       <Box sx={{ display: "flex", alignItems: "center", backgroundColor: "#fff", borderRadius: "6px", flex: 1, maxWidth: "480px", height: "42px", overflow: "hidden" }}>
+//         <Box sx={{ display: "flex", alignItems: "center", px: 1.5, borderRight: "1px solid #ddd", height: "100%", cursor: "pointer", flexShrink: 0 }}>
+//           <Typography sx={{ fontSize: "14px", color: "#333", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif" }}>Buy</Typography>
+//           <KeyboardArrowDownIcon sx={{ fontSize: "17px", color: "#555" }} />
+//         </Box>
+//         <InputBase placeholder="Enter Locality / Pro..." sx={{ flex: 1, px: 1.5, fontSize: "14px", fontFamily: "'Segoe UI', sans-serif", color: "#333" }} />
+//         <MyLocationIcon sx={{ fontSize: "20px", color: "#1557a0", mx: 1, cursor: "pointer" }} />
+//         <MicIcon sx={{ fontSize: "20px", color: "#1557a0", mx: 0.5, cursor: "pointer" }} />
+//         <Box sx={{ backgroundColor: "#1557a0", height: "42px", px: 1.8, display: "flex", alignItems: "center" }}>
+//           <SearchIcon sx={{ color: "#fff", fontSize: "22px" }} />
+//         </Box>
+//       </Box>
 
-      {/* Nav links */}
-      <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 3, ml: 0.5 }}>
-        <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", whiteSpace: "nowrap" }}>
-          For Owners
-        </Typography>
-        <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", whiteSpace: "nowrap" }}>
-          Owner Plans
-        </Typography>
-      </Box>
+//       {/* Nav links */}
+//       <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 3, ml: 0.5 }}>
+//         <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", whiteSpace: "nowrap" }}>
+//           For Owners
+//         </Typography>
+//         <Typography sx={{ fontSize: "15px", color: "#fff", fontWeight: 500, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", whiteSpace: "nowrap" }}>
+//           Owner Plans
+//         </Typography>
+//       </Box>
 
-      {/* Post Property */}
-      <Button variant="outlined" sx={{ backgroundColor:"#fff",borderColor: "#fff", color: "#000", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 2, py: 0.8, whiteSpace: "nowrap", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "rgba(255,255,255,0.1)", borderColor: "#fff" } }}>
-        Post property{" "}
-        <Box component="span" sx={{ backgroundColor: "#4caf50", color: "#fff", fontSize: "11px", fontWeight: 700, px: 0.7, py: 0.2, borderRadius: "3px", ml: 1 }}>
-          FREE
-        </Box>
-      </Button>
+//       {/* Post Property */}
+//       <Button variant="outlined" sx={{ backgroundColor:"#fff",borderColor: "#fff", color: "#000", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", px: 2, py: 0.8, whiteSpace: "nowrap", flexShrink: 0, fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "rgba(255,255,255,0.1)", borderColor: "#fff" } }}>
+//         Post property{" "}
+//         <Box component="span" sx={{ backgroundColor: "#4caf50", color: "#fff", fontSize: "11px", fontWeight: 700, px: 0.7, py: 0.2, borderRadius: "3px", ml: 1 }}>
+//           FREE
+//         </Box>
+//       </Button>
 
-      {/* Right icons */}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexShrink: 0 }}>
-        <IconButton sx={{ color: "#fff", p: 0.8, }}>
-          <NotificationsNoneIcon sx={{ fontSize: "22px" }} />
-        </IconButton>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer",  px: 1, py: 0.4 }}>
-          <Avatar sx={{ width: 28, height: 28, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}>KM</Avatar>
-          <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "20px" }} />
-        </Box>
-        <IconButton sx={{ color: "#fff", p: 0.8 }} onClick={()=>setDrawerOpen(true)}>
-          <MenuIcon sx={{ fontSize: "24px" }} />
-        </IconButton>
-        <AppDrawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        // user={user}               // pass if you have it
-        // onOpenLogin={handleLogin} // pass your login handler
-      />
-      </Box>
-    </Toolbar>
-  </AppBar>
-)};
+//       {/* Right icons */}
+//       <Box sx={{ display: "flex", alignItems: "center", gap: 1.2, flexShrink: 0 }}>
+//         <IconButton sx={{ color: "#fff", p: 0.8, }}>
+//           <NotificationsNoneIcon sx={{ fontSize: "22px" }} />
+//         </IconButton>
+//         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "pointer",  px: 1, py: 0.4 }}>
+//           <Avatar sx={{ width: 28, height: 28, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "11px", fontWeight: 700 }}>KM</Avatar>
+//           <KeyboardArrowDownIcon sx={{ color: "#fff", fontSize: "20px" }} />
+//         </Box>
+//         <IconButton sx={{ color: "#fff", p: 0.8 }} onClick={()=>setDrawerOpen(true)}>
+//           <MenuIcon sx={{ fontSize: "24px" }} />
+//         </IconButton>
+//         <AppDrawer
+//         open={drawerOpen}
+//         onClose={() => setDrawerOpen(false)}
+//         // user={user}               // pass if you have it
+//         // onOpenLogin={handleLogin} // pass your login handler
+//       />
+//       </Box>
+//     </Toolbar>
+//   </AppBar>
+// )};
 
 // ── Responses Section (below "0 Responses on this posting") ──
 const ResponsesSection = () => (
@@ -621,7 +622,7 @@ const PlansComparisonBox = () => {
 
 
 // ── Listings Section ──
-const ListingsSection = () => { 
+const ListingsSection = ({user, setUser}) => { 
   const [anchorEl, setAnchorEl] = useState(null);
 const open = Boolean(anchorEl);
 const [property, setProperty] = useState(null);
@@ -875,57 +876,13 @@ const formatDate = (date) => {
 )};
 
 // ── Right Sidebar ──
-const RightSidebar = () => (
+const RightSidebar = ({user,setUser}) => (
   <Box sx={{ width: "320px", flexShrink: 0, display: "flex", flexDirection: "column", gap: 2.5,
     position:"sticky",top:"50px",alignSelf:"flex-start"
    }}>
 
     {/* Kiran M card */}
-    <Box sx={{ border: "1px solid #e0e6ef", borderRadius: "12px", backgroundColor: "#fff", p: 3 }}>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2.5 }}>
-        <Avatar sx={{ width: 46, height: 46, backgroundColor: "#c8e6c9", color: "#2e7d32", fontSize: "15px", fontWeight: 700 }}>KM</Avatar>
-        <Box>
-          <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>Kiran M</Typography>
-          <Typography sx={{ fontSize: "13px", color: "#888", fontFamily: "'Segoe UI', sans-serif" }}>Owner</Typography>
-        </Box>
-      </Box>
-
-      <Typography sx={{ fontSize: "12px", color: "#999", fontWeight: 700, letterSpacing: "0.6px", fontFamily: "'Segoe UI', sans-serif", mb: 1.2, textTransform: "uppercase" }}>
-        Your Recent Activity
-      </Typography>
-
-      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 2, cursor: "pointer" }}>
-        <Typography sx={{ fontSize: "13px", color: "#444", fontFamily: "'Segoe UI', sans-serif" }}>
-          Property ID - U89266127 (2 BHK Flat/Ap...)
-        </Typography>
-        <KeyboardArrowDownIcon sx={{ fontSize: "17px", color: "#555" }} />
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2 }}>
-        {[{ val: "2", label: "Property Posted" }, { val: "0", label: "Total Responses" }].map(({ val, label }) => (
-          <Box key={label} sx={{ flex: 1, border: "1px solid #e0e6ef", borderRadius: "8px", p: 1.8 }}>
-            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <Typography sx={{ fontSize: "24px", fontWeight: 800, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>{val}</Typography>
-              <OpenInNewIcon sx={{ fontSize: "17px", color: "#1557a0" }} />
-            </Box>
-            <Typography sx={{ fontSize: "12px", color: "#777", fontFamily: "'Segoe UI', sans-serif" }}>{label}</Typography>
-          </Box>
-        ))}
-      </Box>
-
-      {/* Alert banner */}
-      <Box sx={{ mt: 2, backgroundColor: "#fff3f3", border: "1px solid #ffc8c8", borderRadius: "8px", p: 1.5, display: "flex", alignItems: "flex-start", gap: 1 }}>
-        <ErrorOutlineIcon sx={{ fontSize: "20px", color: "#e53935", flexShrink: 0, mt: 0.2 }} />
-        <Box>
-          <Typography sx={{ fontSize: "13px", color: "#333", fontFamily: "'Segoe UI', sans-serif", lineHeight: 1.4 }}>
-            Free listing is visible to only 14% buyers
-          </Typography>
-          <Typography sx={{ fontSize: "13px", color: "#1557a0", fontWeight: 600, fontFamily: "'Segoe UI', sans-serif", cursor: "pointer", mt: 0.3 }}>
-            Get upto 10X Responses - Upgrade
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+   <GuestUserCard user={user} setUser={setUser}/>
 
     {/* Get a Relationship Manager card */}
     <Box sx={{ border: "1px solid #e0e6ef", borderRadius: "12px", backgroundColor: "#fff", p: 3, position: "relative", overflow: "hidden", minHeight: "170px" }}>
@@ -949,18 +906,19 @@ const RightSidebar = () => (
 );
 
 // ── Main Dashboard ──
-export default function PropertyDashboard() {
+export default function PropertyDashboard({user,setUser}) {
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f7fa", fontFamily: "'Segoe UI', sans-serif" }}>
-      <Navbar />
+      {/* <Navbar /> */}
+      <CustomNavbar user={user} setUser={setUser}/>
 
       {/* Gap after navbar */}
       <Box sx={{ height: "100px" }} />
 
       <Box sx={{ maxWidth: "1280px", mx: "auto", px: { xs: 2, sm: 5 }, pb: 6, display: "flex", gap: 4, alignItems: "flex-start", flexDirection: { xs: "column", lg: "row" } }}>
         
-        <ListingsSection />
-        <RightSidebar  />
+        <ListingsSection user={user} setUser={setUser}/>
+        <RightSidebar user={user} setUser={setUser} />
         
       </Box>
       
