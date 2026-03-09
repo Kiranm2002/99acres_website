@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const City = require("../models/City");
 
-mongoose.connect("mongodb://localhost:27017/realestate");
+mongoose.connect(process.env.MONGO_URI);
 
 const cities = [
   { name: "Bangalore North", state: "Karnataka" },

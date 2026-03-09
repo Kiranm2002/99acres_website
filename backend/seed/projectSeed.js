@@ -4,7 +4,7 @@ const PropertyProject = require("../models/propertProject");
 
 const seedProjects = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/realestate");
+    await mongoose.connect(process.env.MONGO_URI);
 
     await PropertyProject.deleteMany({});
 

@@ -4,7 +4,7 @@ const SubLocality = require("../models/subLocality");
 
 const seedSubLocalities = async () => {
   try {
-    await mongoose.connect("mongodb://localhost:27017/realestate");
+    await mongoose.connect(process.env.MONGO_URI);
 
     await SubLocality.deleteMany({});
 

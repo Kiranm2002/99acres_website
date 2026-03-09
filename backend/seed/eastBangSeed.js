@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Locality = require("../models/Locality");
 
-mongoose.connect("mongodb://localhost:27017/realestate");
+mongoose.connect(process.env.MONGO_URI);
 
 // 🔥 Replace with your actual Bangalore East ID
 const bangaloreEastId = "69a668c30e28797f03f8a803";
