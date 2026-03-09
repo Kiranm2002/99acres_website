@@ -97,7 +97,7 @@ exports.searchProjects = async (req, res) => {
     // console.log(query,subLocalityId)
 
     
-    if (!query || !subLocalityId) {
+    if (!subLocalityId) {
       return res.json([]);
     }
 

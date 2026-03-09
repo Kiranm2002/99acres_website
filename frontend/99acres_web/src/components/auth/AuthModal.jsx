@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ const AuthModal = ({ open, handleClose, redirectPath }) => {
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [passwordError, setPasswordError] = useState(""); 
-  
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
   // steps: email | otp | register
 
   const [email, setEmail] = useState("");
@@ -45,6 +45,9 @@ const AuthModal = ({ open, handleClose, redirectPath }) => {
     phone: "",
   });
   
+  useEffect(() => {
+  inputRefs.current[0]?.focus();
+}, []);
 
 
   const handleContinue = async() => {
@@ -378,8 +381,17 @@ const AuthModal = ({ open, handleClose, redirectPath }) => {
                       }
                     }}
                     onKeyDown={(e) => {
-                      if (e.key === "Backspace" && !otp[index] && index > 0) {
-                        inputRefs.current[index - 1]?.focus();
+                      if (e.key === "Backspace") {
+                        let newOtp = otp.split("");
+
+                        if (otp[index]) {
+                          newOtp[index] = "";
+                          setOtp(newOtp.join(""));
+                        } else if (index > 0) {
+                          inputRefs.current[index - 1]?.focus();
+                          newOtp[index - 1] = "";
+                          setOtp(newOtp.join(""));
+                        }
                       }
                     }}
                     sx={{
@@ -539,13 +551,24 @@ const AuthModal = ({ open, handleClose, redirectPath }) => {
 
               {/* 5️⃣ Phone */}
               <TextField
-                fullWidth
-                placeholder="Phone Number"
-                name="phone"
-                value={formData.phone || ""}
-                onChange={handleInputChange}
-                sx={{ mb: 2 }}
-              />
+              fullWidth
+              placeholder="Phone Number"
+              name="phone"
+              value={formData.phone || ""}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, ""); // remove non-numbers
+                if (value.length <= 10) {
+                  handleInputChange({
+                    target: {
+                      name: "phone",
+                      value: value,
+                    },
+                  });
+                }
+              }}
+              inputProps={{ maxLength: 10 }}
+              sx={{ mb: 2 }}
+            />
 
               {/* Password */}
               <TextField
@@ -555,6 +578,12 @@ const AuthModal = ({ open, handleClose, redirectPath }) => {
                 name="password"
                 value={formData.password || ""}
                 onChange={handleInputChange}
+                error={formData.password && !passwordRegex.test(formData.password)}
+                helperText={
+                  formData.password && !passwordRegex.test(formData.password)
+                    ? "Password must be at least 8 characters with 1 uppercase and 1 lowercase letter, 1 numeric and 1 special character"
+                    : ""
+                }
                 sx={{ mb: 2 }}
               />
 

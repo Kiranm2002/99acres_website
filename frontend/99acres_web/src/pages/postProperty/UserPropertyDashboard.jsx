@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 import {
   Box,
   Typography,
@@ -110,7 +110,9 @@ const SIDEBAR_MENU = [
 // )};
 
 // ─── Left Sidebar ──────────────────────────────────────────────────────────────
-const Sidebar = ({ activeItem, setActiveItem }) => (
+const Sidebar = ({ activeItem, setActiveItem }) => {
+  const navigate = useNavigate();
+  return(
   <Box
     sx={{
       width: "240px",
@@ -163,6 +165,7 @@ const Sidebar = ({ activeItem, setActiveItem }) => (
       
       <Button
         size="small"
+        onClick={()=>navigate("/my99acres/edit-profile")}
         sx={{
           backgroundColor: "rgba(255,255,255,0.15)",
           color: "#fff",
@@ -248,7 +251,7 @@ const Sidebar = ({ activeItem, setActiveItem }) => (
       ))}
     </Box>
   </Box>
-);
+)};
 
 // ─── Property Card ─────────────────────────────────────────────────────────────
 const PropertyCard = ({ property,onDelete }) =>{
@@ -599,6 +602,8 @@ const MainContent = () => {
   const [sort, setSort] = useState("Newest First");
   const [locality, setLocality] = useState("");
   const [selectAll, setSelectAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const activeProductsRef = useRef(null);
   
   
 
@@ -607,12 +612,75 @@ const MainContent = () => {
   setProperties(prev => prev.filter(p => p.id !== id));
 };
 
+const filteredProperties = properties.filter((property) => {
+
+  const keyword = searchQuery.trim().toLowerCase();
+
+  // if search empty → show all
+  if (!keyword) return true;
+
+  return (
+    (property.city || "").toLowerCase().includes(keyword) ||
+    (property.locality || "").toLowerCase().includes(keyword) ||
+    (property.subLocality || "").toLowerCase().includes(keyword) ||
+    (property.project || "").toLowerCase().includes(keyword)
+  );
+});
+
+// const sortedProperties = [...(searchQuery ? filteredProperties : properties)].sort((a, b) => {
+//   if (sort === "Newest First") {
+//     return new Date(b.createdAt) - new Date(a.createdAt);
+//   } else {
+//     return new Date(a.createdAt) - new Date(b.createdAt);
+//   }
+// });
+
+const displayProperties = [...filteredProperties].sort((a, b) => {
+  const dateA = new Date(a.createdAt || 0);
+  const dateB = new Date(b.createdAt || 0);
+
+  if (sort === "Newest First") {
+    return dateB - dateA;
+  } else {
+    return dateA - dateB;
+  }
+});
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+
+    // if search empty → do nothing
+    if (!searchQuery) return;
+
+    // scroll ONLY if matches exist
+    if (displayProperties.length > 0) {
+      activeProductsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+
+  }, 800); // small delay for better UX
+
+  return () => clearTimeout(timer);
+
+}, [searchQuery, displayProperties]);
+
+
   useEffect(() => {
   const fetchPropertiesFromBackend = async () => {
     try {
       const response = await axiosInstance.get("/property/all-properties");
+      // console.log(response.data.properties);
+      const totalSteps = 5;
+      const formattedProperties = response.data.properties.map((data) => {
+        
+        const completionPercentage = Math.min(
+          Math.round((data.stepCompleted / totalSteps) * 100),
+          100
+        );
 
-      const formattedProperties = response.data.properties.map((data) => ({
+        return{
         id: data._id,
 
         title: `${data.bhk || ""} ${data.propertyType} ${data.category} for ${data.lookingFor} in ${data.project?.name}, ${data.subLocality?.name}, ${data.city?.name}`,
@@ -621,6 +689,11 @@ const MainContent = () => {
 
         carpetArea: `${data.plotArea} ${data.areaUnit}`,
 
+        city: data.city?.name || "",
+        locality: data.locality?.name || "",
+        subLocality: data.subLocality?.name || "",
+        project: data.project?.name || "",
+        createdAt : data.createdAt,
         badge: "Plain",
         badgeColor: "#e07b00",
 
@@ -634,14 +707,14 @@ const MainContent = () => {
 
         expiryOn: "30 Oct 2026",
 
-        completion: 65,
+        completion: completionPercentage,
 
         summaryViews: 0,
 
         detailViews: 3,
 
         listingPrice: "0 Credits",
-      }));
+        }});
 
       setProperties(formattedProperties);
 
@@ -741,14 +814,28 @@ const MainContent = () => {
             <Box sx={{ flex: 1 }} />
 
             {/* Locality search */}
+            <Box sx={{ display: "flex", flexDirection: "column", width: "200px" }}>
             <TextField
               size="small"
               placeholder="Enter Locality"
-              value={locality}
-              onChange={e => setLocality(e.target.value)}
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
               InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon sx={{ fontSize: "18px", color: "#aaa" }} /></InputAdornment> }}
               sx={{ width: "180px", "& .MuiOutlinedInput-root": { borderRadius: "6px", fontSize: "13px", fontFamily: "'Segoe UI', sans-serif" } }}
             />
+            {searchQuery && displayProperties.length === 0 && (
+              <Typography
+                sx={{
+                  fontSize: "12px",
+                  color: "#e53935",
+                  mt: 0.5,
+                  fontFamily: "'Segoe UI', sans-serif"
+                }}
+              >
+                No Listings found for "{searchQuery}"
+              </Typography>
+            )}
+            </Box>
 
             {/* Category */}
             <Box>
@@ -797,6 +884,7 @@ const MainContent = () => {
 
         {/* Action bar */}
         <Box
+          ref={activeProductsRef}
           sx={{
             backgroundColor: "#fff",
             border: "1px solid #e0e6ef",
@@ -810,7 +898,7 @@ const MainContent = () => {
           }}
         >
           <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif", flex: 1 }}>
-            {properties.length} Active Product{properties.length !== 1 ? "s" : ""}
+            {displayProperties.length} Active Product{displayProperties.length !== 1 ? "s" : ""}
           </Typography>
           <Box sx={{ width: "1px", height: "22px", backgroundColor: "#e0e6ef" }} />
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.8 }}>
@@ -833,7 +921,7 @@ const MainContent = () => {
         </Box>
 
         {/* Property cards */}
-        {properties.length === 0 ? (
+       {displayProperties.length === 0 ? (
           <Box
             sx={{
               py: 10,
@@ -851,13 +939,18 @@ const MainContent = () => {
                 fontFamily: "'Segoe UI', sans-serif"
               }}
             >
-              No Property Listed Yet
+              {searchQuery
+                ? `No Listings found for "${searchQuery}"`
+                : "No Property Listed Yet"}
             </Typography>
           </Box>
         ) : (
-          properties.map((property) => (
-            <PropertyCard key={property.id} property={property} 
-            onDelete={handleDeleteProperty}/>
+          displayProperties.map((property) => (
+            <PropertyCard
+              key={property.id}
+              property={property}
+              onDelete={handleDeleteProperty}
+            />
           ))
         )}
 

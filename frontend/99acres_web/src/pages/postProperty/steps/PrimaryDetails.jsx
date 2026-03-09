@@ -13,7 +13,7 @@ import { useNavigate,useParams } from "react-router-dom";
 import axiosInstance from "../../../utils/axiosInstance";
 import { useEffect } from "react";
 
-const PrimaryDetails = ({ user }) => {
+const PrimaryDetails = ({ user,setUser }) => {
   const navigate = useNavigate();
   const {propertyId} = useParams();
 
@@ -37,6 +37,17 @@ const [category, setCategory] = useState("");
     "Farmhouse",
     "Other",
   ];
+
+  const filteredCategories =
+  lookingFor === "PG"
+    ? [
+        "Flat/Apartment",
+        "Independent House / Villa",
+        "Independent / Builder Floor",
+        "1 RK/ Studio Apartment",
+        "Serviced Apartment",
+      ]
+    : propertyOptions;
 
   const handleContinue = async() => {
     
@@ -122,7 +133,12 @@ const [category, setCategory] = useState("");
                         <Button
                         key={index}
                         variant="outlined"
-                        onClick={() => setLookingFor(type)}
+                        onClick={() => {
+                          setLookingFor(type)
+                          if (type === "PG") {
+                            setPropertyType("Residential");
+                          }
+                        }}
                         // value={item}
                         sx={{
                             borderRadius: 5,
@@ -162,21 +178,13 @@ const [category, setCategory] = useState("");
           value="Commercial"
           control={<Radio />}
           label="Commercial"
+          disabled={lookingFor === "PG"}
         />
       </RadioGroup>
 
       {/* ===== Property Category Chips ===== */}
       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2,mt:2 }}>
-                    {[
-                      "Flat/Apartment",
-                      "Independent House / Villa",
-                      "Independent / Builder Floor",
-                      "Plot / Land",
-                      "1 RK/ Studio Apartment",
-                      "Serviced Apartment",
-                      "Farmhouse",
-                      "Other"
-                    ].map((type, index) => (
+                    {filteredCategories.map((type, index) => (
                       <Button
                         key={index}
                         variant="outlined"

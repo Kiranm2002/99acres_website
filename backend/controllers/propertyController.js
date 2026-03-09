@@ -17,6 +17,7 @@ const createProperty = async (req, res) => {
       category,
     });
     property.stepCompleted = 1;
+    property.status = "draft"
     res.status(201).json({
       message: "Primary details saved successfully",
       propertyId: property._id,
@@ -332,7 +333,7 @@ const updateOtherDetails = async (req, res) => {
     property.otherFeatures = otherFeatures || {};
 
     property.stepCompleted = 5;
-
+    property.status = "completed"
     await property.save();
 
     res.status(200).json({

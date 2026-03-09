@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import AuthModal from "../auth/AuthModal";
 
 
-const SecondaryNavbar = ({ show,user,setUser }) => {
+const SecondaryNavbar = ({ show,user,setUser,onSearch, resultsCount, searchQuery  }) => {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -111,6 +111,12 @@ const SecondaryNavbar = ({ show,user,setUser }) => {
               fullWidth
               variant="standard"
               placeholder="Enter Locality / Project / Society / Landmark"
+              onChange={(e) => onSearch(e.target.value)}
+              error={searchQuery && resultsCount === 0}
+              helperText={
+                searchQuery && resultsCount === 0
+                  ? `No listings found for "${searchQuery}"`
+                  : ""}
               InputProps={{
                 disableUnderline: true,
                 startAdornment: (

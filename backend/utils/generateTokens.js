@@ -12,7 +12,7 @@ const generateAccessToken = (user) => {
       
     },
     ACCESS_SECRET_KEY,
-    { expiresIn: "30m" }
+    { expiresIn: "3h" }
   );
 };
 

@@ -26,7 +26,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 
-const HeroSection = ({ searchRef, hideSearch }) => {
+const HeroSection = ({ searchRef, hideSearch, onSearch, resultsCount, searchQuery }) => {
   const [value, setValue] = React.useState(0);
   const navigate = useNavigate();
   const slides = [
@@ -278,6 +278,13 @@ const HeroSection = ({ searchRef, hideSearch }) => {
                 variant="standard"
                 placeholder='Search "3 BHK for sale in Mumbai"'
                 InputProps={{ disableUnderline: true }}
+                onChange={(e) => onSearch(e.target.value)}
+                error={searchQuery && resultsCount === 0}
+                helperText={
+                  searchQuery && resultsCount === 0
+                    ? `No listings found for "${searchQuery}"`
+                    : ""
+                }
               />
 
               <IconButton sx={{ backgroundColor: "#f0f8ff", width: 40, height: 40 }}>
@@ -297,6 +304,7 @@ const HeroSection = ({ searchRef, hideSearch }) => {
               </Button>
             </Box>
           </Paper>
+          
         </Box>
       </Box>
 

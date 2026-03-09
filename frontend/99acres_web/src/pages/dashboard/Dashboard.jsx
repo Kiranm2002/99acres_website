@@ -21,6 +21,17 @@ const PropertyCard = ({ property }) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
   };
+  const formatPrice = (price) => {
+  if (!price) return "";
+
+  if (price >= 10000000) {
+    return `${(price / 10000000).toFixed(1)} Cr`;
+  } else if (price >= 100000) {
+    return `${(price / 100000).toFixed(0)} Lac`;
+  } else {
+    return `${price}`;
+  }
+};
 
   return (
     <Box
@@ -95,7 +106,7 @@ const PropertyCard = ({ property }) => {
         <Box sx={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
           <Box>
             <Typography sx={{ fontSize: "12px", color: "#999" }}>Price</Typography>
-            <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>₹ {property?.expectedPrice}</Typography>
+            <Typography sx={{ fontSize: "14px", fontWeight: 600 }}>₹ {formatPrice(property?.expectedPrice)}</Typography>
           </Box>
           <Box>
             <Typography sx={{ fontSize: "12px", color: "#999" }}>Property ID</Typography>
@@ -124,12 +135,17 @@ const PropertyCard = ({ property }) => {
 const Dashboard = ({user,setUser}) => {
   const [showSecondaryNav, setShowSecondaryNav] = useState(false);
   const [properties, setProperties] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const listingsRef = useRef(null);
   // const [user, setUser] = useState(null);
     const searchRef = useRef(null);
   // const user = {
   //   firstName: "Kiran",
   //   lastName: "M"
   // };
+
+
+
   useEffect(() => {
     const handleScroll = () => {
       if (!searchRef.current) return;
@@ -147,7 +163,32 @@ const Dashboard = ({user,setUser}) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+// const filteredProperties = properties.filter((property) => {
+//   const keyword = searchQuery.toLowerCase();
+
+//   return (
+//     property?.city?.name?.toLowerCase().includes(keyword) ||
+//     property?.locality?.name?.toLowerCase().includes(keyword) ||
+//     property?.subLocality?.name?.toLowerCase().includes(keyword) ||
+//     property?.project?.name?.toLowerCase().includes(keyword)
+//   );
+// });
+
   //fectching user
+  
+  const filteredProperties = properties.filter((property) => {
+  const keyword = searchQuery.toLowerCase();
+
+  const searchableText = `
+    ${property?.city?.name}
+    ${property?.locality?.name}
+    ${property?.subLocality?.name}
+    ${property?.project?.name}
+  `.toLowerCase();
+
+  return searchableText.includes(keyword);
+});
+  
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -175,12 +216,31 @@ const Dashboard = ({user,setUser}) => {
   fetchProperties();
 }, []);
 
+useEffect(() => {
+  if (!searchQuery || filteredProperties.length === 0) return;
+
+  const timer = setTimeout(() => {
+    listingsRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, 1000);
+
+  return () => clearTimeout(timer);
+}, [searchQuery]);
 
   return (<>
-    <SecondaryNavbar isHomePage={true} user={user} setUser={setUser} show={showSecondaryNav}/>
+    <SecondaryNavbar isHomePage={true} user={user} setUser={setUser} 
+    show={showSecondaryNav}
+     onSearch={setSearchQuery}
+      resultsCount={filteredProperties.length}
+      searchQuery={searchQuery}/>
     <Navbar isHomePage={true} user={user} setUser={setUser}  />
       <HeroSection searchRef={searchRef}
-        hideSearch={showSecondaryNav} />
+        hideSearch={showSecondaryNav} 
+        onSearch={setSearchQuery}
+        resultsCount={filteredProperties.length}
+        searchQuery={searchQuery}/>
       <Box sx={{pt:"80px"}}><ExploreOptions/></Box>
 
       <Box
@@ -189,14 +249,15 @@ const Dashboard = ({user,setUser}) => {
         }}
       >
         <Box sx={{flex:3, minWidth:0, }}>
-
+          <Box ref={listingsRef}>
           <Typography
             sx={{ fontSize: "26px", fontWeight: 700, color: "#071c2c", mb: 1, mt:2 }}
           >
             Your Listings
           </Typography>
-          {properties.length > 0 ? (
-            properties.map((property) => <PropertyCard key={property._id} property={property} />)
+          </Box>
+          {filteredProperties.length > 0 ? (
+            filteredProperties.map((property) => <PropertyCard key={property._id} property={property} />)
           ) : (
             <p>No properties found.</p>
           )}

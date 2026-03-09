@@ -24,6 +24,53 @@ import CheckIcon from "@mui/icons-material/Check";
 import axiosInstance from "../../../utils/axiosInstance"
 import { useEffect } from "react";
 
+ const AreaInputBox = ({
+  placeholder,
+  value,
+  onChange,areaUnit,setAreaUnit
+}) => (
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      border: "1px solid #c4c4c4",
+      borderRadius: "4px",
+      width: 380,
+      height: 48,
+      px: 2,
+      mt: 2
+    }}
+  >
+    <TextField
+      variant="standard"
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      InputProps={{ disableUnderline: true }}
+      sx={{ flex: 1 }}
+    />
+
+    <Divider orientation="vertical" flexItem />
+
+    <Select
+      value={areaUnit}
+      onChange={(e) => setAreaUnit(e.target.value)}
+      variant="standard"
+      disableUnderline
+      sx={{ ml: 2, width: 100 }}
+    >
+      <MenuItem value="sq.ft.">sq.ft.</MenuItem>
+      <MenuItem value="sq.yards">sq.yards</MenuItem>
+      <MenuItem value="sq.m">sq.m</MenuItem>
+      <MenuItem value="acres">acres</MenuItem>
+      <MenuItem value="marla">marla</MenuItem>
+      <MenuItem value="cents">cents</MenuItem>
+      <MenuItem value="guntha">guntha</MenuItem>
+    </Select>
+  </Box>
+);
+
+
 const PropertyProfile = () => {
   const navigate = useNavigate();
 const {propertyId} = useParams();
@@ -131,51 +178,7 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
     }
   }
 
-  const AreaInputBox = ({
-  placeholder,
-  value,
-  onChange
-}) => (
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "center",
-      border: "1px solid #c4c4c4",
-      borderRadius: "4px",
-      width: 380,
-      height: 48,
-      px: 2,
-      mt: 2
-    }}
-  >
-    <TextField
-      variant="standard"
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      InputProps={{ disableUnderline: true }}
-      sx={{ flex: 1 }}
-    />
-
-    <Divider orientation="vertical" flexItem />
-
-    <Select
-      value={areaUnit}
-      onChange={(e) => setAreaUnit(e.target.value)}
-      variant="standard"
-      disableUnderline
-      sx={{ ml: 2, width: 100 }}
-    >
-      <MenuItem value="sq.ft.">sq.ft.</MenuItem>
-      <MenuItem value="sq.yards">sq.yards</MenuItem>
-      <MenuItem value="sq.m">sq.m</MenuItem>
-      <MenuItem value="acres">acres</MenuItem>
-      <MenuItem value="marla">marla</MenuItem>
-      <MenuItem value="cents">cents</MenuItem>
-      <MenuItem value="guntha">guntha</MenuItem>
-    </Select>
-  </Box>
-);
+ 
 
   useEffect(() => {
   const id = propertyId || sessionStorage.getItem("propertyId")
@@ -334,6 +337,8 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
           placeholder="Plot Area"
           value={plotArea}
           onChange={(e) => setPlotArea(e.target.value)}
+          areaUnit={areaUnit}
+          setAreaUnit={setAreaUnit}
         />
         <Box mt={2} display="flex" flexDirection="column" gap={1}>
           <Typography
@@ -362,6 +367,8 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
             placeholder="Carpet Area"
             value={carpetArea}
             onChange={(e) => setCarpetArea(e.target.value)}
+            areaUnit={areaUnit}
+            setAreaUnit={setAreaUnit}
           />
         )}
 
@@ -370,6 +377,8 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
             placeholder="Built-up Area"
             value={builtUpArea}
             onChange={(e) => setBuiltUpArea(e.target.value)}
+            areaUnit={areaUnit}
+          setAreaUnit={setAreaUnit}
           />
         )}
 
@@ -378,6 +387,8 @@ const [ageOfProperty,setAgeOfProperty] = useState("");
             placeholder="Super Built-up Area"
             value={superBuiltUpArea}
             onChange={(e) => setSuperBuiltUpArea(e.target.value)}
+            areaUnit={areaUnit}
+          setAreaUnit={setAreaUnit}
           />
         )}
       </Box>

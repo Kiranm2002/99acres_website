@@ -21,6 +21,7 @@ import PropertyPreview from "./pages/postProperty/PropertyPreview";
 import UserPropertydashboard from "./pages/postProperty/UserPropertyDashboard"
 import ShortlistPage from "./pages/postProperty/ShortlistPage";
 import axiosInstance from "./utils/axiosInstance";
+import EditProfile from "./pages/admin/EditProfile";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -48,8 +49,8 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword/>}/>
         <Route path="/post-property"  >
           <Route index element={<PostProperty  user={user} setUser={setUser}/>}/>
-          <Route element={<PrimaryDetailsLayout />}>
-            <Route path="primary-details/:propertyId?" element={<PrimaryDetails />} />
+          <Route element={<PrimaryDetailsLayout user={user} setUser={setUser}/>}>
+            <Route path="primary-details/:propertyId?" element={<PrimaryDetails user={user} setUser={setUser}/>} />
             <Route path="location/:propertyId?" element={<LocationDetails/>}/>
             <Route path="basic-details/:propertyId?" element={<PropertyProfile/>}/>
             <Route path="photo-details/:propertyId?" element={<PhotoDetails/>}/>
@@ -61,7 +62,7 @@ function App() {
           <Route path="user-property-dashboard" element={<UserPropertydashboard user={user} setUser={setUser}/>}/>
           <Route path="shortlist-property" element={<ShortlistPage user={user} setUser={setUser}/>}/>
         </Route>
-        
+        <Route path="my99acres/edit-profile" element={<EditProfile user={user} setUser={setUser}/>}/>
         
       </Routes>
     

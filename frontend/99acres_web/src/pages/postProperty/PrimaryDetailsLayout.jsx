@@ -14,7 +14,7 @@ const steps = [
   { label: "Amenities section", path: "other-details" }
 ];
 
-const PrimaryDetailsLayout = () => {
+const PrimaryDetailsLayout = ({user,setUser}) => {
   const [selectedPropertyType, setSelectedPropertyType] = useState("");
   const location = useLocation();
   const {propertyId} = useParams();
@@ -38,7 +38,7 @@ const PrimaryDetailsLayout = () => {
 
   return (
     <>
-      <PostNavbar />
+      <PostNavbar user={user} setUser={setUser}/>
 
       <Box
         sx={{

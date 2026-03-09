@@ -79,7 +79,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
   // ----------------------------
   useEffect(() => {
     const delay = setTimeout(async () => {
-      if (locality.length >= 1 && selectedCity && !selectedLocality) {
+      if ( selectedCity && !selectedLocality) {
         try {
           setLoadingLocality(true);
           const res = await axiosInstance.get(
@@ -103,7 +103,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
     useEffect(() => {
   const delay = setTimeout(async () => {
 
-    if (subLocality.length >= 1 && selectedLocality && !selectedSubLocality) {
+    if (selectedLocality && !selectedSubLocality) {
 
       try {
         setLoadingSubLocality(true);
@@ -133,13 +133,13 @@ const [loadingProjects, setLoadingProjects] = useState(false);
   useEffect(() => {
   const delay = setTimeout(async () => {
 
-    if (project.length >= 1 && selectedSubLocality && !selectedProject) {
+    if (selectedSubLocality && !selectedProject) {
 
       try {
         setLoadingProjects(true);
 
         const res = await axiosInstance.get(
-          `location/projects/?query=${project}&subLocalityId=${selectedSubLocality._id}`
+          `/location/projects/?query=${project}&subLocalityId=${selectedSubLocality._id}`
         );
 
         setProjectSuggestions(res.data);
@@ -343,6 +343,13 @@ const [loadingProjects, setLoadingProjects] = useState(false);
             fullWidth
             label="Locality / Apartment"
             value={locality}
+            onFocus={()=>{
+              if (selectedCity && !selectedLocality) {
+                axiosInstance
+                  .get(`/location/localities?query=${locality || ""}&cityId=${selectedCity._id}`)
+                  .then((res) => setLocalitySuggestions(res.data));
+              }
+            }}
             onChange={(e) => {
               setLocality(e.target.value);
               setSelectedLocality(null);
@@ -353,7 +360,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
             <CircularProgress size={20} sx={{ position: "absolute", top: 15, right: 10 }} />
           )}
 
-          {locality.length > 0 && !selectedLocality && (
+          {!selectedLocality &&  (localitySuggestions.length > 0 || locality.length > 0) &&(
             <Paper
               sx={{
                 position: "absolute",
@@ -378,7 +385,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
                   </ListItem>
                 ))}
                  {/* 🔹 Show if no results */}
-              {!loadingLocality && localitySuggestions.length === 0 && (
+              {!loadingLocality && locality.length > 0 && localitySuggestions.length === 0 && (
                   <ListItem disablePadding>
                     <ListItemButton
                       sx={{ cursor: "default", backgroundColor: "#f9f9f9" }}
@@ -406,6 +413,13 @@ const [loadingProjects, setLoadingProjects] = useState(false);
                   fullWidth
                   label="Sub Locality (Optional)"
                   value={subLocality}
+                   onFocus={() => {
+                    if (selectedLocality && !selectedSubLocality) {
+                      axiosInstance
+                        .get(`/location/sublocalities?query=${subLocality || ""}&localityId=${selectedLocality._id}`)
+                        .then((res) => setSubLocalitySuggestions(res.data));
+                    }
+                  }}
                   onChange={(e) => {
                     setSubLocality(e.target.value);
                     setSelectedSubLocality(null);
@@ -420,7 +434,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
                   />
                 )}
 
-                {subLocality.length > 0 && !selectedSubLocality && (
+                {!selectedSubLocality && (subLocalitySuggestions.length > 0 || subLocality.length > 0) && (
                   <Paper
                     sx={{
                       position: "absolute",
@@ -471,6 +485,13 @@ const [loadingProjects, setLoadingProjects] = useState(false);
               fullWidth
               label="Apartment / Society (Optional)"
               value={project}
+              onFocus={() => {
+                if (selectedSubLocality && !selectedProject) {
+                  axiosInstance
+                    .get(`/location/projects/?query=${project || ""}&subLocalityId=${selectedSubLocality._id}`)
+                    .then((res) => setProjectSuggestions(res.data));
+                }
+              }}
               onChange={(e) => {
                 setProject(e.target.value);
                 setSelectedProject(null);
@@ -484,7 +505,7 @@ const [loadingProjects, setLoadingProjects] = useState(false);
               />
             )}
 
-            {project.length > 0 && !selectedProject && (
+            {!selectedProject && (projectSuggestions.length > 0 || project.length > 0) && (
               <Paper
                 sx={{
                   position: "absolute",
