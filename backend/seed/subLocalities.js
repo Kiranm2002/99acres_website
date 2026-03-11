@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Locality = require("../models/Locality");
 const SubLocality = require("../models/subLocality");
-
+require("dotenv").config();
 const seedSubLocalities = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);

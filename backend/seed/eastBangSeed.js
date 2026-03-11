@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
 const Locality = require("../models/Locality");
-
+require("dotenv").config();
 mongoose.connect(process.env.MONGO_URI);
 
 // 🔥 Replace with your actual Bangalore East ID
-const bangaloreEastId = "69a668c30e28797f03f8a803";
+const bangaloreEastId = "69b0f8081f6ad8b85cf697ef";
 
 const localities = [
   { name: "Whitefield", city: bangaloreEastId },

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const City = require("../models/City");
-
+require("dotenv").config();
 mongoose.connect(process.env.MONGO_URI);
 
 const cities = [
