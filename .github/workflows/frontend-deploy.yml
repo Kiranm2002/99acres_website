@@ -20,6 +20,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_FRONTEND }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 1800
           script: |
             sudo git config --global --add safe.directory /home/ubuntu/99acres_website
             cd /home/ubuntu/99acres_website
