@@ -77,7 +77,7 @@ const Navbar = ({isHomePage,user,setUser}) => {
                 navigate('/')
               }}}
             fontWeight={700} sx={{fontSize:"2rem",cursor:"pointer"}}>
-              99acres
+              98acres
             </Typography>
 
             <Button sx={{ color: isHomePage ? "#f5f5f5" : "#000", fontWeight:"600",
