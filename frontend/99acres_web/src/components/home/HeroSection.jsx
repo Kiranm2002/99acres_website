@@ -209,7 +209,7 @@ const HeroSection = ({ searchRef, hideSearch, onSearch, resultsCount, searchQuer
                 indicatorColor="error"
               >
                 <Tab label="Buy" />
-                <Tab label="Rent" />
+                <Tab label="Rent/Sell" />
                 <Tab label="New Launch" />
                 <Tab label="Commercial" />
                 <Tab label="Plots/Land" />
