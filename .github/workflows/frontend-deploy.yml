@@ -1,0 +1,30 @@
+name: Frontend Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/99acres_web/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Frontend EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_FRONTEND_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/99acres_website
+            git pull origin main
+            docker stop frontend-container || true
+            docker rm frontend-container || true
+            docker rmi 99_frontend || true
+            docker build -t 99_frontend -f frontend/99acres_web/Dockerfile frontend/99acres_web/
+            docker run -d -p 80:80 --name frontend-container 99_frontend
