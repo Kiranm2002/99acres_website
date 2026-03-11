@@ -208,7 +208,7 @@ const HeroSection = ({ searchRef, hideSearch, onSearch, resultsCount, searchQuer
                 textColor="error"
                 indicatorColor="error"
               >
-                <Tab label="Buy" />
+                <Tab label="Buy/Sell/Rent" />
                 <Tab label="Rent\\Lease" />
                 <Tab label="New Launch" />
                 <Tab label="Commercial" />
