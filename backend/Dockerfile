@@ -1,4 +1,4 @@
-FROM node:iron-trixie-slim
+FROM node:20
 
 WORKDIR /app
 

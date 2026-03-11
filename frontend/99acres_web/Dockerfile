@@ -1,5 +1,5 @@
 # Use Node image
-FROM node:iron-trixie-slim AS build
+FROM node:20-slim AS build
 
 # Set working directory
 WORKDIR /app
@@ -16,7 +16,7 @@ COPY . .
 RUN npm run build
 
 # Production stage
-FROM nginx:trixie-perl
+FROM nginx:alpine
 
 COPY --from=build /app/dist /usr/share/nginx/html
 
