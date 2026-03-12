@@ -268,12 +268,12 @@ const updatePhoto = async (req, res) => {
 
     if (req.files) {
       if (req.files.video) {
-        videoPath = req.files.video[0].path;
+        videoPath = req.files.video[0].location;
       }
 
       if (req.files.photos) {
         const newPhotos = req.files.photos.map(
-          (file) => file.path
+          (file) => file.location
         );
         photoPaths = [...photoPaths, ...newPhotos];
       }

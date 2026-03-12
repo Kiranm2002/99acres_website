@@ -23,15 +23,23 @@ axiosInstance.interceptors.response.use(
   (response) => response,
 
   async (error) => {
+    
     const originalRequest = error.config;
+    console.log("Interceptor triggered");
+  console.log("Status:", error.response?.status);
+  console.log("Original Request:", error.config);
 
-    if (error.response?.status === 403 && !originalRequest._retry) {
+
+    if (error.response?.status === 411 && 
+          !originalRequest._retry ) {
 
       originalRequest._retry = true;
 
       try {
 
         const refreshToken = localStorage.getItem("refreshToken");
+        console.log("Calling refresh token API");
+        console.log("Refresh token:", refreshToken);
 
         const res = await axios.post(
           "http://localhost:5000/refresh-token",
@@ -48,8 +56,10 @@ axiosInstance.interceptors.response.use(
 
       } catch (err) {
         console.log("Refresh token expired");
-        localStorage.clear();
-        window.location.href = "/login";
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("userId")
+        // localStorage.clear();
+        window.location.href = "/";
       }
 
     }

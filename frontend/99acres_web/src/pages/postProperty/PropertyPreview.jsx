@@ -448,26 +448,41 @@ useEffect(() => {
 
             {/* Photo card */}
             <Box sx={{ border: "1px solid #e0e6ef", borderRadius: "12px", overflow: "hidden", backgroundColor: "#1a1a2e" }}>
-              <Box sx={{ px: 2.5, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              {/* <Box sx={{ px: 2.5, py: 1.5, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <Box>
-                  <Typography sx={{ fontSize: "15px", fontWeight: 700, color: "#fff", fontFamily: "'Segoe UI', sans-serif" }}>Property (0)</Typography>
+                  <Typography sx={{ fontSize: "15px", fontWeight: 700, color: "#fff", fontFamily: "'Segoe UI', sans-serif" }}>Property (1)</Typography>
                   <Box sx={{ width: "40px", height: "2px", backgroundColor: "#fff", mt: 0.5 }} />
                 </Box>
                 <Typography sx={{ fontSize: "13px", color: "#aac4ff", fontFamily: "'Segoe UI', sans-serif", cursor: "pointer" }}>
                   Explore Locality Photos/Videos
                 </Typography>
-              </Box>
-              <Box sx={{ height: "240px", backgroundColor: "#2a2a3e", opacity: 0.6 }}>
+              </Box> */}
+              <Box sx={{ height: "240px", opacity: 1 }}>
+                {/* <PropertyImagePlaceholder /> */}
+                {property?.photos?.length > 0 ? (
+                <img
+                  src={property.photos[0]}
+                  alt="property image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
                 <PropertyImagePlaceholder />
+              )}
               </Box>
-              <Box sx={{ backgroundColor: "#1a1a2e", px: 2.5, py: 1, textAlign: "center" }}>
-                <Typography sx={{ fontSize: "12px", color: "#aaa", fontFamily: "'Segoe UI', sans-serif" }}>Photos not shared by advertiser</Typography>
-              </Box>
-              <Box sx={{ px: 2.5, pb: 2.5, pt: 1 }}>
-                <Button fullWidth variant="contained" startIcon={<AddPhotoAlternateOutlinedIcon />} sx={{ backgroundColor: "#1557a0", color: "#fff", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", py: 1.2, fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#0e4080" } }}>
-                  Request Photos
-                </Button>
-              </Box>
+              {!property?.photos?.length && ( <>
+                <Box sx={{ backgroundColor: "#1a1a2e", px: 2.5, py: 1, textAlign: "center" }}>
+                  <Typography sx={{ fontSize: "12px", color: "#aaa", fontFamily: "'Segoe UI', sans-serif" }}>Photos not shared by advertiser</Typography>
+                </Box>
+                <Box sx={{ px: 2.5, pb: 2.5, pt: 1 }}>
+                  <Button fullWidth variant="contained" startIcon={<AddPhotoAlternateOutlinedIcon />} sx={{ backgroundColor: "#1557a0", color: "#fff", textTransform: "none", fontWeight: 600, fontSize: "14px", borderRadius: "6px", py: 1.2, fontFamily: "'Segoe UI', sans-serif", "&:hover": { backgroundColor: "#0e4080" } }}>
+                    Request Photos
+                  </Button>
+                  </Box>
+                </>)}
             </Box>
 
             {/* ── Owner Details card (single container) ── */}

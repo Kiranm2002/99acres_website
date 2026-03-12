@@ -1,14 +1,14 @@
 const multer = require("multer");
+const multerS3 = require("multer-s3");
+const { S3Client } = require("@aws-sdk/client-s3");
 const path = require("path");
+require("dotenv").config();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueName =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueName + path.extname(file.originalname));
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
 });
 
@@ -24,7 +24,23 @@ const fileFilter = (req, file, cb) => {
 };
 
 const upload = multer({
-  storage,
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET_NAME,
+    
+
+    metadata: function (req, file, cb) {
+      cb(null, { fieldName: file.fieldname });
+    },
+
+    key: function (req, file, cb) {
+      const uniqueName =
+        Date.now() + "-" + Math.round(Math.random() * 1e9);
+
+      cb(null, "uploads/" + uniqueName + path.extname(file.originalname));
+    },
+  }),
+
   limits: { fileSize: 80 * 1024 * 1024 }, // 80MB
   fileFilter,
 });

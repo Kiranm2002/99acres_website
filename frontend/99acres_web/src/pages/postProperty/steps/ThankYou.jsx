@@ -205,6 +205,18 @@ const ThankYou = ({user,setUser})=> {
 
     const [property, setProperty] = useState(null);
 
+    const formatPrice = (price) => {
+  if (!price) return "";
+
+  if (price >= 10000000) {
+    return `${(price / 10000000).toFixed(1)} Cr`;
+  } else if (price >= 100000) {
+    return `${(price / 100000).toFixed(0)} Lac`;
+  } else {
+    return `${price}`;
+  }
+};
+
     useEffect(() => {
       const fetchProperty = async () => {
         try {
@@ -284,10 +296,23 @@ const ThankYou = ({user,setUser})=> {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                mb: 1.5,
+                mb: 1.5,overflow:"hidden"
               }}
             >
-              <HouseIllustration />
+              {property?.photos?.length > 0 ? (
+                <img
+                  src={property.photos[0]}
+                  alt="property image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <HouseIllustration />
+              )}
+              
             </Box>
 
             {property && (
@@ -335,7 +360,7 @@ const ThankYou = ({user,setUser})=> {
                     fontFamily: "'Segoe UI', sans-serif",
                   }}
                 >
-                  ₹ {property.expectedPrice}
+                  ₹ {formatPrice(property.expectedPrice)}
                 </Typography>
               </>
             )}

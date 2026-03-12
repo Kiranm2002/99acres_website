@@ -1,7 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const transporter = require("../utils/mailer");
-
+const jwt = require("jsonwebtoken")
+require("dotenv").config()
 
 const {generateAccessToken,generateRefreshToken} = require("../utils/generateTokens")
 
@@ -325,6 +326,7 @@ exports.passwordResetMail = async (req, res) => {
 exports.refreshToken = async (req, res) => {
 
   const { refreshToken } = req.body;
+  console.log(refreshToken)
 
   if (!refreshToken) {
     return res.status(401).json({ message: "Refresh token required" });
@@ -332,7 +334,7 @@ exports.refreshToken = async (req, res) => {
 
   try {
 
-    const decoded = jwt.verify(refreshToken, REFRESH_SECRET_KEY);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     const user = await User.findById(decoded.id);
 
@@ -347,7 +349,8 @@ exports.refreshToken = async (req, res) => {
     });
 
   } catch (err) {
-    return res.status(403).json({ message: "Refresh token expired" });
+    console.log(err)
+    return res.status(401).json({ message: "Refresh token expired" });
   }
 
 };

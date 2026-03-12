@@ -60,7 +60,7 @@ const PropertyCard = ({ property }) => {
         }}
       >
         <img
-          src="https://imagecdn.99acres.com/microsite/wp-content/blogs.dir/6161/files/2025/01/white-and-brown-concrete-building-stockpack-pexels-320x180.jpg?1737463414000"
+          src={property.photos[0]}
           alt="Property"
           style={{ width: "100%", height: "100%", objectFit: "cover" }}
         />

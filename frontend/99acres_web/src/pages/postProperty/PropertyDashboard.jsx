@@ -636,6 +636,18 @@ const handleClose = () => {
   setAnchorEl(null);
 };
 
+const formatPrice = (price) => {
+  if (!price) return "";
+
+  if (price >= 10000000) {
+    return `${(price / 10000000).toFixed(1)} Cr`;
+  } else if (price >= 100000) {
+    return `${(price / 100000).toFixed(0)} Lac`;
+  } else {
+    return `${price}`;
+  }
+};
+
 const handleNavigate = (path) => {
   handleClose();
   navigate(path); // You can change path later
@@ -703,7 +715,20 @@ const formatDate = (date) => {
       <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2.5, px: 2.5, pb: 2.5 }}>
         {/* Image with Not Verified badge */}
         <Box sx={{ position: "relative", width: "175px", height: "118px", borderRadius: "8px", overflow: "hidden", flexShrink: 0 }}>
-          <BuildingIllustration />
+          {/* <BuildingIllustration /> */}
+          {property?.photos?.length > 0 ? (
+                <img
+                  src={property.photos[0]}
+                  alt="property image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <BuildingIllustration />
+              )}
           <Box sx={{ position: "absolute", top: 8, left: 8, backgroundColor: "rgba(0,0,0,0.55)", color: "#fff", fontSize: "11px", fontWeight: 600, px: 1, py: 0.3, borderRadius: "4px", fontFamily: "'Segoe UI', sans-serif" }}>
             Not Verified
           </Box>
@@ -721,7 +746,7 @@ const formatDate = (date) => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
             <Box>
               <Typography sx={{ fontSize: "12px", color: "#999", fontFamily: "'Segoe UI', sans-serif" }}>Price</Typography>
-              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>₹ {property?.expectedPrice}</Typography>
+              <Typography sx={{ fontSize: "14px", fontWeight: 600, color: "#333", fontFamily: "'Segoe UI', sans-serif" }}>₹ {formatPrice(property?.expectedPrice)}</Typography>
             </Box>
             <Box>
               <Typography sx={{ fontSize: "12px", color: "#999", fontFamily: "'Segoe UI', sans-serif" }}>Property ID</Typography>

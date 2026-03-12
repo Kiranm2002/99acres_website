@@ -161,11 +161,35 @@ const PropertyCard = ({ property,onToggle }) =>{
   
   //   fetchProperty();
   // }, []);
+  const formatPrice = (price) => {
+  if (!price) return "";
+
+  if (price >= 10000000) {
+    return `${(price / 10000000).toFixed(1)} Cr`;
+  } else if (price >= 100000) {
+    return `${(price / 100000).toFixed(0)} Lac`;
+  } else {
+    return `${price}`;
+  }
+};
   return (
   <Box sx={{ width: "220px", flexShrink: 0, cursor: "pointer", }}>
     {/* Image area */}
     <Box sx={{ position: "relative", width: "100%", height: "165px", borderRadius: "8px", overflow: "hidden", mb: 1.2 }}>
-      <BuildingPlaceholder />
+      {/* <BuildingPlaceholder /> */}
+      {property?.photos?.length > 0 ? (
+                <img
+                  src={property.photos[0]}
+                  alt="property image"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              ) : (
+                <BuildingPlaceholder />
+              )}
       {/* Heart icon */}
       <IconButton
         onClick={(e) => { e.stopPropagation(); onToggle(property._id); }}
@@ -194,7 +218,7 @@ const PropertyCard = ({ property,onToggle }) =>{
         }}
       >
         <Typography sx={{ fontSize: "14px", fontWeight: 700, color: "#071c2c", fontFamily: "'Segoe UI', sans-serif" }}>
-          ₹ {property?.expectedPrice}
+          ₹ {formatPrice(property?.expectedPrice)}
         </Typography>
       </Box>
     </Box>
